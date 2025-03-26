@@ -1,0 +1,162 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Brain, Timer, Target, User } from 'lucide-react';
+import type { Quiz } from "../types/quiz.ts";
+
+interface PreQuizProps {
+  quiz: Quiz;
+  onStart: (userInfo: { name: string; email: string; phone: string }) => void;
+}
+
+export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
+  const [step, setStep] = useState<'welcome' | 'info'>('welcome');
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onStart(userInfo);
+  };
+
+  if (step === 'welcome') {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-background rounded-lg shadow-xl p-8">
+          <div className="flex items-center justify-center mb-8">
+            <Brain className="h-16 w-16 text-secondary" />
+          </div>
+
+          <h1 className="text-3xl font-bold text-center text-text mb-4">
+            {quiz.title}
+          </h1>
+          
+          {quiz.description && (
+            <p className="text-center text-text mb-8">
+              {quiz.description}
+            </p>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {quiz.time_limit && (
+              <div className="bg-accent p-6 rounded-lg text-center">
+                <Timer className="h-8 w-8 text-secondary mx-auto mb-2" />
+                <h3 className="font-semibold text-text">Time Limit</h3>
+                <p className="text-text">{quiz.time_limit} minutes</p>
+              </div>
+            )}
+
+            {quiz.passing_score && (
+              <div className="bg-accent p-6 rounded-lg text-center">
+                <Target className="h-8 w-8 text-secondary mx-auto mb-2" />
+                <h3 className="font-semibold text-text">Passing Score</h3>
+                <p className="text-text">{quiz.passing_score}%</p>
+              </div>
+            )}
+
+            <div className="bg-accent p-6 rounded-lg text-center">
+              <User className="h-8 w-8 text-secondary mx-auto mb-2" />
+              <h3 className="font-semibold text-text">Questions</h3>
+              <p className="text-text">10 questions</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <button
+              onClick={() => setStep('info')}
+              className="w-full px-6 py-3 bg-secondary text-text rounded-lg hover:bg-primary transition-colors"
+            >
+              Start Quiz
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="w-full px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
+            >
+              Return Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="bg-background rounded-lg shadow-xl p-8">
+        <div className="flex items-center justify-center mb-8">
+          <Brain className="h-16 w-16 text-secondary" />
+        </div>
+
+        <h1 className="text-3xl font-bold text-center text-text mb-2">
+          Before We Begin
+        </h1>
+        <p className="text-center text-text mb-8">
+          Please provide your information to start the quiz
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              required
+              value={userInfo.name}
+              onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              placeholder="Enter your name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              required
+              value={userInfo.email}
+              onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">
+              Phone
+            </label>
+            <input
+              type="tel"
+              required
+              value={userInfo.phone}
+              onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              placeholder="Enter your phone number"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+            >
+              Start Quiz
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep('welcome')}
+              className="w-full px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

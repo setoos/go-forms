@@ -1,0 +1,150 @@
+/* Base theme variables */
+:root {
+  /* Colors */
+  --color-primary: #6b21a8;
+  --color-primary-contrast: #ffffff;
+  --color-secondary: #9333ea;
+  --color-secondary-contrast: #ffffff;
+  --color-accent: #e9d5ff;
+  --color-background: #ffffff;
+  --color-text: #1f2937;
+  --color-border: #e5e7eb;
+
+  /* Brand Colors */
+  --color-brand-primary: var(--color-primary);
+  --color-brand-secondary: var(--color-secondary);
+  --color-brand-accent: var(--color-accent);
+
+  /* Typography */
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-brand-heading: var(--font-heading);
+  --font-brand-body: var(--font-body);
+
+  /* Quiz Styles */
+  --quiz-header-bg: var(--color-primary);
+  --quiz-button-style: rounded;
+  --quiz-progress-style: standard;
+
+  /* Transitions */
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Apply transitions to elements that change with theme */
+body,
+button,
+input,
+select,
+textarea {
+  transition: var(--theme-transition);
+}
+
+/* Base styles */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-text);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-contrast);
+}
+
+/* Dark mode */
+.dark {
+  --color-primary: #9333ea;
+  --color-primary-contrast: #ffffff;
+  --color-secondary: #c084fc;
+  --color-secondary-contrast: #ffffff;
+  --color-accent: #2d1a45;
+  --color-background: #1f2937;
+  --color-text: #f9fafb;
+  --color-border: #374151;
+}
+
+/* Ensure text contrast */
+.text-on-primary {
+  color: var(--color-primary-contrast);
+}
+
+.text-on-secondary {
+  color: var(--color-secondary-contrast);
+}
+
+/* Toast container */
+#toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Toast animations */
+.toast-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.toast-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+.toast-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-exit-active {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+/* Brand logo styles */
+.brand-logo {
+  max-height: var(--brand-logo-height, 40px);
+  width: auto;
+}
+
+/* Ensure form elements are readable */
+input, select, textarea {
+  color: var(--color-text);
+  background-color: var(--color-background);
+  border-color: var(--color-border);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text);
+  opacity: 0.5;
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
