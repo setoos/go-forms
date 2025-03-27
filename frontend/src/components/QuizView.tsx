@@ -1,10 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, Copy, Check, AlertCircle, ArrowRight, Lock, Globe, Users } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Share2,
+  Copy,
+  Check,
+  AlertCircle,
+  ArrowRight,
+  Lock,
+  Globe,
+  Users,
+} from "lucide-react";
 import { supabase } from "../lib/supabase.ts";
 import { showToast } from "../lib/toast.ts";
 import type { Quiz as QuizType, Question } from "../types/quiz.ts";
 import { generateQuizShare } from "../lib/quiz.ts";
+import { validate as isValidUUID } from "uuid";
 
 export default function QuizView() {
   const { id } = useParams();
@@ -15,7 +25,7 @@ export default function QuizView() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string>('');
+  const [shareUrl, setShareUrl] = useState<string>("");
 
   useEffect(() => {
     loadQuiz();
@@ -26,26 +36,28 @@ export default function QuizView() {
       setError(null);
       setLoading(true);
 
+      const quizQuery = isValidUUID(id)
+        ? `id.eq.${id},share_id.eq.${id}`
+        : `share_id.eq.${id}`;
+
       const { data: quizData, error: quizError } = await supabase
-        .from('quizzes')
+        .from("quizzes")
         .select()
-        .eq('id', id)
-        .single();
+        .or(quizQuery)
+        .limit(1)
+        .maybeSingle();
 
       if (quizError) throw quizError;
       if (!quizData) {
-        setError('Quiz not found');
+        setError("Quiz not found");
         return;
       }
 
       const { data: questionsData, error: questionsError } = await supabase
-        .from('questions')
-        .select(`
-          *,
-          options (*)
-        `)
-        .eq('quiz_id', id)
-        .order('order', { ascending: true });
+        .from("questions")
+        .select("*, options (*)")
+        .eq("quiz_id", quizData.id)
+        .order("order", { ascending: true });
 
       if (questionsError) throw questionsError;
 
@@ -53,8 +65,8 @@ export default function QuizView() {
       setQuestions(questionsData || []);
       setShareUrl(`${window.location.origin}/quiz/${quizData.share_id}`);
     } catch (error) {
-      console.error('Error loading quiz:', error);
-      setError('Failed to load quiz');
+      console.error("Error loading quiz:", error);
+      setError("Failed to load quiz");
     } finally {
       setLoading(false);
     }
@@ -64,27 +76,27 @@ export default function QuizView() {
     try {
       let urlToCopy = shareUrl;
       if (!quiz?.share_id) {
-        const share = await generateQuizShare(quiz?.id || '', {
-          accessType: quiz?.access_type || 'public'
+        const share = await generateQuizShare(quiz?.id || "", {
+          accessType: quiz?.access_type || "public",
         });
         urlToCopy = `${window.location.origin}/quiz/${share.share_id}`;
         setShareUrl(urlToCopy);
       }
       await navigator.clipboard.writeText(urlToCopy);
       setCopied(true);
-      showToast('Share link copied to clipboard!', 'success');
+      showToast("Share link copied to clipboard!", "success");
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
-      showToast('Failed to copy link', 'error');
+      console.error("Failed to copy:", error);
+      showToast("Failed to copy link", "error");
     }
   };
 
   const getAccessTypeIcon = () => {
     switch (quiz?.access_type) {
-      case 'private':
+      case "private":
         return <Lock className="h-5 w-5 text-secondary" />;
-      case 'invite':
+      case "invite":
         return <Users className="h-5 w-5 text-secondary" />;
       default:
         return <Globe className="h-5 w-5 text-secondary" />;
@@ -108,9 +120,9 @@ export default function QuizView() {
         <div className="bg-background rounded-lg shadow-xl p-8 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-text mb-4">Oops!</h2>
-          <p className="text-gray-600 mb-6">{error || 'Quiz not found'}</p>
+          <p className="text-gray-600 mb-6">{error || "Quiz not found"}</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
             Return Home
@@ -176,11 +188,11 @@ export default function QuizView() {
                 <div className="flex items-center">
                   {getAccessTypeIcon()}
                   <span className="ml-2">
-                    {quiz.access_type === 'private'
-                      ? 'Private - Only people with the link can access'
-                      : quiz.access_type === 'invite'
-                      ? 'Invite Only - Only invited participants can access'
-                      : 'Public - Anyone can access'}
+                    {quiz.access_type === "private"
+                      ? "Private - Only people with the link can access"
+                      : quiz.access_type === "invite"
+                        ? "Invite Only - Only invited participants can access"
+                        : "Public - Anyone can access"}
                   </span>
                 </div>
               </div>
@@ -191,13 +203,19 @@ export default function QuizView() {
         {/* Quiz Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Questions</h3>
+            <h3 className="text-sm font-medium text-gray-500 mb-1">
+              Questions
+            </h3>
             <p className="text-2xl font-bold text-text">{questions.length}</p>
           </div>
           {quiz.time_limit && (
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-500 mb-1">Time Limit</h3>
-              <p className="text-2xl font-bold text-text">{quiz.time_limit} minutes</p>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">
+                Time Limit
+              </h3>
+              <p className="text-2xl font-bold text-text">
+                {quiz.time_limit} minutes
+              </p>
             </div>
           )}
         </div>
@@ -205,7 +223,10 @@ export default function QuizView() {
         {/* Questions Preview */}
         <div className="space-y-6">
           {questions.map((question, index) => (
-            <div key={question.id} className="border-b border-border pb-6 last:border-0">
+            <div
+              key={question.id}
+              className="border-b border-border pb-6 last:border-0"
+            >
               <h3 className="text-lg font-medium text-text mb-4">
                 Question {index + 1}: {question.text}
               </h3>
