@@ -246,17 +246,17 @@ export default function Quiz() {
           onAnswer={handleAnswer}
         />
 
-        {quiz.share_id && !window.location.href.includes(quiz.share_id) && (
+        {quiz.share_id && !globalThis.location.href.includes(quiz.share_id) && (
           <div className="mt-8 pt-8 border-t border-border">
             <a
-              href={`${window.location.origin}/quiz/${quiz.share_id}`}
+              href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-gray-500"
             >
               Share this quiz:{" "}
               <span className="text-primary">
-                {window.location.origin}/quiz/{quiz.share_id}
+                {globalThis.location.origin}/quiz/{quiz.share_id}
               </span>
             </a>
           </div>
