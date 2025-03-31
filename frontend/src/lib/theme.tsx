@@ -19,6 +19,7 @@ export interface ThemeConfig {
     logo?: string;
     logoHeight?: number;
     favicon?: string;
+    logoText?: string;
   };
 }
 

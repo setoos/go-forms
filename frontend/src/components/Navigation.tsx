@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from "../lib/auth.tsx";
 import { cn } from "../lib/utils.ts";
+import { useTheme } from '../lib/theme.tsx';
 
 interface NavLinkProps {
   to: string;
@@ -134,6 +135,8 @@ function UserMenu() {
 
 export default function Navigation() {
   const { user } = useAuth();
+  const { theme } = useTheme();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -145,8 +148,10 @@ export default function Navigation() {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center text-text hover:text-secondary">
-              <Brain className="h-8 w-8 text-secondary" />
-              <span className="ml-2 text-xl font-bold">Vidoora</span>
+              {theme.branding?.logo ?
+               <img src={theme.branding?.logo} alt='Logo' className='w-40 h-20'/> :
+              <><Brain className="h-8 w-8 text-secondary" /> <span className="ml-2 text-xl font-bold">Vidoora</span></>}
+              {theme.branding?.logoText && <span className="ml-2 text-xl font-bold">{theme.branding?.logoText}</span> }
             </Link>
           </div>
 

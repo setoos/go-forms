@@ -13,6 +13,7 @@ import {
   Plus,
   Trash2,
   Copy,
+  Camera,
 } from "lucide-react";
 import { ThemeConfig, useTheme } from "../../lib/theme.tsx";
 import { Button } from "../ui/Button.tsx";
@@ -126,7 +127,7 @@ export default function ThemeSettings() {
   const saveTheme = async () => {
     try {
       setSaving(true);
-      await updateTheme(theme);
+      await updateTheme({ ...theme });
       showToast("Theme saved successfully", "success");
     } catch (error) {
       console.error("Error saving theme:", error);
@@ -236,6 +237,105 @@ export default function ThemeSettings() {
     reader.readAsText(file);
   };
 
+  async function handleLogoUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+      const file = event.target.files[0];
+
+      // Create preview
+      const objectUrl = URL.createObjectURL(file);
+      setTheme((prev) => ({
+        ...prev,
+        branding: {
+          ...prev.branding,
+          logo: objectUrl,
+        },
+      }));
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("logo")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("logo").getPublicUrl(filePath);
+
+      setTheme((prev) => ({
+        ...prev,
+        branding: {
+          ...prev.branding,
+          logo: publicUrl,
+        },
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      alert("Error uploading image!");
+    }
+  }
+  async function handleFaviconUpload(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+      const file = event.target.files[0];
+
+      // Create preview
+      const objectUrl = URL.createObjectURL(file);
+      setTheme((prev) => ({
+        ...prev,
+        branding: {
+          ...prev.branding,
+          favicon: objectUrl,
+        },
+      }));
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("favicon")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("favicon").getPublicUrl(filePath);
+
+      setTheme((prev) => ({
+        ...prev,
+        branding: {
+          ...prev.branding,
+          favicon: publicUrl,
+        },
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      alert("Error uploading image!");
+    }
+  }
+
+  const handleLogoText = (text:string) => {
+    setTheme((prev) => ({
+      ...prev,
+      branding: {
+        ...prev.branding,
+        logoText: text,
+      },
+    }));
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -301,6 +401,101 @@ export default function ThemeSettings() {
           </Button>
         </div>
       </div>
+
+      <Card className="flex gap-10">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Upload Logo
+          </label>
+          <div className="mt-1 flex items-center space-x-4">
+            {theme.branding?.logo ? (
+              <label className="relative cursor-pointer group">
+                {/* Logo Image */}
+                <img
+                  src={theme.branding.logo}
+                  alt="Logo"
+                  className="h-20 w-40"
+                />
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md">
+                  <span className="text-white text-xs font-medium">
+                  <Camera className="w-6 h-6" />
+                  </span>
+                </div>
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleLogoUpload(e)}
+                />
+              </label>
+            ) : (
+              <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <Camera className="w-4 h-4" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleLogoUpload(e)}
+                />
+              </label>
+            )}
+          </div>
+        </div>
+  
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Favicon
+          </label>
+          <div className="mt-1 flex items-center space-x-4">
+            {theme.branding?.favicon ? (
+              <label className="relative cursor-pointer group">
+                {/* Logo Image */}
+                <img
+                  src={theme.branding.favicon}
+                  alt="Logo"
+                  className="h-20 w-20"
+                />
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md">
+                  <span className="text-white text-xs font-medium">
+                  <Camera className="w-6 h-6" />
+                  </span>
+                </div>
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleFaviconUpload(e)}
+                />
+              </label>
+            ) : (
+              <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <Camera className="w-4 h-4" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleFaviconUpload(e)}
+                />
+              </label>
+            )}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Logo Text
+          </label>
+          <div className="mt-1 flex items-center space-x-4">
+          <Input
+                    value={theme.branding?.logoText}
+                    onChange={(e) => handleLogoText(e.target.value)}
+                  />
+          </div>
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Color Settings */}

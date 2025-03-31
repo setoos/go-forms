@@ -1,5 +1,5 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
 import { 
   Brain,
   ArrowRight,
@@ -15,6 +15,10 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Vidoora | Home</title>
+        <meta name="description" content="Your SEO description here" />
+      </Helmet>
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-primary via-secondary to-primary text-text">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=2070')] bg-cover bg-center mix-blend-overlay opacity-20 pointer-events-none"></div>
