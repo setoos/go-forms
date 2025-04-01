@@ -7,6 +7,7 @@ import type { Quiz as QuizType, Question } from "../types/quiz";
 import { questions as sampleQuestions } from "../data/questions.ts";
 import { shuffleQuestions, shuffleOptions } from "../lib/quiz.ts";
 import { validate as isValidUUID } from "uuid";
+import { useTheme } from "../lib/theme.tsx";
 
 export default function Quiz() {
   const { id } = useParams();
@@ -21,7 +22,10 @@ export default function Quiz() {
   const [startTime] = useState<number>(Date.now());
   const isSampleQuiz = id === "sample";
 
+  const { setParams } = useTheme();
+
   useEffect(() => {
+    setParams({ shareId: id });
     if (isSampleQuiz) {
       loadSampleQuiz();
     } else {
