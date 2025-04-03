@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from "../../lib/auth.tsx";
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../lib/auth';
 import { Brain } from 'lucide-react';
 
 export default function AuthForm() {
@@ -10,6 +10,7 @@ export default function AuthForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +23,7 @@ export default function AuthForm() {
         setError('Check your email for the confirmation link.');
       } else {
         await signIn(email, password);
+        navigate('/admin/quizzes');
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -45,10 +47,10 @@ export default function AuthForm() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <Link to="/" className="flex items-center justify-center text-secondary hover:text-primary">
+          <Link to="/" className="flex items-center justify-center text-purple-600 hover:text-purple-700">
             <Brain className="h-12 w-12" />
           </Link>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-text">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             {isSignUp ? 'Create your account' : 'Sign in to your account'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -76,7 +78,7 @@ export default function AuthForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-border placeholder-gray-500 text-text rounded-t-md focus:outline-none focus:ring-secondary focus:border-secondary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
             </div>
@@ -92,7 +94,7 @@ export default function AuthForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-border placeholder-gray-500 text-text rounded-b-md focus:outline-none focus:ring-secondary focus:border-secondary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 minLength={6}
               />
@@ -105,8 +107,8 @@ export default function AuthForm() {
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
                 loading
-                  ? 'bg-secondary cursor-not-allowed'
-                  : 'bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
+                  ? 'bg-purple-400 cursor-not-allowed'
+                  : 'bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500'
               }`}
             >
               {loading ? (
@@ -125,7 +127,7 @@ export default function AuthForm() {
                 setIsSignUp(!isSignUp);
                 setError(null);
               }}
-              className="font-medium text-secondary hover:text-secondary"
+              className="font-medium text-purple-600 hover:text-purple-500"
             >
               {isSignUp
                 ? 'Already have an account? Sign in'

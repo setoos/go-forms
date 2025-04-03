@@ -8,7 +8,7 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   server: {
-    // Force HTTP for local development to avoid mixed content issues
+    // Use HTTP instead of HTTPS for local development
     https: false,
     // Ensure proper CORS headers
     proxy: {

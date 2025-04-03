@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 export type QuestionType = 
   | 'multiple_choice'
   | 'true_false'
@@ -11,22 +9,6 @@ export type QuestionType =
   | 'picture_based'
   | 'complete_statement'
   | 'definition';
-
-  export type QuizAnalytics = {
-    completionRate: number;
-    recentAttempts: any;
-    totalAttempts: ReactNode;
-    passRate: number;
-    averageTimeSpent: number;
-    averageScore: number;
-    questionAnalytics: {
-      id: string;
-      text: string;
-      correctRate: number;
-      averageTimeSpent: number;
-      answerDistribution: Record<string, number>;
-    }[];
-  };
 
 export interface Quiz {
   id: string;
@@ -131,6 +113,7 @@ export interface QuizResponse {
   quiz_id: string;
   completion_time: number | null;
   timestamp: string;
+  custom_feedback?: string;
 }
 
 export interface QuizState {
@@ -195,3 +178,42 @@ export const ACCESS_TYPES = {
     description: 'Only invited participants can access'
   }
 } as const;
+
+export interface QuizAnalytics {
+  totalAttempts: number;
+  averageScore: number;
+  passRate: number;
+  completionRate: number;
+  averageTimeSpent: number;
+  questionAnalytics: QuestionAnalytics[];
+  recentAttempts: RecentAttempt[];
+}
+
+export interface QuestionAnalytics {
+  id: string;
+  text: string;
+  correctRate: number;
+  averageTimeSpent: number;
+  answerDistribution: Record<string, number>;
+}
+
+export interface RecentAttempt {
+  id: string;
+  participant_name: string;
+  participant_email: string;
+  score: number;
+  started_at: string;
+  completed_at: string;
+}
+
+export interface QuizShare {
+  id: string;
+  quiz_id: string;
+  share_id: string;
+  created_at: string;
+  expires_at: string | null;
+  access_type: 'public' | 'private' | 'invite';
+  password_hash: string | null;
+  max_attempts: number | null;
+  created_by: string;
+}

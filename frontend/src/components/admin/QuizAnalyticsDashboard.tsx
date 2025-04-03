@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  LineChart,
+  Line,
   BarChart as RechartsBarChart,
   Bar,
   XAxis,
@@ -12,15 +14,18 @@ import {
   Cell
 } from 'recharts';
 import { 
+  BarChart3, 
   Users, 
   Timer, 
   Trophy,
   Download,
+  Calendar,
   CheckCircle2,
+  XCircle,
   Clock,
   FileSpreadsheet
 } from 'lucide-react';
-import type { QuizAnalytics } from '../../types/quiz.ts';
+import type { QuizAnalytics } from '../../types/quiz';
 
 interface Props {
   analytics: QuizAnalytics;
@@ -36,7 +41,7 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
     { name: 'Incomplete', value: (1 - analytics.completionRate) * 100 }
   ];
 
-  const scoreDistribution = analytics.recentAttempts.reduce((acc: Record<number, number>, attempt: { score?: number }) => {
+  const scoreDistribution = analytics.recentAttempts.reduce((acc, attempt) => {
     const score = attempt.score || 0;
     const range = Math.floor(score / 10) * 10;
     acc[range] = (acc[range] || 0) + 1;
@@ -52,40 +57,40 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
     <div className="space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-background rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <Users className="h-8 w-8 text-secondary" />
-            <span className="text-3xl font-bold text-text">
+            <Users className="h-8 w-8 text-purple-600" />
+            <span className="text-3xl font-bold text-gray-900">
               {analytics.totalAttempts}
             </span>
           </div>
           <h3 className="text-sm font-medium text-gray-500">Total Attempts</h3>
         </div>
 
-        <div className="bg-background rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <Trophy className="h-8 w-8 text-secondary" />
-            <span className="text-3xl font-bold text-text">
+            <Trophy className="h-8 w-8 text-purple-600" />
+            <span className="text-3xl font-bold text-gray-900">
               {Math.round(analytics.averageScore)}%
             </span>
           </div>
           <h3 className="text-sm font-medium text-gray-500">Average Score</h3>
         </div>
 
-        <div className="bg-background rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <CheckCircle2 className="h-8 w-8 text-secondary" />
-            <span className="text-3xl font-bold text-text">
+            <CheckCircle2 className="h-8 w-8 text-purple-600" />
+            <span className="text-3xl font-bold text-gray-900">
               {Math.round(analytics.passRate * 100)}%
             </span>
           </div>
           <h3 className="text-sm font-medium text-gray-500">Pass Rate</h3>
         </div>
 
-        <div className="bg-background rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <Timer className="h-8 w-8 text-secondary" />
-            <span className="text-3xl font-bold text-text">
+            <Timer className="h-8 w-8 text-purple-600" />
+            <span className="text-3xl font-bold text-gray-900">
               {Math.round(analytics.averageTimeSpent / 60)}m
             </span>
           </div>
@@ -96,9 +101,9 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Completion Rate */}
-        <div className="bg-background rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-text">Completion Rate</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Completion Rate</h2>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -109,7 +114,7 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
                   cy="50%"
                   labelLine={false}
                   outerRadius={80}
-                  fill="currentColor"
+                  fill="#8884d8"
                   dataKey="value"
                 >
                   {completionData.map((entry, index) => (
@@ -122,20 +127,20 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
           </div>
           <div className="flex justify-center mt-4 space-x-8">
             <div className="flex items-center">
-              <div className="w-3 h-3 bg-secondary rounded-full mr-2"></div>
+              <div className="w-3 h-3 bg-purple-600 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600">Completed</span>
             </div>
             <div className="flex items-center">
-              <div className="w-3 h-3 bg-accent rounded-full mr-2"></div>
+              <div className="w-3 h-3 bg-purple-200 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600">Incomplete</span>
             </div>
           </div>
         </div>
 
         {/* Score Distribution */}
-        <div className="bg-background rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-text">Score Distribution</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Score Distribution</h2>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -152,20 +157,20 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
       </div>
 
       {/* Question Analysis */}
-      <div className="bg-background rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-text">Question Analysis</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Question Analysis</h2>
           <div className="flex space-x-2">
             <button
               onClick={() => onExport('csv')}
-              className="inline-flex items-center px-3 py-2 text-sm text-secondary hover:text-primary border border-secondary rounded-lg hover:bg-accent"
+              className="inline-flex items-center px-3 py-2 text-sm text-purple-600 hover:text-purple-800 border border-purple-600 rounded-lg hover:bg-purple-50"
             >
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Export CSV
             </button>
             <button
               onClick={() => onExport('pdf')}
-              className="inline-flex items-center px-3 py-2 text-sm text-secondary hover:text-primary border border-secondary rounded-lg hover:bg-accent"
+              className="inline-flex items-center px-3 py-2 text-sm text-purple-600 hover:text-purple-800 border border-purple-600 rounded-lg hover:bg-purple-50"
             >
               <Download className="h-4 w-4 mr-2" />
               Export PDF
@@ -175,15 +180,15 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
 
         <div className="space-y-6">
           {analytics.questionAnalytics.map((question, index) => (
-            <div key={question.id} className="border-b border-border pb-6 last:border-0">
+            <div key={question.id} className="border-b border-gray-200 pb-6 last:border-0">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="font-medium text-text">Question {index + 1}</h3>
+                  <h3 className="font-medium text-gray-900">Question {index + 1}</h3>
                   <p className="text-gray-600 mt-1">{question.text}</p>
                 </div>
                 <div className="text-right">
                   <span className="text-sm font-medium text-gray-500">Correct Rate</span>
-                  <p className="text-2xl font-bold text-text">
+                  <p className="text-2xl font-bold text-gray-900">
                     {Math.round(question.correctRate * 100)}%
                   </p>
                 </div>
@@ -200,7 +205,7 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
                       <div key={option} className="flex items-center">
                         <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-secondary rounded-full"
+                            className="h-full bg-purple-600 rounded-full"
                             style={{ 
                               width: `${(count / Object.values(question.answerDistribution)
                                 .reduce((a, b) => a + b, 0)) * 100}%` 
@@ -216,7 +221,7 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
                   <div className="text-sm text-gray-500 mb-2">Average Time Spent</div>
                   <div className="flex items-center">
                     <Clock className="h-5 w-5 text-gray-400 mr-2" />
-                    <span className="text-lg font-medium text-text">
+                    <span className="text-lg font-medium text-gray-900">
                       {Math.round(question.averageTimeSpent)} seconds
                     </span>
                   </div>
@@ -228,8 +233,8 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
       </div>
 
       {/* Recent Attempts */}
-      <div className="bg-background rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-semibold text-text mb-6">Recent Attempts</h2>
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Recent Attempts</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
@@ -248,11 +253,11 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-background divide-y divide-gray-200">
-              {analytics.recentAttempts.map((attempt: { id: string; participant_name: string; participant_email: string; score?: number; completed_at?: string; started_at?: string }) => (
+            <tbody className="bg-white divide-y divide-gray-200">
+              {analytics.recentAttempts.map((attempt) => (
                 <tr key={attempt.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-text">
+                    <div className="text-sm font-medium text-gray-900">
                       {attempt.participant_name}
                     </div>
                     <div className="text-sm text-gray-500">
@@ -277,7 +282,7 @@ export default function QuizAnalyticsDashboard({ analytics, onExport }: Props) {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {attempt.started_at ? new Date(attempt.started_at).toLocaleDateString() : 'N/A'}
+                    {new Date(attempt.started_at).toLocaleDateString()}
                   </td>
                 </tr>
               ))}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Question, Option } from "../../types/quiz.ts";
+import { Question, Option } from '../../types/quiz';
+import { processTemplateVariables } from '../../lib/htmlSanitizer';
 
 // Base props for all question types
 interface BaseQuestionProps {
@@ -10,26 +11,58 @@ interface BaseQuestionProps {
 
 // Multiple Choice Question
 export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: BaseQuestionProps) {
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const [showOptionFeedback, setShowOptionFeedback] = useState(false);
+
+  const handleOptionSelect = (option: Option) => {
+    setSelectedOption(option);
+    setShowOptionFeedback(true);
+    onAnswer(option.score, { optionId: option.id, correct: option.is_correct });
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="space-y-3">
         {question.options?.map((option: Option, index) => (
-          <button
-            key={option.id}
-            onClick={() => onAnswer(option.score, { optionId: option.id, correct: option.is_correct })}
-            className="w-full text-left p-4 rounded-lg border-2 border-border hover:border-accent0 hover:bg-accent transition-all duration-200"
-          >
-            <div className="flex items-center">
-              <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 mr-3">
-                {String.fromCharCode(65 + index)}
-              </span>
-              <p className="text-lg font-medium text-text">{option.text}</p>
-            </div>
-            {showFeedback && option.feedback && (
-              <p className="mt-2 text-sm text-gray-600 ml-11">{option.feedback}</p>
+          <div key={option.id}>
+            <button
+              onClick={() => handleOptionSelect(option)}
+              className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${
+                selectedOption?.id === option.id
+                  ? option.is_correct
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-red-500 bg-red-50'
+                  : 'border-gray-200 hover:border-purple-500 hover:bg-purple-50'
+              }`}
+            >
+              <div className="flex items-center">
+                <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 mr-3">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <p className="text-lg font-medium text-gray-900">{option.text}</p>
+              </div>
+            </button>
+            
+            {showFeedback && showOptionFeedback && selectedOption?.id === option.id && option.feedback && (
+              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div 
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{ 
+                    __html: processTemplateVariables(option.feedback, {
+                      name: 'User',
+                      email: 'user@example.com',
+                      score: option.score.toString(),
+                      date: new Date().toLocaleDateString(),
+                      time: '0:00',
+                      quiz_title: 'Quiz',
+                      performance_category: 'N/A'
+                    })
+                  }}
+                />
+              </div>
             )}
-          </button>
+          </div>
         ))}
       </div>
     </div>
@@ -50,9 +83,9 @@ export function TrueFalseQuestion({ question, onAnswer }: BaseQuestionProps) {
                 (question.answer_key?.correct_answer === true);
               onAnswer(isCorrect ? question.points : 0, { answer: value.toLowerCase(), correct: isCorrect });
             }}
-            className="p-6 text-center rounded-lg border-2 border-border hover:border-accent0 hover:bg-accent transition-all duration-200"
+            className="p-6 text-center rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all duration-200"
           >
-            <span className="text-xl font-semibold text-text">{value}</span>
+            <span className="text-xl font-semibold text-gray-900">{value}</span>
           </button>
         ))}
       </div>
@@ -80,12 +113,12 @@ export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           placeholder="Type your answer here"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
           Submit Answer
         </button>
@@ -111,13 +144,13 @@ export function ShortAnswerQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           rows={4}
           placeholder="Type your answer here"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
           Submit Answer
         </button>
@@ -157,8 +190,8 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
             const buttonClasses = [
               "w-full p-4 rounded-lg border-2 transition-colors",
               selectedLeft === pair.left_item
-                ? "border-accent0 bg-accent"
-                : "border-border hover:border-accent0 hover:bg-accent"
+                ? "border-purple-500 bg-purple-50"
+                : "border-gray-200 hover:border-purple-500 hover:bg-purple-50"
             ].join(" ");
 
             return (
@@ -177,7 +210,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
             <button
               key={pair.right_item}
               onClick={() => handleMatch(pair.right_item)}
-              className="w-full p-4 rounded-lg border-2 border-border hover:border-accent0 hover:bg-accent transition-colors"
+              className="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors"
             >
               {pair.right_item}
             </button>
@@ -186,7 +219,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
       </div>
       <button
         onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+        className="w-full mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
       >
         Submit Matches
       </button>
@@ -237,7 +270,7 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
             >
               ↓
             </button>
-            <div className="flex-1 p-4 bg-background rounded-lg border-2 border-border">
+            <div className="flex-1 p-4 bg-white rounded-lg border-2 border-gray-200">
               {item.item}
             </div>
           </div>
@@ -245,7 +278,7 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
       </div>
       <button
         onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+        className="w-full mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
       >
         Submit Order
       </button>
@@ -276,7 +309,7 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={essay}
           onChange={(e) => setEssay(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           rows={10}
           placeholder="Write your essay here (minimum 250 words)"
         />
@@ -286,7 +319,7 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
         <button
           type="submit"
           disabled={countWords(essay) < minWords}
-          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors disabled:bg-gray-400"
+          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400"
         >
           Submit Essay
         </button>
@@ -318,13 +351,13 @@ export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) 
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           rows={6}
           placeholder="Analyze the image and provide your answer"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
           Submit Analysis
         </button>
@@ -363,14 +396,14 @@ export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionPr
                 newAnswers[index] = e.target.value;
                 setAnswers(newAnswers);
               }}
-              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Fill in the blank"
             />
           </div>
         ))}
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
           Submit Answers
         </button>
@@ -395,13 +428,13 @@ export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           rows={6}
           placeholder="Write your definition and explanation"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
           Submit Definition
         </button>

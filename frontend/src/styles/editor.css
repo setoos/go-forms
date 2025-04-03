@@ -1,0 +1,363 @@
+/* Editor Styles */
+.rich-text-editor {
+  position: relative;
+  z-index: 10;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-bottom: 1.5rem;
+}
+
+/* Ensure the editor is always visible */
+.ql-container {
+  min-height: 200px;
+  max-height: none;
+  overflow: visible !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+/* Fix toolbar positioning */
+.ql-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: white;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex !important;
+  flex-wrap: wrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure editor content is always visible */
+.ql-editor {
+  min-height: 200px;
+  overflow: visible !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap !important;
+}
+
+/* Fix z-index issues with dropdowns */
+.ql-tooltip {
+  z-index: 25 !important;
+  position: absolute !important;
+}
+
+/* Fix dropdown menus */
+.ql-picker-options {
+  z-index: 30 !important;
+}
+
+/* Ensure proper toolbar visibility */
+.ql-formats {
+  display: inline-flex !important;
+  align-items: center;
+  margin-right: 0.75rem !important;
+}
+
+/* Fix color picker positioning */
+.ql-color-picker,
+.ql-background {
+  position: relative;
+  z-index: 25;
+}
+
+/* Ensure proper link tooltip positioning */
+.ql-tooltip {
+  left: 0 !important;
+  top: 0 !important;
+  position: absolute !important;
+  transform: none !important;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.375rem !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  padding: 0.5rem !important;
+}
+
+/* Fix ReactQuill specific issues */
+.quill {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix for collapsed sections */
+.ql-container.ql-snow {
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Fix for toolbar in collapsed sections */
+.ql-toolbar.ql-snow {
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  display: flex !important;
+  flex-wrap: wrap;
+  visibility: visible !important;
+}
+
+/* Fix for toolbar buttons */
+.ql-toolbar button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  visibility: visible !important;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 0.25rem;
+}
+
+.ql-toolbar button:hover {
+  background-color: #f3f4f6;
+}
+
+.ql-toolbar button.ql-active {
+  background-color: #f3f4f6;
+}
+
+/* Fix for toolbar dropdowns */
+.ql-toolbar .ql-picker {
+  display: inline-block !important;
+  visibility: visible !important;
+}
+
+/* Editor container */
+.editor-container {
+  position: relative;
+  z-index: 10;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: 200px;
+  overflow: visible !important;
+}
+
+/* Fix for editor in collapsed sections */
+.collapsed-section .editor-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure editors are always visible regardless of section state */
+[data-section-expanded="false"] .editor-container,
+[data-section-expanded="true"] .editor-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* HTML Mode Textarea Styles */
+.html-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 1rem;
+  font-family: monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #374151;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 0.375rem 0.375rem;
+  resize: vertical;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10;
+  position: relative;
+}
+
+/* Ensure HTML mode textarea is always visible */
+.html-mode .html-textarea {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix for HTML mode toggle */
+.html-mode-toggle {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 20;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .ql-toolbar {
+    flex-wrap: wrap !important;
+  }
+  
+  .ql-formats {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .html-textarea {
+    min-height: 150px;
+  }
+}
+
+/* Smooth transitions for expand/collapse */
+.section-content {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+/* Animation for section expansion */
+@keyframes expandSection {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 2000px;
+    opacity: 1;
+  }
+}
+
+@keyframes collapseSection {
+  from {
+    max-height: 2000px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+.section-expanding {
+  animation: expandSection 0.3s ease forwards;
+  display: block !important;
+}
+
+.section-collapsing {
+  animation: collapseSection 0.3s ease forwards;
+  display: block !important;
+}
+
+/* Fix for ReactQuill focus issues */
+.ql-editor:focus {
+  outline: none;
+}
+
+/* Fix for ReactQuill paste issues */
+.ql-clipboard {
+  position: fixed !important;
+  left: -100000px !important;
+  height: 1px !important;
+  width: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Fix for ReactQuill Enter key issues */
+.ql-editor p {
+  margin-bottom: 1em;
+}
+
+/* Fix for ReactQuill cursor issues */
+.ql-cursor {
+  display: none !important;
+}
+
+/* Fix for ReactQuill selection issues */
+.ql-editor .ql-blank::before {
+  color: rgba(55, 65, 81, 0.6) !important;
+  font-style: italic !important;
+}
+
+/* Fix for ReactQuill key handling */
+.ql-keyboard {
+  display: none !important;
+}
+
+/* Fix for ReactQuill content preservation */
+.ql-editor * {
+  white-space: pre-wrap !important;
+}
+
+/* Fix for ReactQuill line breaks */
+.ql-editor br {
+  display: block !important;
+  content: "" !important;
+  margin-top: 0.5em !important;
+}
+
+/* Fix for ReactQuill tab key handling */
+.ql-editor {
+  tab-size: 4 !important;
+}
+
+/* Fix for ReactQuill content editable issues */
+.ql-container.ql-snow {
+  position: relative !important;
+}
+
+/* Fix for ReactQuill editor height issues */
+.ql-container .ql-editor {
+  min-height: 200px !important;
+  height: auto !important;
+  overflow-y: visible !important;
+}
+
+/* Fix for ReactQuill toolbar button active states */
+.ql-toolbar button.ql-active,
+.ql-toolbar .ql-picker-label.ql-active,
+.ql-toolbar .ql-picker-item.ql-selected {
+  color: #9333ea !important;
+}
+
+.ql-toolbar button:hover .ql-stroke,
+.ql-toolbar button.ql-active .ql-stroke,
+.ql-toolbar .ql-picker-label:hover .ql-stroke,
+.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.ql-toolbar .ql-picker-item:hover .ql-stroke,
+.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
+.ql-toolbar button:hover .ql-stroke-miter,
+.ql-toolbar button.ql-active .ql-stroke-miter,
+.ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
+.ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
+.ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
+.ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter {
+  stroke: #9333ea !important;
+}
+
+.ql-toolbar button:hover .ql-fill,
+.ql-toolbar button.ql-active .ql-fill,
+.ql-toolbar .ql-picker-label:hover .ql-fill,
+.ql-toolbar .ql-picker-label.ql-active .ql-fill,
+.ql-toolbar .ql-picker-item:hover .ql-fill,
+.ql-toolbar .ql-picker-item.ql-selected .ql-fill,
+.ql-toolbar button:hover .ql-stroke.ql-fill,
+.ql-toolbar button.ql-active .ql-stroke.ql-fill,
+.ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
+.ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,
+.ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
+.ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill {
+  fill: #9333ea !important;
+}

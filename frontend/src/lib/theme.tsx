@@ -1,6 +1,6 @@
-import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
-import { supabase } from "./supabase.ts";
-import { showToast } from "./toast.ts";
+import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import { supabase } from './supabase';
+import { showToast } from './toast';
 
 export interface ThemeConfig {
   colors: {
@@ -19,13 +19,12 @@ export interface ThemeConfig {
     logo?: string;
     logoHeight?: number;
     favicon?: string;
-    logoText?: string;
   };
 }
 
 export const defaultTheme: ThemeConfig = {
   colors: {
-    primary: '#6b21a8', 
+    primary: '#6b21a8', // Darker purple for better contrast
     secondary: '#9333ea',
     accent: '#e9d5ff',
     background: '#ffffff',
@@ -60,9 +59,6 @@ interface ThemeContextType {
   resetTheme: () => void;
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  setTheme: React.Dispatch<React.SetStateAction<ThemeConfig>>;
-  params: Record<string, string | undefined>;
-  setParams: (params: Record<string, string | undefined>) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -71,9 +67,6 @@ const ThemeContext = createContext<ThemeContextType>({
   resetTheme: () => {},
   isDarkMode: false,
   toggleDarkMode: () => {},
-  setTheme: () => {},
-  params: {},
-  setParams: () => {},
 });
 
 export function useTheme() {
@@ -112,6 +105,13 @@ function applyTheme(theme: ThemeConfig, isDarkMode: boolean) {
     root.style.setProperty(`--font-${key}`, value);
   });
 
+  // Apply branding
+  if (mergedTheme.branding) {
+    if (mergedTheme.branding.logoHeight) {
+      root.style.setProperty('--brand-logo-height', `${mergedTheme.branding.logoHeight}px`);
+    }
+  }
+
   root.classList.toggle('dark', isDarkMode);
 }
 
@@ -127,7 +127,6 @@ function isLightColor(color: string): boolean {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<ThemeConfig>(defaultTheme);
-  const [params, setParams] = useState<Record<string, string | undefined>>({});
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const updateTheme = async (newTheme: Partial<ThemeConfig>) => {
@@ -183,38 +182,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          if(params?.shareId) {
-            applyTheme(defaultTheme, false);
-
-          const { data: quizData, error: quizError } = await supabase
-        .from("quizzes")
-        .select("created_by")
-        .eq("share_id", params?.shareId) 
-        .single();
-
-      if (quizError) {
-        console.error("Error fetching quiz data:", quizError.message);
-        return;
-      }
-
-      const userId = quizData.created_by;
-      console.log("Fetched user_id from shareId:", userId);
-
-      const { data: preferences, error: preferencesError } = await supabase
-        .from("user_preferences")
-        .select("preferences")
-        .eq("user_id", userId) 
-        .single();
-
-         
-        if (preferences?.preferences?.theme) {
-          setTheme(preferences.preferences.theme);
-          setIsDarkMode(preferences.preferences.isDarkMode || false);
-          applyTheme(preferences.preferences.theme, preferences.preferences.isDarkMode || false);
-        } else {
           applyTheme(defaultTheme, false);
-        }
-          }
           return;
         }
 
@@ -223,7 +191,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           .select('preferences')
           .eq('user_id', user.id)
           .single();
-          
+
         if (preferences?.preferences?.theme) {
           setTheme(preferences.preferences.theme);
           setIsDarkMode(preferences.preferences.isDarkMode || false);
@@ -238,7 +206,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
 
     loadTheme();
-  }, [params]);
+  }, []);
 
   return (
     <ThemeContext.Provider value={{
@@ -247,9 +215,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       resetTheme,
       isDarkMode,
       toggleDarkMode,
-      setTheme,
-      setParams,
-      params
     }}>
       {children}
     </ThemeContext.Provider>

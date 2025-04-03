@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, Timer, Target, User } from 'lucide-react';
-import type { Quiz } from "../types/quiz.ts";
+import type { Quiz } from '../types/quiz';
 
 interface PreQuizProps {
   quiz: Quiz;
@@ -25,55 +25,55 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
   if (step === 'welcome') {
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-background rounded-lg shadow-xl p-8">
+        <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="flex items-center justify-center mb-8">
-            <Brain className="h-16 w-16 text-secondary" />
+            <Brain className="h-16 w-16 text-purple-600" />
           </div>
 
-          <h1 className="text-3xl font-bold text-center text-text mb-4">
+          <h1 className="text-3xl font-bold text-center text-gray-900 mb-4">
             {quiz.title}
           </h1>
           
           {quiz.description && (
-            <p className="text-center text-text mb-8">
+            <p className="text-center text-gray-600 mb-8">
               {quiz.description}
             </p>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {quiz.time_limit && (
-              <div className="bg-accent p-6 rounded-lg text-center">
-                <Timer className="h-8 w-8 text-secondary mx-auto mb-2" />
-                <h3 className="font-semibold text-text">Time Limit</h3>
-                <p className="text-text">{quiz.time_limit} minutes</p>
+              <div className="bg-purple-50 p-6 rounded-lg text-center">
+                <Timer className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                <h3 className="font-semibold text-gray-900">Time Limit</h3>
+                <p className="text-gray-600">{quiz.time_limit} minutes</p>
               </div>
             )}
 
             {quiz.passing_score && (
-              <div className="bg-accent p-6 rounded-lg text-center">
-                <Target className="h-8 w-8 text-secondary mx-auto mb-2" />
-                <h3 className="font-semibold text-text">Passing Score</h3>
-                <p className="text-text">{quiz.passing_score}%</p>
+              <div className="bg-purple-50 p-6 rounded-lg text-center">
+                <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                <h3 className="font-semibold text-gray-900">Passing Score</h3>
+                <p className="text-gray-600">{quiz.passing_score}%</p>
               </div>
             )}
 
-            <div className="bg-accent p-6 rounded-lg text-center">
-              <User className="h-8 w-8 text-secondary mx-auto mb-2" />
-              <h3 className="font-semibold text-text">Questions</h3>
-              <p className="text-text">10 questions</p>
+            <div className="bg-purple-50 p-6 rounded-lg text-center">
+              <User className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-900">Questions</h3>
+              <p className="text-gray-600">10 questions</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <button
               onClick={() => setStep('info')}
-              className="w-full px-6 py-3 bg-secondary text-text rounded-lg hover:bg-primary transition-colors"
+              className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
               Start Quiz
             </button>
             <button
               onClick={() => navigate('/')}
-              className="w-full px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
+              className="w-full px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
             >
               Return Home
             </button>
@@ -85,21 +85,21 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-background rounded-lg shadow-xl p-8">
+      <div className="bg-white rounded-lg shadow-xl p-8">
         <div className="flex items-center justify-center mb-8">
-          <Brain className="h-16 w-16 text-secondary" />
+          <Brain className="h-16 w-16 text-purple-600" />
         </div>
 
-        <h1 className="text-3xl font-bold text-center text-text mb-2">
+        <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">
           Before We Begin
         </h1>
-        <p className="text-center text-text mb-8">
+        <p className="text-center text-gray-600 mb-8">
           Please provide your information to start the quiz
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-text mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Name
             </label>
             <input
@@ -107,13 +107,13 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
               required
               value={userInfo.name}
               onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Enter your name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
@@ -121,13 +121,13 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
               required
               value={userInfo.email}
               onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Enter your email"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Phone
             </label>
             <input
@@ -135,7 +135,7 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
               required
               value={userInfo.phone}
               onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent0 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Enter your phone number"
             />
           </div>
@@ -143,14 +143,14 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
           <div className="space-y-4">
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+              className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
               Start Quiz
             </button>
             <button
               type="button"
               onClick={() => setStep('welcome')}
-              className="w-full px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
+              className="w-full px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
             >
               Go Back
             </button>

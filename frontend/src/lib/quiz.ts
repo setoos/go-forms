@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.ts";
+import { supabase } from './supabase';
 import type { 
   Quiz, 
   QuizFilters, 
@@ -8,7 +8,8 @@ import type {
   OrderingItem,
   EssayRubric,
   QuizShare
-} from "../types/quiz.ts";
+} from '../types/quiz';
+import { showToast } from './toast';
 
 export async function getQuizzes(filters: QuizFilters = {}) {
   let query = supabase
@@ -300,4 +301,85 @@ export function shuffleOptions(options: Option[]): Option[] {
     ...option,
     order: index
   }));
+}
+
+// Get a template by ID
+export async function getQuizTemplate(templateId: string) {
+  try {
+    // In a real application, this would fetch from a templates table
+    // For this demo, we'll use the sample quiz data
+    const { data: quiz, error: quizError } = await supabase
+      .from('quizzes')
+      .select()
+      .eq('id', '00000000-0000-0000-0000-000000000000')
+      .single();
+
+    if (quizError) throw quizError;
+
+    const { data: questions, error: questionsError } = await supabase
+      .from('questions')
+      .select(`
+        *,
+        options (*),
+        matching_pairs (*),
+        ordering_items (*),
+        essay_rubrics (*)
+      `)
+      .eq('quiz_id', '00000000-0000-0000-0000-000000000000')
+      .order('order', { ascending: true });
+
+    if (questionsError) throw questionsError;
+
+    // Modify the quiz to be a template
+    const templateQuiz = {
+      ...quiz,
+      id: undefined, // Remove ID so a new one will be generated
+      title: `${quiz.title} (Copy)`,
+      is_published: false,
+      status: 'draft',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    // Modify questions to remove IDs
+    const templateQuestions = questions?.map(question => ({
+      ...question,
+      id: undefined, // Remove ID so a new one will be generated
+      quiz_id: undefined, // This will be set when saving
+      options: question.options?.map(option => ({
+        ...option,
+        id: undefined, // Remove ID so a new one will be generated
+        question_id: undefined // This will be set when saving
+      })),
+      matching_pairs: question.matching_pairs?.map(pair => ({
+        ...pair,
+        id: undefined, // Remove ID so a new one will be generated
+        question_id: undefined // This will be set when saving
+      })),
+      ordering_items: question.ordering_items?.map(item => ({
+        ...item,
+        id: undefined, // Remove ID so a new one will be generated
+        question_id: undefined // This will be set when saving
+      })),
+      essay_rubrics: question.essay_rubrics?.map(rubric => ({
+        ...rubric,
+        id: undefined, // Remove ID so a new one will be generated
+        question_id: undefined // This will be set when saving
+      }))
+    })) || [];
+
+    return {
+      quiz: templateQuiz,
+      questions: templateQuestions
+    };
+  } catch (error) {
+    console.error('Error getting quiz template:', error);
+    throw error;
+  }
+}
+
+export async function validateQuizAccess(quizId: string, password?: string) {
+  // This would normally check if the quiz is accessible
+  // For this demo, we'll just return true
+  return true;
 }

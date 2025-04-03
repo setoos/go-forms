@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
+  LineChart,
+  Line,
   BarChart,
   Bar,
   XAxis,
@@ -20,24 +23,30 @@ import {
   ArrowDownRight,
   Clock,
   MousePointerClick,
+  Download,
   FileSpreadsheet,
   Filter,
+  Calendar,
+  TrendingUp,
   Target,
   Brain,
   Award,
   BookOpen,
-  Loader2
+  Lightbulb,
+  Loader2,
+  Lock
 } from 'lucide-react';
-import { supabase } from "../../lib/supabase.ts";
-import { showToast } from "../../lib/toast.ts";
-import { format } from 'date-fns';
+import { supabase } from '../../lib/supabase';
+import { showToast } from '../../lib/toast';
+import { format, parseISO } from 'date-fns';
+import { useAuth } from '../../lib/auth';
 
 // Define color constants
 const COLORS = ['#9333ea', '#c084fc', '#e9d5ff', '#f3e8ff'];
 const CHART_COLORS = {
   primary: '#9333ea',
   secondary: '#c084fc',
-  tertiary: '#000000',
+  tertiary: '#e9d5ff',
   quaternary: '#f3e8ff'
 };
 
@@ -133,14 +142,24 @@ function MetricCard({ title, value, change, icon, format = 'number' }: MetricCar
 }
 
 export default function AnalyticsDashboard() {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('30d');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadAnalytics();
-  }, [dateRange]);
+    // Check if user is authenticated
+    if (!authLoading && !user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (user) {
+      loadAnalytics();
+    }
+  }, [dateRange, user, authLoading, navigate]);
 
   async function loadAnalytics() {
     try {
@@ -210,6 +229,34 @@ export default function AnalyticsDashboard() {
       showToast('Failed to export analytics', 'error');
     }
   };
+
+  // If still checking authentication status, show loading
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // If not authenticated, redirect to login (handled in useEffect)
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Lock className="h-16 w-16 text-purple-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">You need to be logged in to view analytics.</p>
+          <button
+            onClick={() => navigate('/auth')}
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

@@ -1,73 +1,73 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { supabase } from "../lib/supabase.ts";
-import { QuestionComponent } from "./questions/QuestionTypes.tsx";
-import type { Quiz as QuizType, Question } from "../types/quiz";
-import { questions as sampleQuestions } from "../data/questions.ts";
-import { shuffleQuestions, shuffleOptions } from "../lib/quiz.ts";
-import { validate as isValidUUID } from "uuid";
-import { useTheme } from "../lib/theme.tsx";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { QuestionComponent } from './questions/QuestionTypes';
+import type { Quiz as QuizType, Question } from '../types/quiz';
+import { questions as sampleQuestions } from '../data/questions';
+import { shuffleQuestions, shuffleOptions } from '../lib/quiz';
 
-export default function Quiz() {
+interface QuizProps {
+  initialQuiz?: QuizType;
+  initialQuestions?: Question[];
+  isSampleQuiz?: boolean;
+}
+
+export default function Quiz({ initialQuiz, initialQuestions, isSampleQuiz: propIsSampleQuiz }: QuizProps = {}) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [quiz, setQuiz] = useState<QuizType | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [quiz, setQuiz] = useState<QuizType | null>(initialQuiz || null);
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions || []);
+  const [loading, setLoading] = useState(!initialQuiz);
   const [error, setError] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [scores, setScores] = useState<Record<string, number>>({});
   const [startTime] = useState<number>(Date.now());
-  const isSampleQuiz = id === "sample";
-
-  const { setParams } = useTheme();
+  
+  const isSampleQuiz = propIsSampleQuiz || id === 'sample';
 
   useEffect(() => {
-    setParams({ shareId: id });
+    if (initialQuiz && initialQuestions) {
+      return; // Skip loading if props are provided
+    }
+    
     if (isSampleQuiz) {
       loadSampleQuiz();
     } else {
       loadQuiz();
     }
-  }, [id]);
+  }, [id, initialQuiz, initialQuestions]);
 
   async function loadQuiz() {
     try {
       setLoading(true);
       setError(null);
 
-      const query = isValidUUID(id)
-        ? `id.eq.${id},share_id.eq.${id}`
-        : `share_id.eq.${id}`;
-
       // First get the quiz data
       const { data: quizData, error: quizError } = await supabase
-        .from("quizzes")
-        .select("*")
-        .or(query)
+        .from('quizzes')
+        .select('*')
+        .eq('id', id)
         .single();
 
       if (quizError) throw quizError;
       if (!quizData) {
-        setError("Quiz not found");
+        setError('Quiz not found');
         return;
       }
 
       // Then get questions with related data
       const { data: questionsData, error: questionsError } = await supabase
-        .from("questions")
-        .select(
-          "*, options(*), matching_pairs(*), ordering_items(*), essay_rubrics(*)"
-        )
-        .eq("quiz_id", quizData.id)
-        .order("order");
+        .from('questions')
+        .select('*, options(*), matching_pairs(*), ordering_items(*), essay_rubrics(*)')
+        .eq('quiz_id', id)
+        .order('order');
 
       if (questionsError) throw questionsError;
 
       // Shuffle questions and their options
-      const shuffledQuestions = questionsData.map((question) => ({
+      const shuffledQuestions = questionsData.map(question => ({
         ...question,
         options: question.options ? shuffleOptions(question.options) : [],
       }));
@@ -75,8 +75,8 @@ export default function Quiz() {
       setQuiz(quizData);
       setQuestions(shuffleQuestions(shuffledQuestions));
     } catch (error) {
-      console.error("Error loading quiz:", error);
-      setError("Failed to load quiz");
+      console.error('Error loading quiz:', error);
+      setError('Failed to load quiz');
     } finally {
       setLoading(false);
     }
@@ -84,14 +84,14 @@ export default function Quiz() {
 
   function loadSampleQuiz() {
     setQuiz({
-      id: "sample",
-      title: "Marketing Awareness Sample Quiz",
-      description: "Test your marketing knowledge with our sample quiz",
+      id: 'sample',
+      title: 'Marketing Awareness Sample Quiz',
+      description: 'Test your marketing knowledge with our sample quiz',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      created_by: "system",
+      created_by: 'system',
       is_published: true,
-      share_id: "sample",
+      share_id: 'sample'
     });
     setQuestions(sampleQuestions);
     setLoading(false);
@@ -101,62 +101,48 @@ export default function Quiz() {
     const questionId = questions[currentQuestion].id;
     const newAnswers = { ...answers, [questionId]: answer };
     const newScores = { ...scores, [questionId]: score };
+    
     setAnswers(newAnswers);
     setScores(newScores);
 
     if (currentQuestion === questions.length - 1) {
-      const totalScore = Object.values(newScores).reduce(
-        (acc, val) => acc + val,
-        0
-      );
+      const totalScore = Object.values(newScores).reduce((acc, val) => acc + val, 0);
       const completionTime = Math.floor((Date.now() - startTime) / 1000);
 
       if (!isSampleQuiz) {
         try {
           // Create quiz attempt
           const { data: attempt, error: attemptError } = await supabase
-            .from("quiz_attempts")
+            .from('quiz_attempts')
             .insert({
               quiz_id: id,
-              score: Math.round(totalScore),
-              answers: newAnswers,
+              score: Math.round((totalScore / (questions.length * 10)) * 100),
+              answers: newScores,
               started_at: new Date(startTime).toISOString(),
-              completed_at: new Date().toISOString(),
+              completed_at: new Date().toISOString()
             })
             .select()
             .single();
 
-          if (attemptError) throw attemptError;
-
-          // Create quiz sessions for each question
-          const sessions = Object.entries(newAnswers).map(
-            ([questionId, answer]) => ({
-              attempt_id: attempt.id,
-              question_id: questionId,
-              final_answer: answer,
-              time_spent: Math.floor(completionTime / questions.length),
-            })
-          );
-
-          const { error: sessionsError } = await supabase
-            .from("quiz_sessions")
-            .insert(sessions);
-
-          if (sessionsError) throw sessionsError;
+          if (attemptError) {
+            console.error('Error saving quiz attempt:', attemptError);
+            // Continue even if there's an error, to ensure the user can see their results
+          }
         } catch (error) {
-          console.error("Error saving quiz attempt:", error);
+          console.error('Error saving quiz attempt:', error);
+          // Continue even if there's an error, to ensure the user can see their results
         }
       }
 
-      navigate("/results", {
-        state: {
-          quizId: quiz?.id,
+      navigate('/results', { 
+        state: { 
+          quizId: id,
           answers: newScores,
           score: Math.round((totalScore / (questions.length * 10)) * 100),
           completionTime,
           isSampleQuiz,
-          showUserInfoForm: true,
-        },
+          showUserInfoForm: true
+        }
       });
     } else {
       setCurrentQuestion(currentQuestion + 1);
@@ -167,8 +153,8 @@ export default function Quiz() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
-          <p className="text-text">Loading quiz...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading quiz...</p>
         </div>
       </div>
     );
@@ -177,12 +163,12 @@ export default function Quiz() {
   if (error) {
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-background rounded-lg shadow-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-text mb-4">Oops!</h2>
-          <p className="text-text mb-6">{error}</p>
+        <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Oops!</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={() => navigate("/")}
-            className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
+            onClick={() => navigate('/')}
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
           >
             Return Home
           </button>
@@ -194,14 +180,12 @@ export default function Quiz() {
   if (!quiz || !questions[currentQuestion]) {
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-background rounded-lg shadow-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-text mb-4">Quiz Not Found</h2>
-          <p className="text-text mb-6">
-            The quiz you're looking for doesn't exist.
-          </p>
+        <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quiz Not Found</h2>
+          <p className="text-gray-600 mb-6">The quiz you're looking for doesn't exist.</p>
           <button
-            onClick={() => navigate("/")}
-            className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
+            onClick={() => navigate('/')}
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
           >
             Return Home
           </button>
@@ -217,16 +201,16 @@ export default function Quiz() {
       <div className="mb-8">
         <Link
           to="/"
-          className="inline-flex items-center text-text hover:text-text transition-colors"
+          className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Home
         </Link>
       </div>
-      <div className="bg-background rounded-lg shadow-xl p-8">
+      <div className="bg-white rounded-lg shadow-xl p-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-secondary">
+            <span className="text-sm font-medium text-purple-600">
               Question {currentQuestion + 1} of {questions.length}
             </span>
             <span className="text-sm text-gray-500">
@@ -234,35 +218,28 @@ export default function Quiz() {
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-secondary h-2 rounded-full transition-all duration-300"
+            <div 
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
               style={{ width: progressWidth }}
             ></div>
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-text mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">
           {questions[currentQuestion].text}
         </h2>
 
         <QuestionComponent
           question={questions[currentQuestion]}
           onAnswer={handleAnswer}
+          showFeedback={true}
         />
 
-        {quiz.share_id && !globalThis.location.href.includes(quiz.share_id) && (
-          <div className="mt-8 pt-8 border-t border-border">
-            <a
-              href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-gray-500"
-            >
-              Share this quiz:{" "}
-              <span className="text-primary">
-                {globalThis.location.origin}/quiz/{quiz.share_id}
-              </span>
-            </a>
+        {quiz.share_id && (
+          <div className="mt-8 pt-8 border-t border-gray-200">
+            <p className="text-sm text-gray-500">
+              Share this quiz: {window.location.origin}/quiz/{quiz.share_id}
+            </p>
           </div>
         )}
       </div>

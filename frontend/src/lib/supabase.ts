@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from "../types/supabase.ts";
+import type { Database } from '../types/supabase';
 
 // Get environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -29,10 +29,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
   },
   global: {
     headers: {
-      'X-Client-Info': 'vidoora-web',
-      "Access-Control-Allow-Origin": "*",
-       "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      'X-Client-Info': 'vidoora-web'
     }
   }
 });

@@ -1,15 +1,59 @@
 import React, { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { UserCog, Bell, Lock, Shield, Palette } from 'lucide-react';
-import { Card } from "../ui/Card.tsx";
-import ThemeSettings from "./ThemeSettings.tsx";
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  UserCog, 
+  Bell, 
+  Lock, 
+  Shield, 
+  Palette, 
+  DollarSign
+} from 'lucide-react';
+import { Card } from '../ui/Card';
+import ThemeSettings from './ThemeSettings';
+import BillingSettings from './BillingSettings';
+
+interface SidebarLinkProps {
+  to: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  end?: boolean;
+  onClick?: () => void;
+}
+
+function SidebarLink({ to, icon, children, end = false, onClick }: SidebarLinkProps) {
+  const location = useLocation();
+  const isActive = end 
+    ? location.pathname === to
+    : location.pathname.startsWith(to);
+
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`
+        flex items-center px-4 py-2 text-sm font-medium rounded-lg
+        ${
+          isActive
+            ? "bg-purple-100 text-purple-900"
+            : "text-gray-600 hover:bg-purple-50 hover:text-purple-900"
+        }
+      `}
+    >
+      {React.cloneElement(icon as React.ReactElement, {
+        className: `h-5 w-5 mr-3 ${isActive ? "text-purple-600" : "text-gray-400"}`
+      })}
+      {children}
+    </Link>
+  );
+}
 
 const tabs = [
-  { id: 'account', label: 'Account', icon: UserCog },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'privacy', label: 'Privacy', icon: Lock },
-  { id: 'security', label: 'Security', icon: Shield },
-  { id: 'theme', label: 'Theme', icon: Palette },
+  { id: 'account', label: 'Account', icon: <UserCog /> },
+  { id: 'notifications', label: 'Notifications', icon: <Bell /> },
+  { id: 'privacy', label: 'Privacy', icon: <Lock /> },
+  { id: 'security', label: 'Security', icon: <Shield /> },
+  { id: 'theme', label: 'Theme', icon: <Palette /> },
+  { id: 'billing', label: 'Billing & Usage', icon: <DollarSign /> }
 ];
 
 export default function UserSettings() {
@@ -25,27 +69,16 @@ export default function UserSettings() {
         <div className="w-64 flex-shrink-0">
           <Card className="sticky top-8">
             <nav className="space-y-1">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <Link
-                    key={tab.id}
-                    to={`/settings/${tab.id}`}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`
-                      flex items-center px-4 py-2 text-sm font-medium rounded-lg
-                      ${
-                        activeTab === tab.id
-                          ? 'bg-primary text-white'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }
-                    `}
-                  >
-                    <Icon className="w-5 h-5 mr-3" />
-                    {tab.label}
-                  </Link>
-                );
-              })}
+              {tabs.map((tab) => (
+                <SidebarLink
+                  key={tab.id}
+                  to={`/settings/${tab.id}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  icon={tab.icon}
+                >
+                  {tab.label}
+                </SidebarLink>
+              ))}
             </nav>
           </Card>
         </div>
@@ -54,6 +87,8 @@ export default function UserSettings() {
         <div className="flex-1">
           {activeTab === 'theme' ? (
             <ThemeSettings />
+          ) : activeTab === 'billing' ? (
+            <BillingSettings />
           ) : (
             <Card>
               <h2 className="text-2xl font-bold mb-6">{

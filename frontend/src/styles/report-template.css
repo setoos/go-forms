@@ -1,0 +1,190 @@
+/* Report Template Styles */
+.report-container {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Table of Contents */
+.toc {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.toc h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+
+.toc ul {
+  list-style-type: none;
+  padding-left: 0.5rem;
+}
+
+.toc ul ul {
+  padding-left: 1.5rem;
+}
+
+.toc li {
+  margin-bottom: 0.5rem;
+}
+
+.toc a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.toc a:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 2rem;
+  page-break-inside: avoid;
+}
+
+.section h2 {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  page-break-after: avoid;
+}
+
+/* Subsections */
+.subsection {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  page-break-inside: avoid;
+}
+
+.subsection h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-secondary);
+  margin-bottom: 0.75rem;
+  page-break-after: avoid;
+}
+
+/* Tables */
+.report-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  page-break-inside: avoid;
+}
+
+.report-container th {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+
+.report-container td {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+
+.report-container tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Images */
+.report-container img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.25rem;
+}
+
+/* Lists */
+.report-container ul, 
+.report-container ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.report-container li {
+  margin-bottom: 0.5rem;
+}
+
+/* Page breaks for PDF */
+@media print {
+  .section {
+    page-break-before: always;
+  }
+  
+  .section:first-child {
+    page-break-before: avoid;
+  }
+  
+  h2, h3 {
+    page-break-after: avoid;
+  }
+  
+  .toc {
+    page-break-after: always;
+  }
+}
+
+/* Collapsible sections */
+.collapsible-section {
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.collapsible-header {
+  background-color: #f9fafb;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapsible-header h2, 
+.collapsible-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.collapsible-content {
+  padding: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .toc {
+    padding: 1rem;
+  }
+  
+  .section h2 {
+    font-size: 1.5rem;
+  }
+  
+  .subsection h3 {
+    font-size: 1.1rem;
+  }
+  
+  .subsection {
+    margin-left: 0.75rem;
+  }
+}

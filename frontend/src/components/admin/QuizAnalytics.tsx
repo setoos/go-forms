@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { supabase } from "../../lib/supabase.ts";
-import type { QuizAnalytics as Analytics } from "../../types/quiz.ts";
-import QuizAnalyticsDashboard from "./QuizAnalyticsDashboard.tsx";
-import { generatePDF } from "../../lib/pdf.ts";
-import { showToast } from "../../lib/toast.ts";
+import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import type { QuizAnalytics as Analytics } from '../../types/quiz';
+import QuizAnalyticsDashboard from './QuizAnalyticsDashboard';
+import { generatePDF } from '../../lib/pdf';
+import { showToast } from '../../lib/toast';
+import { useAuth } from '../../lib/auth';
+import { Loader2, Lock } from 'lucide-react';
 
 export default function QuizAnalytics() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadAnalytics();
-  }, [id]);
+    // Check if user is authenticated
+    if (!authLoading && !user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (user && id) {
+      loadAnalytics();
+    }
+  }, [id, user, authLoading, navigate]);
 
   async function loadAnalytics() {
     try {
@@ -45,7 +57,7 @@ export default function QuizAnalytics() {
         const pdfData = {
           id: id || '',
           name: 'Quiz Analytics Report',
-          email: 'analytics@vidoora.com',
+          email: 'analytics@goforms.com',
           timestamp: new Date().toISOString(),
           score: analytics.averageScore,
           answers: analytics.questionAnalytics.reduce((acc, q) => ({
@@ -81,22 +93,50 @@ export default function QuizAnalytics() {
     }
   };
 
+  // If still checking authentication status, show loading
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // If not authenticated, show login prompt
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Lock className="h-16 w-16 text-purple-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">You need to be logged in to view quiz analytics.</p>
+          <button
+            onClick={() => navigate('/auth')}
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
       </div>
     );
   }
 
   if (error || !analytics) {
     return (
-      <div className="bg-background rounded-lg shadow-md p-6 text-center">
-        <h3 className="text-lg font-medium text-text mb-2">Failed to load analytics</h3>
+      <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load analytics</h3>
         <p className="text-gray-500 mb-4">{error}</p>
         <button
           onClick={() => loadAnalytics()}
-          className="inline-flex items-center px-4 py-2 bg-secondary text-text rounded-lg hover:bg-primary"
+          className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
         >
           Try Again
         </button>

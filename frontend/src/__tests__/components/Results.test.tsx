@@ -2,9 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import React from "react";
-import Results from "../../components/Results.tsx";
-import { generatePDF } from "../../lib/pdf.ts";
+import Results from '../../components/Results';
+import { generatePDF } from '../../lib/pdf';
 
 vi.mock('../../lib/pdf', () => ({
   generatePDF: vi.fn()
