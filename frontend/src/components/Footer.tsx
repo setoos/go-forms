@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../lib/theme";
 import { useAuth } from "../lib/auth";
+import StratejiLogo from "../../public/strateji.svg";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -58,10 +59,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-2">
             {theme.branding?.logo && user ? (
-              <Link
-                to="/"
-                className="flex items-center hover:text-secondary"
-              >
+              <Link to="/" className="flex items-center hover:text-secondary">
                 <img
                   src={theme.branding.logo}
                   alt="Logo"
@@ -136,23 +134,39 @@ export default function Footer() {
             Setoo Solutions
           </p>
 
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            <a href="#" className="text-gray-400 hover:text-white">
-              <Facebook className="h-5 w-5" />
-              <span className="sr-only">Facebook</span>
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white">
-              <Twitter className="h-5 w-5" />
-              <span className="sr-only">Twitter</span>
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white">
-              <Instagram className="h-5 w-5" />
-              <span className="sr-only">Instagram</span>
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white">
-              <Linkedin className="h-5 w-5" />
-              <span className="sr-only">LinkedIn</span>
-            </a>
+          <div className="flex space-x-4">
+            <div className="my-auto flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-white">
+                <img
+                  src=" https://www.setoo.co/_next/static/media/logo-white.5de2be34.svg"
+                  alt=""
+                  className="size-16"
+                />
+                <span className="sr-only">Setoo</span>
+              </a>{" "}
+              <a href="#" className="text-gray-400 hover:text-white">
+                <img src={StratejiLogo} alt="" className="size-16" />
+                <span className="sr-only">StrateJi</span>
+              </a>
+            </div>
+            <div className="flex space-x-4 mt-4 md:mt-5 my-auto">
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Facebook className="h-5 w-5" />
+                <span className="sr-only">Facebook</span>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Twitter className="h-5 w-5" />
+                <span className="sr-only">Twitter</span>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Instagram className="h-5 w-5" />
+                <span className="sr-only">Instagram</span>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Linkedin className="h-5 w-5" />
+                <span className="sr-only">LinkedIn</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
