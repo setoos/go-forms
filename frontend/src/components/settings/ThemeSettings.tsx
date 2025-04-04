@@ -367,19 +367,19 @@ export default function ThemeSettings() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="">
         <div>
           <h2 className="text-2xl font-bold">Theme Settings</h2>
           <p className="text-gray-600">Customize the appearance of your quizzes</p>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 mt-5">
           <Button
             variant="outline"
             size="sm"
             icon={isDarkMode ? <Sun /> : <Moon />}
             onClick={toggleDarkMode}
           >
-            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            {isDarkMode ? 'Light' : 'Dark'}
           </Button>
           <Button
             variant="outline"
@@ -504,22 +504,24 @@ export default function ThemeSettings() {
           <h3 className="text-lg font-semibold mb-4">Branding</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Logo URL
               </label>
-              <div className="flex items-center space-x-2">
+              <div className="space-y-5">
                 <Input
                   value={logoUrl}
+                  className='w-full h-8'
                   onChange={(e) => handleLogoChange(e.target.value)}
                   placeholder="https://example.com/logo.png"
                 />
                 <Button
                   variant="outline"
+                  className='w-full'
                   size="sm"
                   icon={<Image />}
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  Upload
+                  Upload logo
                 </Button>
                 <input
                   ref={fileInputRef}
@@ -529,7 +531,7 @@ export default function ThemeSettings() {
                   onChange={handleFileUpload}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-3">
                 Enter a URL or upload an image (max 2MB)
               </p>
             </div>

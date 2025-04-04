@@ -93,7 +93,7 @@ const quizTemplates = [
   // Academic - Math
   {
     id: 'math-algebra-basics',
-    title: 'Algebra Basics Quiz',
+    title: 'Algebra Basics GoForm',
     description: 'Fundamental algebra concepts assessment with equation solving and graphing problems',
     category: 'academic',
     subcategory: 'math',
@@ -182,7 +182,7 @@ const quizTemplates = [
   {
     id: 'history-world-war-2',
     title: 'World War II Assessment',
-    description: 'Comprehensive quiz on World War II events, figures, and impacts',
+    description: 'Comprehensive GoForm on World War II events, figures, and impacts',
     category: 'academic',
     subcategory: 'history',
     audienceLevel: 'intermediate',
@@ -571,7 +571,7 @@ export default function QuizTemplateLibrary() {
 
   const handleUseTemplate = (templateId: string) => {
     navigate(`/admin/quizzes/new?template=${templateId}`);
-    showToast('Template selected. Customize your quiz now.', 'success');
+    showToast('Template selected. Customize your GoForm now.', 'success');
   };
 
   const handlePreview = (templateId: string) => {
@@ -586,9 +586,9 @@ export default function QuizTemplateLibrary() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Quiz Template Library</h1>
+        <h1 className="text-3xl font-bold text-gray-900">GoForm Template Library</h1>
         <p className="mt-2 text-lg text-gray-600">
-          Professional quiz templates for education, professional development, compliance, and employee assessment
+          Professional GoForm templates for education, professional development, compliance, and employee assessment
         </p>
       </div>
 
@@ -944,9 +944,9 @@ export default function QuizTemplateLibrary() {
       {/* Create Custom Quiz CTA */}
       <div className="mt-12 bg-purple-50 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Need a Custom Quiz?</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Need a Custom GoForm?</h3>
           <p className="text-gray-600 max-w-2xl">
-            Can't find what you're looking for? Create a custom quiz tailored to your specific needs with our powerful quiz builder.
+            Can't find what you're looking for? Create a custom GoForm tailored to your specific needs with our powerful GoForm builder.
           </p>
         </div>
         <button
@@ -954,7 +954,7 @@ export default function QuizTemplateLibrary() {
           className="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
         >
           <Plus className="h-5 w-5 mr-2" />
-          Create Custom Quiz
+          Create Custom GoForm
         </button>
       </div>
     </div>

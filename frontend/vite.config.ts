@@ -7,6 +7,10 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    outDir: "dist",
+  },
+  base: "/",
   server: {
     // Use HTTP instead of HTTPS for local development
     https: false,

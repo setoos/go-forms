@@ -208,8 +208,8 @@ export default function AnalyticsDashboard() {
           ['Retention Rate', `${data.retentionRate}%`],
           ['Average Session Duration', data.averageSessionDuration],
           ['Bounce Rate', `${data.bounceRate}%`],
-          ['Total Quizzes', data.quizInsights.totalQuizzes],
-          ['Total Quiz Attempts', data.quizInsights.totalAttempts],
+          ['Total GoForms', data.quizInsights.totalQuizzes],
+          ['Total GoForm Attempts', data.quizInsights.totalAttempts],
           ['Overall Average Score', `${data.quizInsights.overallAverageScore}%`],
           ['Overall Completion Rate', `${data.quizInsights.overallCompletionRate}%`]
         ].map(row => row.join(',')).join('\n');
@@ -355,12 +355,12 @@ export default function AnalyticsDashboard() {
 
       {/* Quiz Analytics Overview */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Quiz Analytics Overview</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">GoForm Analytics Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-purple-50 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
               <Brain className="h-6 w-6 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">Total Quizzes</span>
+              <span className="text-sm font-medium text-purple-600">Total GoForms</span>
             </div>
             <p className="text-2xl font-bold text-gray-900">{data.quizInsights.totalQuizzes}</p>
           </div>
@@ -393,7 +393,7 @@ export default function AnalyticsDashboard() {
 
         {/* Quiz Performance Trends */}
         <div className="mt-8">
-          <h3 className="text-md font-semibold text-gray-900 mb-4">Quiz Performance Trends</h3>
+          <h3 className="text-md font-semibold text-gray-900 mb-4">GoForm Performance Trends</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData}>
@@ -438,13 +438,13 @@ export default function AnalyticsDashboard() {
 
         {/* Top Performing Quizzes */}
         <div className="mt-8">
-          <h3 className="text-md font-semibold text-gray-900 mb-4">Top Performing Quizzes</h3>
+          <h3 className="text-md font-semibold text-gray-900 mb-4">Top Performing GoForms</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quiz Title
+                  GoForm Title
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Attempts

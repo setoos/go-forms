@@ -120,7 +120,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   // Load quiz data
   useEffect(() => {
     if (!user) {
-      setError('You must be logged in to create or edit quizzes');
+      setError('You must be logged in to create or edit GoForms');
       setLoading(false);
       return;
     }
@@ -162,7 +162,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           const { quiz: loadedQuiz, questions: loadedQuestions } = await getQuiz(id);
           
           if (loadedQuiz.created_by !== user.id) {
-            setError('You do not have permission to edit this quiz');
+            setError('You do not have permission to edit this GoForm');
             setLoading(false);
             return;
           }
@@ -179,8 +179,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
         
         setLoading(false);
       } catch (error) {
-        console.error('Error loading quiz:', error);
-        setError('Failed to load quiz data');
+        console.error('Error loading GoForm:', error);
+        setError('Failed to load GoForm data');
         setLoading(false);
       }
     };
@@ -499,13 +499,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       // Save quiz
       const quizId = await saveQuiz(quiz, questions);
       
-      showToast('Quiz saved successfully', 'success');
+      showToast('GoForm saved successfully', 'success');
       
       // Redirect to quiz list
       navigate('/admin/quizzes');
     } catch (error) {
-      console.error('Error saving quiz:', error);
-      showToast('Failed to save quiz', 'error');
+      console.error('Error saving GoForm:', error);
+      showToast('Failed to save GoForm', 'error');
     } finally {
       setSaving(false);
     }
@@ -516,14 +516,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
     if (quiz.id) {
       window.open(`/quiz/${quiz.id}`, '_blank');
     } else {
-      showToast('Please save the quiz first to preview it', 'error');
+      showToast('Please save the GoForm first to preview it', 'error');
     }
   };
   
   // Share the quiz
   const handleShare = async () => {
     if (!quiz.id) {
-      showToast('Please save the quiz first to share it', 'error');
+      showToast('Please save the GoForm first to share it', 'error');
       return;
     }
     
@@ -533,8 +533,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       setShareUrl(shareId);
       setShowShareModal(true);
     } catch (error) {
-      console.error('Error sharing quiz:', error);
-      showToast('Failed to share quiz', 'error');
+      console.error('Error sharing GoForm:', error);
+      showToast('Failed to share GoForm', 'error');
     }
   };
   
@@ -605,7 +605,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             onClick={() => navigate('/admin/quizzes')}
             className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
           >
-            Back to Quizzes
+            Back to GoForms
           </button>
         </div>
       </div>
@@ -625,10 +625,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {id === 'new' || templateId ? 'Create Quiz' : 'Edit Quiz'}
+              {id === 'new' || templateId ? 'Create GoForm' : 'Edit GoForm'}
             </h1>
             <p className="text-gray-600">
-              {activeStep === 'questions' ? 'Add and edit questions' : 'Configure quiz settings'}
+              {activeStep === 'questions' ? 'Add and edit questions' : 'Configure GoForm settings'}
             </p>
           </div>
         </div>
@@ -669,7 +669,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             ) : (
               <>
                 <Save className="h-5 w-5 mr-2" />
-                Save Quiz
+                Save GoForm
               </>
             )}
           </button>
@@ -701,7 +701,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             </div>
             <div className="ml-3">
               <h3 className="font-medium text-gray-900">Details</h3>
-              <p className="text-sm text-gray-500">Configure quiz settings</p>
+              <p className="text-sm text-gray-500">Configure GoForm settings</p>
             </div>
           </div>
         </div>
@@ -1037,7 +1037,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       {activeStep === 'details' && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quiz Details</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">GoForm Details</h2>
             
             <div className="space-y-4">
               <div>
@@ -1049,7 +1049,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   value={quiz.title}
                   onChange={(e) => handleQuizChange('title', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Enter quiz title"
+                  placeholder="Enter GoForm title"
                 />
               </div>
               
@@ -1061,7 +1061,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   value={quiz.description || ''}
                   onChange={(e) => handleQuizChange('description', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="Enter quiz description"
+                  placeholder="Enter GoForm description"
                   rows={3}
                 />
               </div>
@@ -1181,7 +1181,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               ) : (
                 <>
                   <Save className="h-5 w-5 mr-2" />
-                  Save Quiz
+                  Save GoForm
                 </>
               )}
             </button>
@@ -1194,7 +1194,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Share Quiz</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Share GoForm</h3>
               <button
                 onClick={() => setShowShareModal(false)}
                 className="text-gray-500 hover:text-gray-700"

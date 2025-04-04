@@ -72,7 +72,7 @@ export default function QuizTemplateHome() {
     {
       icon: <Download className="h-6 w-6 text-purple-600" />,
       title: 'Export Options',
-      description: 'Multiple export formats for quizzes and results'
+      description: 'Multiple export formats for GoForms and results'
     },
     {
       icon: <Sliders className="h-6 w-6 text-purple-600" />,
@@ -89,7 +89,7 @@ export default function QuizTemplateHome() {
   const popularTemplates = [
     {
       id: 'math-algebra-basics',
-      title: 'Algebra Basics Quiz',
+      title: 'Algebra Basics GoForm',
       category: 'Academic',
       subcategory: 'Mathematics',
       rating: 4.8,
@@ -122,10 +122,10 @@ export default function QuizTemplateHome() {
       <div className="bg-gradient-to-r from-purple-700 to-purple-900 rounded-2xl overflow-hidden shadow-xl mb-16">
         <div className="px-8 py-16 sm:px-16 sm:py-20 lg:py-24 max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Professional Quiz Templates for Every Purpose
+            Professional GoForm Templates for Every Purpose
           </h1>
           <p className="text-lg sm:text-xl text-purple-100 mb-8">
-            Choose from our extensive library of customizable quiz templates designed for education, professional development, compliance, and employee assessment.
+            Choose from our extensive library of customizable GoForm templates designed for education, professional development, compliance, and employee assessment.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <button
@@ -139,7 +139,7 @@ export default function QuizTemplateHome() {
               onClick={() => navigate('/admin/quizzes/new')}
               className="inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
             >
-              Create Custom Quiz
+              Create Custom GoForm
             </button>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function QuizTemplateHome() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Browse by Category</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Explore our extensive library of professionally designed quiz templates organized by purpose
+            Explore our extensive library of professionally designed GoForm templates organized by purpose
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export default function QuizTemplateHome() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Popular Templates</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our most used and highest-rated quiz templates
+            Our most used and highest-rated GoForm templates
           </p>
         </div>
 
@@ -279,9 +279,9 @@ export default function QuizTemplateHome() {
 
       {/* CTA Section */}
       <div className="bg-purple-50 rounded-2xl p-8 sm:p-12 text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Ready to Create Your Quiz?</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Ready to Create Your GoForm?</h2>
         <p className="text-lg text-gray-700 mb-8 max-w-3xl mx-auto">
-          Browse our extensive template library or create a custom quiz from scratch.
+          Browse our extensive template library or create a custom GoForm from scratch.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button
@@ -295,7 +295,7 @@ export default function QuizTemplateHome() {
             onClick={() => navigate('/admin/quizzes/new')}
             className="inline-flex items-center justify-center px-6 py-3 bg-white border border-purple-600 text-purple-600 rounded-lg font-medium hover:bg-purple-50 transition-colors"
           >
-            Create Custom Quiz
+            Create Custom GoForm
           </button>
         </div>
       </div>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  UserCog, 
-  Bell, 
-  Lock, 
-  Shield, 
+  // UserCog, 
+  // Bell, 
+  // Lock, 
+  // Shield, 
   Palette, 
   DollarSign
 } from 'lucide-react';
@@ -48,10 +48,10 @@ function SidebarLink({ to, icon, children, end = false, onClick }: SidebarLinkPr
 }
 
 const tabs = [
-  { id: 'account', label: 'Account', icon: <UserCog /> },
-  { id: 'notifications', label: 'Notifications', icon: <Bell /> },
-  { id: 'privacy', label: 'Privacy', icon: <Lock /> },
-  { id: 'security', label: 'Security', icon: <Shield /> },
+  // { id: 'account', label: 'Account', icon: <UserCog /> },
+  // { id: 'notifications', label: 'Notifications', icon: <Bell /> },
+  // { id: 'privacy', label: 'Privacy', icon: <Lock /> },
+  // { id: 'security', label: 'Security', icon: <Shield /> },
   { id: 'theme', label: 'Theme', icon: <Palette /> },
   { id: 'billing', label: 'Billing & Usage', icon: <DollarSign /> }
 ];

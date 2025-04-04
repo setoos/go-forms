@@ -48,7 +48,7 @@ const getTemplateById = (id: string) => {
   // This is a simplified version - in a real app, you'd fetch this from an API
   return {
     id: 'math-algebra-basics',
-    title: 'Algebra Basics Quiz',
+    title: 'Algebra Basics GoForm',
     description: 'Fundamental algebra concepts assessment with equation solving and graphing problems',
     category: 'academic',
     subcategory: 'math',
@@ -148,7 +148,7 @@ export default function QuizTemplatePreview() {
   const handleUseTemplate = () => {
     if (!template) return;
     navigate(`/admin/quizzes/new?template=${template.id}`);
-    showToast('Template selected. Customize your quiz now.', 'success');
+    showToast('Template selected. Customize your GoForm now.', 'success');
   };
 
   const handleDownload = () => {
@@ -566,7 +566,7 @@ export default function QuizTemplatePreview() {
                 <div>
                   <h2 className="text-xl font-semibold mb-4">Template Features</h2>
                   <p className="text-gray-600 mb-6">
-                    This template includes the following features to enhance your quiz experience:
+                    This template includes the following features to enhance your GoForm experience:
                   </p>
                   
                   <div className="space-y-3">
@@ -596,7 +596,7 @@ export default function QuizTemplatePreview() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="flex items-center">
                           <Sliders className="h-5 w-5 text-purple-600 mr-2" />
-                          <span>Quiz duration and time limits</span>
+                          <span>GoForm duration and time limits</span>
                         </div>
                         <div className="flex items-center">
                           <FileQuestion className="h-5 w-5 text-purple-600 mr-2" />
@@ -678,7 +678,7 @@ export default function QuizTemplatePreview() {
                     
                     <div className="mt-4 text-sm text-gray-600">
                       <p>
-                        The analytics dashboard provides real-time insights into quiz performance, 
+                        The analytics dashboard provides real-time insights into GoForm performance, 
                         participant engagement, and learning outcomes. Export reports in CSV, PDF, 
                         or Excel format for further analysis or sharing with stakeholders.
                       </p>
