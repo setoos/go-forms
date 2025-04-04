@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
-import { supabase } from './supabase';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;

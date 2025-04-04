@@ -84,7 +84,7 @@ describe('QuizList', () => {
 
     it('should allow quiz deletion', async () => {
       renderQuizList();
-      const deleteButton = await screen.findByTitle('Delete Quiz');
+      const deleteButton = await screen.findByTitle('Delete GoForm');
       await userEvent.click(deleteButton);
       
       expect(supabase.rpc).toHaveBeenCalledWith('soft_delete_quiz', expect.any(Object));
@@ -102,7 +102,7 @@ describe('QuizList', () => {
 
     it('should navigate to edit quiz page', async () => {
       renderQuizList();
-      const editButton = await screen.findByTitle('Edit Quiz');
+      const editButton = await screen.findByTitle('Edit GoForm');
       await userEvent.click(editButton);
       
       expect(window.location.pathname).toMatch(/\/admin\/quizzes\/.+/);
@@ -110,7 +110,7 @@ describe('QuizList', () => {
 
     it('should navigate to preview quiz page', async () => {
       renderQuizList();
-      const previewButton = await screen.findByTitle('Preview Quiz');
+      const previewButton = await screen.findByTitle('Preview GoForm');
       await userEvent.click(previewButton);
       
       expect(window.location.pathname).toMatch(/\/quiz\/.+/);

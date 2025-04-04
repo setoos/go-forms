@@ -1,67 +1,103 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Brain, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  Brain,
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+} from "lucide-react";
+import { useTheme } from "../lib/theme";
+import { useAuth } from "../lib/auth";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  
+  const { theme } = useTheme();
+  const { user } = useAuth();
+
   const footerLinks = [
     {
-      title: 'Product',
+      title: "Product",
       links: [
-        { label: 'Features', href: '#' },
-        { label: 'Pricing', href: '#' },
-        { label: 'Templates', href: '/forms/templates' },
-        { label: 'Integrations', href: '#' },
-        { label: 'API', href: '#' }
-      ]
+        { label: "Features", href: "#" },
+        { label: "Pricing", href: "#" },
+        { label: "Templates", href: "/forms/templates" },
+        { label: "Integrations", href: "#" },
+        { label: "API", href: "#" },
+      ],
     },
     {
-      title: 'Resources',
+      title: "Resources",
       links: [
-        { label: 'Documentation', href: '#' },
-        { label: 'Guides', href: '#' },
-        { label: 'Blog', href: '#' },
-        { label: 'Support Center', href: '#' },
-        { label: 'Webinars', href: '#' }
-      ]
+        { label: "Documentation", href: "#" },
+        { label: "Guides", href: "#" },
+        { label: "Blog", href: "#" },
+        { label: "Support Center", href: "#" },
+        { label: "Webinars", href: "#" },
+      ],
     },
     {
-      title: 'Company',
+      title: "Company",
       links: [
-        { label: 'About Us', href: '#' },
-        { label: 'Careers', href: '#' },
-        { label: 'Privacy Policy', href: '#' },
-        { label: 'Terms of Service', href: '#' },
-        { label: 'Contact Us', href: '#' }
-      ]
-    }
+        { label: "About Us", href: "#" },
+        { label: "Careers", href: "#" },
+        { label: "Privacy Policy", href: "#" },
+        { label: "Terms of Service", href: "#" },
+        { label: "Contact Us", href: "#" },
+      ],
+    },
   ];
-  
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <div className="flex items-center mb-4">
-              <Brain className="h-8 w-8 text-purple-500" />
-              <span className="ml-2 text-xl font-bold">GoForms</span>
-            </div>
+            {theme.branding?.logo && user ? (
+              <Link
+                to="/"
+                className="flex items-center hover:text-secondary"
+              >
+                <img
+                  src={theme.branding.logo}
+                  alt="Logo"
+                  className="h-10 w-auto"
+                />
+                <span className="ml-2 text-xl font-bold">GoForms</span>
+              </Link>
+            ) : (
+              <Link
+                to="/"
+                className="flex items-center text-text hover:text-secondary"
+              >
+                <Brain className="h-8 w-8 text-secondary" />
+                <span className="ml-2 text-xl font-bold">GoForms</span>
+              </Link>
+            )}
             <p className="text-gray-400 mb-6 max-w-md">
-              Professional form and quiz templates for every purpose. Create beautiful, 
-              responsive forms and assessments in minutes.
+              Professional form and GoForm templates for every purpose. Create
+              beautiful, responsive forms and assessments in minutes.
             </p>
             <div className="space-y-2">
               <div className="flex items-center">
                 <Mail className="h-5 w-5 text-purple-500 mr-3" />
-                <a href="mailto:info@goforms.com" className="text-gray-400 hover:text-white">
-                  info@goforms.com
+                <a
+                  href="mailto:info@goforms.ai"
+                  className="text-gray-400 hover:text-white"
+                >
+                  info@goforms.ai
                 </a>
               </div>
               <div className="flex items-center">
                 <Phone className="h-5 w-5 text-purple-500 mr-3" />
-                <a href="tel:+1234567890" className="text-gray-400 hover:text-white">
+                <a
+                  href="tel:+1234567890"
+                  className="text-gray-400 hover:text-white"
+                >
                   +1 (234) 567-890
                 </a>
               </div>
@@ -73,7 +109,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          
+
           {/* Links */}
           {footerLinks.map((section) => (
             <div key={section.title}>
@@ -81,8 +117,8 @@ export default function Footer() {
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link 
-                      to={link.href} 
+                    <Link
+                      to={link.href}
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       {link.label}
@@ -93,12 +129,13 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        
+
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            &copy; {currentYear} GoForms. All rights reserved.
+            &copy; {currentYear} GoForms. All rights reserved.| Proudly Owned by
+            Setoo Solutions
           </p>
-          
+
           <div className="flex space-x-4 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-white">
               <Facebook className="h-5 w-5" />

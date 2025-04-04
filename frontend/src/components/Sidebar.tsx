@@ -5,12 +5,12 @@ import {
   BarChart3, 
   Settings, 
   FileQuestion, 
-  ClipboardList, 
+  // ClipboardList, 
   LayoutTemplate, 
-  Mail, 
+  // Mail, 
   Users, 
-  GraduationCap, 
-  Award, 
+  // GraduationCap, 
+  // Award, 
   ChevronRight, 
   ChevronDown,
   FileEdit,
@@ -65,7 +65,7 @@ interface SidebarGroupProps {
   defaultOpen?: boolean;
 }
 
-function SidebarGroup({ title, icon, children, defaultOpen = false }: SidebarGroupProps) {
+function SidebarGroup({ title, icon, children, defaultOpen = true }: SidebarGroupProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -93,7 +93,7 @@ export default function Sidebar() {
   const location = useLocation();
   
   // Check if we're in the forms section
-  const isFormsSection = location.pathname.startsWith('/forms');
+  // const isFormsSection = location.pathname.startsWith('/forms');
   
   // Check if we're in the templates section
   const isTemplatesSection = location.pathname.startsWith('/templates');
@@ -107,10 +107,10 @@ export default function Sidebar() {
         <div className="space-y-1">
           {/* Main Navigation */}
           <SidebarLink to="/" icon={<Home />} end>
-            Home
+            Dashboard
           </SidebarLink>
           <SidebarLink to="/admin/quizzes" icon={<FileQuestion />}>
-            My Quizzes
+            My GoForms
           </SidebarLink>
           <SidebarLink to="/admin/submissions" icon={<Inbox />}>
             Submissions
@@ -123,10 +123,11 @@ export default function Sidebar() {
           <SidebarGroup 
             title="Templates" 
             icon={<LayoutTemplate />} 
-            defaultOpen={isAdminSection || isFormsSection || isTemplatesSection}
+            // defaultOpen={isAdminSection || isFormsSection || isTemplatesSection}
+            defaultOpen={isAdminSection || isTemplatesSection}
           >
             <SidebarLink to="/templates" icon={<FileText />}>
-              Quiz Templates
+            GoForm Templates
             </SidebarLink>
             <SidebarLink to="/admin/templates" icon={<FileEdit />}>
               Report Templates
@@ -138,7 +139,7 @@ export default function Sidebar() {
           
           {/* Quiz Template Categories */}
           {isTemplatesSection && (
-            <SidebarGroup title="Quiz Categories" defaultOpen={true}>
+            <SidebarGroup title="GoForm Categories" defaultOpen={true}>
               <SidebarLink to="/templates/category/academic" icon={<BookOpen />}>
                 Academic
               </SidebarLink>
@@ -154,7 +155,7 @@ export default function Sidebar() {
             </SidebarGroup>
           )}
           
-          {/* Form Categories */}
+          {/* Form Categories
           {isFormsSection && (
             <SidebarGroup title="Form Categories" defaultOpen={true}>
               <SidebarLink to="/forms/categories/lead-magnet" icon={<Mail />}>
@@ -170,7 +171,7 @@ export default function Sidebar() {
                 Certificates
               </SidebarLink>
             </SidebarGroup>
-          )}
+          )} */}
           
           {/* Settings */}
           <SidebarLink to="/settings/account" icon={<Settings />}>

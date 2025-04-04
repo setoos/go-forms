@@ -11,10 +11,10 @@ import {
   Sliders, 
   Tag, 
   MessageSquare, 
-  Globe, 
+  // Globe, 
   Layers, 
   Lock, 
-  Share2, 
+  // Share2, 
   Zap
 } from 'lucide-react';
 
@@ -58,7 +58,7 @@ export default function QuizTemplateFeatures() {
     },
     {
       title: 'Certificate Generation',
-      description: 'Automatic certificate generation for successful quiz completion',
+      description: 'Automatic certificate generation for successful GoForm completion',
       icon: <Award className="h-6 w-6 text-purple-600" />,
       details: [
         'Customizable certificate templates',
@@ -82,7 +82,7 @@ export default function QuizTemplateFeatures() {
     },
     {
       title: 'Export Options',
-      description: 'Multiple export formats for quizzes, results, and analytics',
+      description: 'Multiple export formats for GoForms, results, and analytics',
       icon: <Download className="h-6 w-6 text-purple-600" />,
       details: [
         'PDF export with customizable formatting',
@@ -133,9 +133,9 @@ export default function QuizTemplateFeatures() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Quiz Template Features</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">GoForm Template Features</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Our quiz templates include powerful features for assessment, tracking, and reporting
+          Our GoForm templates include powerful features for assessment, tracking, and reporting
         </p>
       </div>
 
@@ -195,7 +195,7 @@ export default function QuizTemplateFeatures() {
               <h3 className="font-medium">Timing</h3>
             </div>
             <p className="text-sm text-gray-600">
-              Set time limits for the entire quiz or individual questions
+              Set time limits for the entire GoForm or individual questions
             </p>
           </div>
           

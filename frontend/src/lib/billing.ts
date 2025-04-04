@@ -108,7 +108,7 @@ export const availablePlans: BillingPlan[] = [
     price: 0,
     billingCycle: 'monthly',
     features: [
-      'Up to 3 quizzes',
+      'Up to 3 GoForms',
       'Basic analytics',
       'Standard templates',
       'Email support'
@@ -125,7 +125,7 @@ export const availablePlans: BillingPlan[] = [
     price: 9.99,
     billingCycle: 'monthly',
     features: [
-      'Up to 10 quizzes',
+      'Up to 10 GoForms',
       'Standard analytics',
       'All templates',
       'Email support',
@@ -143,7 +143,7 @@ export const availablePlans: BillingPlan[] = [
     price: 29.99,
     billingCycle: 'monthly',
     features: [
-      'Unlimited quizzes',
+      'Unlimited GoForms',
       'Advanced analytics',
       'Custom branding',
       'API access',
@@ -161,7 +161,7 @@ export const availablePlans: BillingPlan[] = [
     price: 99.99,
     billingCycle: 'monthly',
     features: [
-      'Unlimited quizzes',
+      'Unlimited GoForms',
       'Advanced analytics',
       'Custom branding',
       'API access',
@@ -350,8 +350,8 @@ export async function getQuizSubmissions(dateRange: { start: Date, end: Date }):
       cost: sub.cost
     })) || [];
   } catch (error) {
-    console.error('Error getting quiz submissions:', error);
-    showToast('Failed to load quiz submissions', 'error');
+    console.error('Error getting GoForm submissions:', error);
+    showToast('Failed to load GoForm submissions', 'error');
     return [];
   }
 }

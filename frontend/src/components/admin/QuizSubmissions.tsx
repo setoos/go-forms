@@ -293,8 +293,8 @@ export default function QuizSubmissions() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quiz Submissions</h1>
-          <p className="text-gray-600">View and analyze all quiz submissions</p>
+          <h1 className="text-2xl font-bold text-gray-900">GoForm Submissions</h1>
+          <p className="text-gray-600">View and analyze all GoForm submissions</p>
         </div>
         <div className="flex space-x-3">
           <button
@@ -318,7 +318,7 @@ export default function QuizSubmissions() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, email, or quiz..."
+              placeholder="Search by name, email, or GoForm..."
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
             />
           </div>
@@ -361,7 +361,7 @@ export default function QuizSubmissions() {
                 onChange={(e) => setQuizFilter(e.target.value)}
                 className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
               >
-                <option value="all">All Quizzes</option>
+                <option value="all">All GoForms</option>
                 {quizzes.map(quiz => (
                   <option key={quiz.id} value={quiz.id}>{quiz.title}</option>
                 ))}
@@ -399,7 +399,7 @@ export default function QuizSubmissions() {
             <p className="text-gray-500 mb-6">
               {searchQuery || statusFilter !== 'all' || quizFilter !== 'all'
                 ? 'Try adjusting your filters to see more results'
-                : 'No quiz submissions have been received yet'}
+                : 'No GoForm submissions have been received yet'}
             </p>
           </div>
         ) : (
@@ -421,7 +421,7 @@ export default function QuizSubmissions() {
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quiz
+                  GoForm
                   </th>
                   <th 
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"

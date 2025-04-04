@@ -4,13 +4,13 @@ import {
   PlusCircle, 
   FileText, 
   BarChart3, 
-  Settings, 
+  // Settings, 
   FileQuestion, 
-  ClipboardList, 
-  Mail, 
-  Users, 
-  GraduationCap, 
-  Award 
+  // ClipboardList, 
+  // Mail, 
+  // Users, 
+  // GraduationCap, 
+  // Award 
 } from 'lucide-react';
 
 export default function QuickActions() {
@@ -24,7 +24,7 @@ export default function QuickActions() {
       color: 'bg-purple-600 hover:bg-purple-700 text-white'
     },
     { 
-      label: 'My Quizzes', 
+      label: 'My GoForms', 
       icon: <FileQuestion className="h-5 w-5" />, 
       onClick: () => navigate('/admin/quizzes'),
       color: 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -43,32 +43,32 @@ export default function QuickActions() {
     }
   ];
   
-  const formCategories = [
-    { 
-      label: 'Lead Magnets', 
-      icon: <Mail className="h-5 w-5" />, 
-      onClick: () => navigate('/forms/categories/lead-magnet'),
-      color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
-    },
-    { 
-      label: 'HR Forms', 
-      icon: <Users className="h-5 w-5" />, 
-      onClick: () => navigate('/forms/categories/hr'),
-      color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
-    },
-    { 
-      label: 'Academic Quizzes', 
-      icon: <GraduationCap className="h-5 w-5" />, 
-      onClick: () => navigate('/forms/categories/academic'),
-      color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
-    },
-    { 
-      label: 'Certificates', 
-      icon: <Award className="h-5 w-5" />, 
-      onClick: () => navigate('/forms/categories/certificate'),
-      color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
-    }
-  ];
+  // const formCategories = [
+  //   { 
+  //     label: 'Lead Magnets', 
+  //     icon: <Mail className="h-5 w-5" />, 
+  //     onClick: () => navigate('/forms/categories/lead-magnet'),
+  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //   },
+  //   { 
+  //     label: 'HR Forms', 
+  //     icon: <Users className="h-5 w-5" />, 
+  //     onClick: () => navigate('/forms/categories/hr'),
+  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //   },
+  //   { 
+  //     label: 'Academic Quizzes', 
+  //     icon: <GraduationCap className="h-5 w-5" />, 
+  //     onClick: () => navigate('/forms/categories/academic'),
+  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //   },
+  //   { 
+  //     label: 'Certificates', 
+  //     icon: <Award className="h-5 w-5" />, 
+  //     onClick: () => navigate('/forms/categories/certificate'),
+  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //   }
+  // ];
   
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -87,7 +87,7 @@ export default function QuickActions() {
         ))}
       </div>
       
-      <h3 className="text-sm font-medium text-gray-700 mb-3">Form Categories</h3>
+      {/* <h3 className="text-sm font-medium text-gray-700 mb-3">Form Categories</h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {formCategories.map((category, index) => (
           <button
@@ -99,7 +99,7 @@ export default function QuickActions() {
             <span className="ml-2 text-sm hidden sm:inline">{category.label}</span>
           </button>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

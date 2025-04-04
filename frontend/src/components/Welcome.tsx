@@ -30,7 +30,7 @@ export default function Welcome() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 text-white">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=2070')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=2070')] bg-cover bg-center mix-blend-overlay opacity-20 pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -282,9 +282,6 @@ export default function Welcome() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

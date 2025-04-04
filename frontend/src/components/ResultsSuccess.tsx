@@ -82,8 +82,8 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
       if (navigator.share) {
         try {
           await navigator.share({
-            title: `${quizTitle || 'Quiz'} Results`,
-            text: `I scored ${score}% on the ${quizTitle || 'quiz'}!`,
+            title: `${quizTitle || 'GoForm'} Results`,
+            text: `I scored ${score}% on the ${quizTitle || 'GoForm'}!`,
             url: window.location.href
           });
         } catch (shareError) {
@@ -127,8 +127,8 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
             </h1>
             <p className="mt-2 text-purple-100">
               {actionType === 'email' 
-                ? 'Your quiz results have been emailed to you.' 
-                : 'Your quiz results have been saved.'}
+                ? 'Your GoForm results have been emailed to you.' 
+                : 'Your GoForm results have been saved.'}
             </p>
           </div>
 
@@ -142,7 +142,7 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                     <div>
                       <p className="text-sm text-gray-500 flex items-center">
                         <FileText className="h-4 w-4 mr-1" />
-                        Quiz
+                        GoForm
                       </p>
                       <p className="font-medium text-gray-900">{quizTitle}</p>
                     </div>
@@ -243,14 +243,14 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                     <RefreshCw className="h-5 w-5 text-purple-600" />
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Take Another Quiz</h3>
-                    <p className="text-gray-600">Explore more quizzes to test your knowledge in different areas.</p>
+                    <h3 className="text-lg font-medium text-gray-900">Take Another GoForm</h3>
+                    <p className="text-gray-600">Explore more GoForms to test your knowledge in different areas.</p>
                     <Link 
                       to="/"
                       className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-600 border border-purple-600 rounded-md hover:bg-purple-50 transition-colors"
                     >
                       <RefreshCw className="h-4 w-4 mr-1.5" />
-                      Browse Quizzes
+                      Browse GoForms
                     </Link>
                   </div>
                 </div>
