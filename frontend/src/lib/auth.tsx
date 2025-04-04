@@ -1,6 +1,12 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { User } from '@supabase/supabase-js';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { User } from "@supabase/supabase-js";
 import { supabase } from "./supabase.ts";
 
 interface AuthContextType {
@@ -25,17 +31,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         // Only redirect to /admin/quizzes if we're on the auth page
-        if (location.pathname === '/auth') {
-          navigate('/admin/quizzes');
+        if (location.pathname === "/auth") {
+          navigate("/admin/quizzes");
         }
       } else {
         // If user is logged out and trying to access protected routes, redirect to auth
-        if (location.pathname.startsWith('/admin')) {
-          navigate('/auth');
+        if (location.pathname.startsWith("/admin")) {
+          navigate("/auth");
         }
       }
     });
@@ -44,17 +52,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [navigate, location.pathname]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ 
-      email, 
+    const { error } = await supabase.auth.signUp({
+      email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
     if (error) throw error;
   };
@@ -62,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -75,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

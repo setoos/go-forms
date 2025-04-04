@@ -1,6 +1,15 @@
-import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { supabase } from "./supabase.ts";
 import { showToast } from "./toast.ts";
+import Cookies from "js-cookie";
+import { Quiz } from "../types/quiz.ts";
+import { User } from "@supabase/supabase-js";
 
 export interface ThemeConfig {
   colors: {
@@ -20,21 +29,22 @@ export interface ThemeConfig {
     logoHeight?: number;
     favicon?: string;
     logoText?: string;
+    titleText?: string;
   };
 }
 
 export const defaultTheme: ThemeConfig = {
   colors: {
-    primary: '#6b21a8', 
-    secondary: '#9333ea',
-    accent: '#e9d5ff',
-    background: '#ffffff',
-    text: '#1f2937',
-    border: '#e5e7eb',
+    primary: "#6b21a8",
+    secondary: "#9333ea",
+    accent: "#e9d5ff",
+    background: "#ffffff",
+    text: "#1f2937",
+    border: "#e5e7eb",
   },
   fonts: {
-    heading: 'Inter, system-ui, sans-serif',
-    body: 'Inter, system-ui, sans-serif',
+    heading: "Inter, system-ui, sans-serif",
+    body: "Inter, system-ui, sans-serif",
   },
   branding: {
     logoHeight: 40,
@@ -43,16 +53,26 @@ export const defaultTheme: ThemeConfig = {
 
 export const darkTheme: ThemeConfig = {
   colors: {
-    primary: '#9333ea',
-    secondary: '#c084fc',
-    accent: '#2d1a45',
-    background: '#1f2937',
-    text: '#f9fafb',
-    border: '#374151',
+    primary: "#9333ea",
+    secondary: "#c084fc",
+    accent: "#2d1a45",
+    background: "#1f2937",
+    text: "#f9fafb",
+    border: "#374151",
   },
   fonts: defaultTheme.fonts,
   branding: defaultTheme.branding,
 };
+
+interface QuizSubmission {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  score: number;
+  created_at: string;
+  quiz_id: string;
+}
 
 interface ThemeContextType {
   theme: ThemeConfig;
@@ -63,6 +83,27 @@ interface ThemeContextType {
   setTheme: React.Dispatch<React.SetStateAction<ThemeConfig>>;
   params: Record<string, string | undefined>;
   setParams: (params: Record<string, string | undefined>) => void;
+  isSignOut: boolean;
+  setIsSignOut: (isSignOut: boolean) => void;
+  isResultSent: boolean;
+  setIsResultSent: (isResultSent: boolean) => void;
+  quizzes: Quiz[];
+  setQuizzes: (quizzes: Quiz[]) => Promise<void>;
+  loading: boolean;
+  setLoading: (isLoading: boolean) => void;
+  error: string;
+  setError: (error: string) => void;
+  loadQuizzes: () => void;
+  selectedQuiz: string;
+  setSelectedQuiz: (quizId: string) => void;
+  quizSubmissions: QuizSubmission[];
+  setQuizSubmissions: (submissions: QuizSubmission[]) => void;
+  answers: Record<string, string | number | boolean | null>;
+  setAnswers: (
+    answers: Record<string, string | number | boolean | null>
+  ) => void;
+  scores: Record<string, number>;
+  setScores: (scores: Record<string, number>) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -74,17 +115,36 @@ const ThemeContext = createContext<ThemeContextType>({
   setTheme: () => {},
   params: {},
   setParams: () => {},
+  isSignOut: false,
+  setIsSignOut: () => {},
+  isResultSent: false,
+  setIsResultSent: () => {},
+  quizzes: [],
+  setQuizzes: async () => {},
+  loading: false,
+  setLoading: () => {},
+  error: "",
+  setError: () => {},
+  loadQuizzes: () => {},
+  selectedQuiz: "",
+  setSelectedQuiz: () => {},
+  quizSubmissions: [],
+  setQuizSubmissions: () => {},
+  answers: {},
+  setAnswers: () => {},
+  scores: {},
+  setScores: () => {},
 });
 
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 }
 
-function applyTheme(theme: ThemeConfig, isDarkMode: boolean) {
+export function applyTheme(theme: ThemeConfig, isDarkMode: boolean) {
   const root = document.documentElement;
   const baseTheme = isDarkMode ? darkTheme : defaultTheme;
   const mergedTheme = {
@@ -94,75 +154,121 @@ function applyTheme(theme: ThemeConfig, isDarkMode: boolean) {
     fonts: { ...baseTheme.fonts, ...theme.fonts },
     branding: { ...baseTheme.branding, ...theme.branding },
   };
-  
+
   // Apply colors with contrast checking
   Object.entries(mergedTheme.colors).forEach(([key, value]) => {
     root.style.setProperty(`--color-${key}`, value);
-    
+
     // Add contrast colors for text
-    if (key === 'primary' || key === 'secondary') {
+    if (key === "primary" || key === "secondary") {
       root.style.setProperty(
         `--color-${key}-contrast`,
-        isLightColor(value) ? '#1f2937' : '#ffffff'
+        isLightColor(value) ? "#1f2937" : "#ffffff"
       );
     }
   });
-  
+
   Object.entries(mergedTheme.fonts).forEach(([key, value]) => {
     root.style.setProperty(`--font-${key}`, value);
   });
 
-  root.classList.toggle('dark', isDarkMode);
+  root.classList.toggle("dark", isDarkMode);
 }
 
 // Helper function to determine if a color is light
 function isLightColor(color: string): boolean {
-  const hex = color.replace('#', '');
+  const hex = color.replace("#", "");
   const r = parseInt(hex.substr(0, 2), 16);
   const g = parseInt(hex.substr(2, 2), 16);
   const b = parseInt(hex.substr(4, 2), 16);
-  const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
   return brightness > 155;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<ThemeConfig>(defaultTheme);
+  const savedTheme = Cookies.get("theme")
+    ? JSON.parse(Cookies.get("theme")!)
+    : defaultTheme;
+
+  const [theme, setTheme] = useState<ThemeConfig>(savedTheme);
   const [params, setParams] = useState<Record<string, string | undefined>>({});
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isSignOut, setIsSignOut] = useState(false);
+  const [isResultSent, setIsResultSent] = useState(false);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [selectedQuiz, setSelectedQuiz] = useState<string | undefined>(
+    undefined
+  );
+  const [quizSubmissions, setQuizSubmissions] = useState<QuizSubmission[]>([]);
+  const [answers, setAnswers] = useState<
+    Record<string, string | number | boolean | null>
+  >({});
+  const [scores, setScores] = useState<Record<string, number>>({});
+
+  const updateQuizzes = (newQuizzes: Quiz[]): Promise<void> => {
+    setQuizzes(newQuizzes);
+    return Promise.resolve();
+  };
+
+  console.log("theme", theme);
+
+  useEffect(() => {
+    setTheme(savedTheme);
+    applyTheme(savedTheme, isDarkMode);
+    async function fetchData() {
+      const {
+        data: { user: _user },
+      } = await supabase.auth.getUser();
+
+      console.log("_user", !_user);
+
+      if (!_user) {
+        setTheme(defaultTheme);
+        applyTheme(defaultTheme, isDarkMode);
+      }
+    }
+    fetchData();
+  }, []);
 
   const updateTheme = async (newTheme: Partial<ThemeConfig>) => {
     try {
       const updatedTheme = {
         ...theme,
         ...newTheme,
-        colors: { ...theme.colors, ...(newTheme.colors || {}) },
-        fonts: { ...theme.fonts, ...(newTheme.fonts || {}) },
-        branding: { ...theme.branding, ...(newTheme.branding || {}) },
+        colors: { ...theme?.colors, ...(newTheme.colors || {}) },
+        fonts: { ...theme?.fonts, ...(newTheme.fonts || {}) },
+        branding: { ...theme?.branding, ...(newTheme.branding || {}) },
       };
 
       setTheme(updatedTheme);
       applyTheme(updatedTheme, isDarkMode);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
+      const { error } = await supabase.from("user_preferences").upsert(
+        {
           user_id: user.id,
           preferences: {
             theme: updatedTheme,
             isDarkMode,
           },
-        }, {
-          onConflict: 'user_id',
-        });
+        },
+        {
+          onConflict: "user_id",
+        }
+      );
 
       if (error) throw error;
-      showToast('Theme updated successfully', 'success');
+      showToast("Theme updated successfully", "success");
     } catch (error) {
-      console.error('Error updating theme:', error);
-      showToast('Failed to update theme', 'error');
+      console.error("Error updating theme:", error);
+      showToast("Failed to update theme", "error");
     }
   };
 
@@ -181,58 +287,65 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadTheme = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) {
-          if(params?.shareId) {
+          if (params?.shareId) {
             applyTheme(defaultTheme, false);
 
-          const { data: quizData, error: quizError } = await supabase
-        .from("quizzes")
-        .select("created_by")
-        .eq("share_id", params?.shareId) 
-        .single();
+            const { data: quizData, error: quizError } = await supabase
+              .from("quizzes")
+              .select("created_by")
+              .eq("share_id", params?.shareId)
+              .single();
 
-      if (quizError) {
-        console.error("Error fetching quiz data:", quizError.message);
-        return;
-      }
+            if (quizError) {
+              console.error("Error fetching quiz data:", quizError.message);
+              return;
+            }
 
-      const userId = quizData.created_by;
-      console.log("Fetched user_id from shareId:", userId);
+            const userId = quizData.created_by;
+            console.log("Fetched user_id from shareId:", userId);
 
-      const { data: preferences, error: preferencesError } = await supabase
-        .from("user_preferences")
-        .select("preferences")
-        .eq("user_id", userId) 
-        .single();
+            const { data: preferences } = await supabase
+              .from("user_preferences")
+              .select("preferences")
+              .eq("user_id", userId)
+              .single();
 
-         
-        if (preferences?.preferences?.theme) {
-          setTheme(preferences.preferences.theme);
-          setIsDarkMode(preferences.preferences.isDarkMode || false);
-          applyTheme(preferences.preferences.theme, preferences.preferences.isDarkMode || false);
-        } else {
-          applyTheme(defaultTheme, false);
-        }
+            if (preferences?.preferences?.theme) {
+              setTheme(preferences.preferences.theme);
+              setIsDarkMode(preferences.preferences.isDarkMode || false);
+              applyTheme(
+                preferences.preferences.theme,
+                preferences.preferences.isDarkMode || false
+              );
+            } else {
+              applyTheme(defaultTheme, false);
+            }
           }
           return;
         }
 
         const { data: preferences } = await supabase
-          .from('user_preferences')
-          .select('preferences')
-          .eq('user_id', user.id)
+          .from("user_preferences")
+          .select("preferences")
+          .eq("user_id", user.id)
           .single();
-          
+
         if (preferences?.preferences?.theme) {
           setTheme(preferences.preferences.theme);
           setIsDarkMode(preferences.preferences.isDarkMode || false);
-          applyTheme(preferences.preferences.theme, preferences.preferences.isDarkMode || false);
+          applyTheme(
+            preferences.preferences.theme,
+            preferences.preferences.isDarkMode || false
+          );
         } else {
           applyTheme(defaultTheme, false);
         }
       } catch (error) {
-        console.error('Error loading theme:', error);
+        console.error("Error loading theme:", error);
         applyTheme(defaultTheme, false);
       }
     };
@@ -240,17 +353,147 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     loadTheme();
   }, [params]);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    fetchUser();
+
+    // Subscribe to auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      loadQuizzes();
+    }
+  }, [user]);
+
+  console.log("quizzes",quizzes);
+  
+
+  async function loadQuizzes() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Ensure user is authenticated
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error: fetchError } = await supabase
+        .from("quizzes")
+        .select("*")
+        .eq("created_by", user.id)
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+
+      if (fetchError) {
+        console.error("Error fetching quizzes:", fetchError);
+        throw new Error("Failed to load quizzes. Please try again.");
+      }
+
+      setQuizzes(data || []);
+    } catch (error) {
+      console.error("Error loading quizzes:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to load quizzes"
+      );
+      showToast("Failed to load quizzes", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function quizResponses() {
+    try {
+      setLoading(true);
+
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      if (!selectedQuiz) {
+        throw new Error("No quiz selected");
+      }
+
+      const { data, error } = await supabase
+        .from("quiz_responses")
+        .select("*")
+        .eq("quiz_id", selectedQuiz)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching quiz responses:", error);
+        throw new Error("Failed to load quiz responses. Please try again.");
+      }
+
+      setQuizSubmissions(data || []);
+    } catch (error) {
+      console.error("Error loading quizzes:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to load quizzes"
+      );
+      showToast("Failed to load quizzes", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (user && selectedQuiz) {
+      quizResponses();
+    }
+  }, [user, selectedQuiz]);
+
   return (
-    <ThemeContext.Provider value={{
-      theme,
-      updateTheme,
-      resetTheme,
-      isDarkMode,
-      toggleDarkMode,
-      setTheme,
-      setParams,
-      params
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme: theme || defaultTheme,
+        updateTheme,
+        resetTheme,
+        isDarkMode,
+        toggleDarkMode,
+        setTheme,
+        setParams,
+        params,
+        isSignOut,
+        setIsSignOut,
+        isResultSent,
+        setIsResultSent,
+        quizzes,
+        setQuizzes: updateQuizzes,
+        loading,
+        setLoading,
+        error: error || "",
+        setError,
+        loadQuizzes,
+        selectedQuiz: selectedQuiz || "",
+        setSelectedQuiz,
+        quizSubmissions,
+        setQuizSubmissions,
+        answers,
+        setAnswers,
+        scores,
+        setScores,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

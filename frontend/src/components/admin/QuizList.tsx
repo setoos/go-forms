@@ -1,55 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { PlusCircle, Edit, Trash2, Eye, AlertCircle, FileText, BarChart3 } from 'lucide-react';
 import { supabase } from "../../lib/supabase.ts";
-import { useAuth } from "../../lib/auth.tsx";
 import { showToast } from "../../lib/toast.ts";
-import type { Quiz } from "../../types/quiz.ts";
+import { useTheme } from "../../lib/theme.tsx";
 
 export default function QuizList() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      loadQuizzes();
-    }
-  }, [user]);
-
-  async function loadQuizzes() {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Ensure user is authenticated
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-
-      const { data, error: fetchError } = await supabase
-        .from('quizzes')
-        .select('*')
-        .eq('created_by', user.id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-      if (fetchError) {
-        console.error('Error fetching quizzes:', fetchError);
-        throw new Error('Failed to load quizzes. Please try again.');
-      }
-
-      setQuizzes(data || []);
-    } catch (error) {
-      console.error('Error loading quizzes:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load quizzes');
-      showToast('Failed to load quizzes', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }
+  const {quizzes, loading, error, loadQuizzes} = useTheme();
 
   async function deleteQuiz(id: string) {
     if (!confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {

@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Question, Option } from "../../types/quiz.ts";
+import { useTheme } from "../../lib/theme.tsx";
+import { useAuth } from "../../lib/auth.tsx";
+import { supabase } from "../../lib/supabase.ts";
+import { showToast } from "../../lib/toast.ts";
 
 // Base props for all question types
 interface BaseQuestionProps {
@@ -9,7 +13,11 @@ interface BaseQuestionProps {
 }
 
 // Multiple Choice Question
-export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: BaseQuestionProps) {
+export function MultipleChoiceQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
@@ -17,7 +25,12 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
         {question.options?.map((option: Option, index) => (
           <button
             key={option.id}
-            onClick={() => onAnswer(option.score, { optionId: option.id, correct: option.is_correct })}
+            onClick={() =>
+              onAnswer(option.score, {
+                optionId: option.id,
+                correct: option.is_correct,
+              })
+            }
             className="w-full text-left p-4 rounded-lg border-2 border-border hover:border-accent0 hover:bg-accent transition-all duration-200"
           >
             <div className="flex items-center">
@@ -27,7 +40,9 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
               <p className="text-lg font-medium text-text">{option.text}</p>
             </div>
             {showFeedback && option.feedback && (
-              <p className="mt-2 text-sm text-gray-600 ml-11">{option.feedback}</p>
+              <p className="mt-2 text-sm text-gray-600 ml-11">
+                {option.feedback}
+              </p>
             )}
           </button>
         ))}
@@ -42,15 +57,19 @@ export function TrueFalseQuestion({ question, onAnswer }: BaseQuestionProps) {
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="grid grid-cols-2 gap-4">
-        {['True', 'False'].map((value) => (
+        {["True", "False"].map((value) => (
           <button
             key={value}
             onClick={() => {
-              const isCorrect = (value.toLowerCase() === 'true') === 
+              const isCorrect =
+                (value.toLowerCase() === "true") ===
                 (question.answer_key?.correct_answer === true);
-              onAnswer(isCorrect ? question.points : 0, { answer: value.toLowerCase(), correct: isCorrect });
+              onAnswer(isCorrect ? question.points : 0, {
+                answer: value.toLowerCase(),
+                correct: isCorrect,
+              });
             }}
-            className="p-6 text-center rounded-lg border-2 border-border hover:border-accent0 hover:bg-accent transition-all duration-200"
+            className="p-6 text-center rounded-lg border-2 border-border hover:border-accent hover:bg-accent transition-all duration-200"
           >
             <span className="text-xl font-semibold text-text">{value}</span>
           </button>
@@ -62,13 +81,19 @@ export function TrueFalseQuestion({ question, onAnswer }: BaseQuestionProps) {
 
 // Fill in the Blank Question
 export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+  const [answer, setAnswer] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const answerKey = question.answer_key as { correct_answer: string; alternative_answers?: string[] };
-    const isCorrect = answer.toLowerCase() === answerKey.correct_answer.toLowerCase() ||
-      answerKey.alternative_answers?.some(alt => alt.toLowerCase() === answer.toLowerCase());
+    const answerKey = question.answer_key as {
+      correct_answer: string;
+      alternative_answers?: string[];
+    };
+    const isCorrect =
+      answer.toLowerCase() === answerKey.correct_answer.toLowerCase() ||
+      answerKey.alternative_answers?.some(
+        (alt) => alt.toLowerCase() === answer.toLowerCase()
+      );
     onAnswer(isCorrect ? question.points : 0, { answer, correct: isCorrect });
   };
 
@@ -96,7 +121,7 @@ export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
 
 // Short Answer Question
 export function ShortAnswerQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+  const [answer, setAnswer] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,7 +158,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
 
   const handleMatch = (rightItem: string) => {
     if (selectedLeft) {
-      setMatches(prev => ({ ...prev, [selectedLeft]: rightItem }));
+      setMatches((prev) => ({ ...prev, [selectedLeft]: rightItem }));
       setSelectedLeft(null);
     }
   };
@@ -141,9 +166,11 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
   const handleSubmit = () => {
     const score = Object.entries(matches).reduce((acc, [left, right]) => {
       const isCorrect = question.matching_pairs?.some(
-        pair => pair.left_item === left && pair.right_item === right
+        (pair) => pair.left_item === left && pair.right_item === right
       );
-      return acc + (isCorrect ? question.points / Object.keys(matches).length : 0);
+      return (
+        acc + (isCorrect ? question.points / Object.keys(matches).length : 0)
+      );
     }, 0);
     onAnswer(score, { matches });
   };
@@ -153,12 +180,12 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-3">
-          {question.matching_pairs?.map(pair => {
+          {question.matching_pairs?.map((pair) => {
             const buttonClasses = [
               "w-full p-4 rounded-lg border-2 transition-colors",
               selectedLeft === pair.left_item
                 ? "border-accent0 bg-accent"
-                : "border-border hover:border-accent0 hover:bg-accent"
+                : "border-border hover:border-accent0 hover:bg-accent",
             ].join(" ");
 
             return (
@@ -173,7 +200,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
           })}
         </div>
         <div className="space-y-3">
-          {question.matching_pairs?.map(pair => (
+          {question.matching_pairs?.map((pair) => (
             <button
               key={pair.right_item}
               onClick={() => handleMatch(pair.right_item)}
@@ -209,9 +236,14 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
 
   const handleSubmit = () => {
     const score = items.reduce((acc, item, index) => {
-      return acc + (item.correct_position === index + 1 ? question.points / items.length : 0);
+      return (
+        acc +
+        (item.correct_position === index + 1
+          ? question.points / items.length
+          : 0)
+      );
     }, 0);
-    onAnswer(score, { order: items.map(item => item.item) });
+    onAnswer(score, { order: items.map((item) => item.item) });
   };
 
   return (
@@ -219,10 +251,7 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="space-y-2">
         {items.map((item, index) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-2"
-          >
+          <div key={item.id} className="flex items-center gap-2">
             <button
               onClick={() => index > 0 && moveItem(index, index - 1)}
               className="p-2 text-gray-500 hover:text-gray-700"
@@ -231,7 +260,9 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
               ↑
             </button>
             <button
-              onClick={() => index < items.length - 1 && moveItem(index, index + 1)}
+              onClick={() =>
+                index < items.length - 1 && moveItem(index, index + 1)
+              }
               className="p-2 text-gray-500 hover:text-gray-700"
               disabled={index === items.length - 1}
             >
@@ -255,7 +286,7 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
 
 // Essay Question
 export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [essay, setEssay] = useState('');
+  const [essay, setEssay] = useState("");
   const minWords = 250;
 
   const countWords = (text: string) => {
@@ -296,8 +327,11 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
 }
 
 // Picture Based Question
-export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+export function PictureBasedQuestion({
+  question,
+  onAnswer,
+}: BaseQuestionProps) {
+  const [answer, setAnswer] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -334,15 +368,24 @@ export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) 
 }
 
 // Complete Statement Question
-export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionProps) {
+export function CompleteStatementQuestion({
+  question,
+  onAnswer,
+}: BaseQuestionProps) {
   const [answers, setAnswers] = useState<string[]>([]);
-  const answerKey = question.answer_key as { answers: string[]; scoring: { per_correct: number; partial_credit: boolean } };
-  const blanks = question.text.split('\n').filter(line => line.includes('____'));
+  const answerKey = question.answer_key as {
+    answers: string[];
+    scoring: { per_correct: number; partial_credit: boolean };
+  };
+  const blanks = question.text
+    .split("\n")
+    .filter((line) => line.includes("____"));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const score = answers.reduce((acc, answer, index) => {
-      const isCorrect = answer.toLowerCase() === answerKey.answers[index].toLowerCase();
+      const isCorrect =
+        answer.toLowerCase() === answerKey.answers[index].toLowerCase();
       return acc + (isCorrect ? answerKey.scoring.per_correct : 0);
     }, 0);
     onAnswer(score, { answers });
@@ -354,10 +397,10 @@ export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionPr
       <form onSubmit={handleSubmit} className="space-y-4">
         {blanks.map((blank, index) => (
           <div key={index} className="flex items-center gap-4">
-            <span>{blank.replace('____', '')}</span>
+            <span>{blank.replace("____", "")}</span>
             <input
               type="text"
-              value={answers[index] || ''}
+              value={answers[index] || ""}
               onChange={(e) => {
                 const newAnswers = [...answers];
                 newAnswers[index] = e.target.value;
@@ -381,7 +424,7 @@ export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionPr
 
 // Definition Question
 export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+  const [answer, setAnswer] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -411,27 +454,86 @@ export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
 }
 
 // Question Factory Component
-export function QuestionComponent({ question, onAnswer, showFeedback }: BaseQuestionProps) {
+export function QuestionComponent({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const { selectedQuiz, setLoading , setError} = useTheme();
+   const [quizResponseAnswers, setQuizResponseAnswers] = useState<any[] | undefined>(undefined);
+  const { user } = useAuth();
+
+  useEffect (() => {
+    if(user && selectedQuiz) {
+      responseAnswers();
+    }
+  },[user, selectedQuiz])
+
+  async function responseAnswers() {
+    try {
+      setLoading(true);
+
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      if (!selectedQuiz) {
+        throw new Error("No quiz selected");
+      }
+
+      const { data, error } = await supabase
+        .from("quiz_attempts")
+        .select("*")
+        .eq("quiz_id", 'b3bfa01b-686a-47d1-a8aa-a4fce658ebf6')
+
+      if (error) {
+        console.error("Error fetching quiz responses:", error);
+        throw new Error("Failed to load quiz responses. Please try again.");
+      }
+
+      setQuizResponseAnswers(data || []);
+    } catch (error) {
+      console.error("Error loading quizzes:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to load quizzes"
+      );
+      showToast("Failed to load quizzes", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  console.log("quizResponseAnswers", quizResponseAnswers);
+  
+
   switch (question.type) {
-    case 'multiple_choice':
-      return <MultipleChoiceQuestion question={question} onAnswer={onAnswer} showFeedback={showFeedback} />;
-    case 'true_false':
+    case "multiple_choice":
+      return (
+        <MultipleChoiceQuestion
+          question={question}
+          onAnswer={onAnswer}
+          showFeedback={showFeedback}
+        />
+      );
+    case "true_false":
       return <TrueFalseQuestion question={question} onAnswer={onAnswer} />;
-    case 'fill_blank':
+    case "fill_blank":
       return <FillBlankQuestion question={question} onAnswer={onAnswer} />;
-    case 'short_answer':
+    case "short_answer":
       return <ShortAnswerQuestion question={question} onAnswer={onAnswer} />;
-    case 'matching':
+    case "matching":
       return <MatchingQuestion question={question} onAnswer={onAnswer} />;
-    case 'ordering':
+    case "ordering":
       return <OrderingQuestion question={question} onAnswer={onAnswer} />;
-    case 'essay':
+    case "essay":
       return <EssayQuestion question={question} onAnswer={onAnswer} />;
-    case 'picture_based':
+    case "picture_based":
       return <PictureBasedQuestion question={question} onAnswer={onAnswer} />;
-    case 'complete_statement':
-      return <CompleteStatementQuestion question={question} onAnswer={onAnswer} />;
-    case 'definition':
+    case "complete_statement":
+      return (
+        <CompleteStatementQuestion question={question} onAnswer={onAnswer} />
+      );
+    case "definition":
       return <DefinitionQuestion question={question} onAnswer={onAnswer} />;
     default:
       return <div>Unsupported question type</div>;

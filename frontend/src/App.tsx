@@ -19,6 +19,7 @@ import QuizAnalytics from "./components/admin/QuizAnalytics.tsx";
 import AnalyticsDashboard from "./components/admin/AnalyticsDashboard.tsx";
 import UserSettings from "./components/settings/UserSettings.tsx";
 import "./styles/theme.css";
+import QuizSubmissions from "./components/admin/Submissions.tsx";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -49,7 +50,7 @@ function AppContent() {
           <Route path="/auth" element={<AuthForm />} />
           <Route path="/quiz/:id" element={<Quiz />} />
           <Route path="/quiz/view/:id" element={<QuizView />} />
-          <Route path="/results" element={<Results />} />
+          <Route path="/quiz/:id/results" element={<Results />} />
 
           {/* Settings Routes */}
           <Route
@@ -107,6 +108,14 @@ function AppContent() {
             element={
               <PrivateRoute>
                 <AnalyticsDashboard />
+              </PrivateRoute>
+            }
+          />
+            <Route
+            path="/admin/submissions"
+            element={
+              <PrivateRoute>
+                <QuizSubmissions />
               </PrivateRoute>
             }
           />

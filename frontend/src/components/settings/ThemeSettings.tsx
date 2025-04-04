@@ -15,13 +15,14 @@ import {
   Copy,
   Camera,
 } from "lucide-react";
-import { ThemeConfig, useTheme } from "../../lib/theme.tsx";
+import { defaultTheme, ThemeConfig, useTheme } from "../../lib/theme.tsx";
 import { Button } from "../ui/Button.tsx";
 import { supabase } from "../../lib/supabase.ts";
 import { showToast } from "../../lib/toast.ts";
 import { Card } from "../ui/Card.tsx";
 import { Input } from "../ui/Input.tsx";
 import { Progress } from "../ui/Progress.tsx";
+import Cookies from "js-cookie";
 
 interface ThemePreset {
   id: string;
@@ -69,8 +70,8 @@ export default function ThemeSettings() {
     toggleDarkMode,
     theme,
     setTheme,
+    isSignOut,
   } = useTheme();
-  // const [theme, setTheme] = useState<ThemeConfig>(currentTheme);
   const [presets, setPresets] = useState<ThemePreset[]>([]);
   const [activePreset, setActivePreset] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
@@ -81,9 +82,13 @@ export default function ThemeSettings() {
   const [newPresetName, setNewPresetName] = useState("");
   const [showNewPresetForm, setShowNewPresetForm] = useState(false);
 
+
   useEffect(() => {
     loadPresets();
     setTheme(currentTheme);
+    if (isSignOut) {
+      setTheme(defaultTheme);
+    }
   }, []);
 
   const loadPresets = async () => {
@@ -127,7 +132,11 @@ export default function ThemeSettings() {
   const saveTheme = async () => {
     try {
       setSaving(true);
+
+      Cookies.set("theme", JSON.stringify(theme), { expires: 365 });
+
       await updateTheme({ ...theme });
+
       showToast("Theme saved successfully", "success");
     } catch (error) {
       console.error("Error saving theme:", error);
@@ -169,22 +178,29 @@ export default function ThemeSettings() {
       setSaving(false);
     }
   };
-
   const applyPreset = async (preset: ThemePreset) => {
     try {
       setActivePreset(preset.id);
+      
       const presetTheme: ThemeConfig = {
         colors: preset.colors,
         fonts: preset.fonts,
+        branding: {
+          ...theme.branding,
+          logo: theme.branding?.logo,
+        },
       };
-      await updateTheme(presetTheme);
+
       setTheme(presetTheme);
+      await updateTheme(presetTheme);
+  
       showToast("Theme preset applied successfully", "success");
     } catch (error) {
       console.error("Error applying preset:", error);
       showToast("Failed to apply theme preset", "error");
     }
   };
+  
 
   const deletePreset = async (id: string) => {
     if (!confirm("Are you sure you want to delete this preset?")) return;
@@ -326,7 +342,7 @@ export default function ThemeSettings() {
     }
   }
 
-  const handleLogoText = (text:string) => {
+  const handleLogoText = (text: string) => {
     setTheme((prev) => ({
       ...prev,
       branding: {
@@ -334,7 +350,16 @@ export default function ThemeSettings() {
         logoText: text,
       },
     }));
-  }
+  };
+  const handleTitleText = (text: string) => {
+    setTheme((prev) => ({
+      ...prev,
+      branding: {
+        ...prev.branding,
+        titleText: text,
+      },
+    }));
+  };
 
   return (
     <div className="space-y-8">
@@ -419,7 +444,7 @@ export default function ThemeSettings() {
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md">
                   <span className="text-white text-xs font-medium">
-                  <Camera className="w-6 h-6" />
+                    <Camera className="w-6 h-6" />
                   </span>
                 </div>
                 {/* Hidden File Input */}
@@ -443,7 +468,7 @@ export default function ThemeSettings() {
             )}
           </div>
         </div>
-  
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Favicon
@@ -460,7 +485,7 @@ export default function ThemeSettings() {
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md">
                   <span className="text-white text-xs font-medium">
-                  <Camera className="w-6 h-6" />
+                    <Camera className="w-6 h-6" />
                   </span>
                 </div>
                 {/* Hidden File Input */}
@@ -489,10 +514,21 @@ export default function ThemeSettings() {
             Logo Text
           </label>
           <div className="mt-1 flex items-center space-x-4">
-          <Input
-                    value={theme.branding?.logoText}
-                    onChange={(e) => handleLogoText(e.target.value)}
-                  />
+            <Input
+              value={theme.branding?.logoText}
+              onChange={(e) => handleLogoText(e.target.value)}
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Title Text
+          </label>
+          <div className="mt-1 flex items-center space-x-4">
+            <Input
+              value={theme.branding?.titleText}
+              onChange={(e) => handleTitleText(e.target.value)}
+            />
           </div>
         </div>
       </Card>

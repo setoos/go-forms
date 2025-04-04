@@ -17,12 +17,20 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
-  const [scores, setScores] = useState<Record<string, number>>({});
   const [startTime] = useState<number>(Date.now());
   const isSampleQuiz = id === "sample";
 
-  const { setParams } = useTheme();
+  const {
+    setParams,
+    isResultSent,
+    setIsResultSent,
+    answers,
+    setAnswers,
+    scores,
+    setScores,
+  } = useTheme();
+
+  console.log("location", location);
 
   useEffect(() => {
     setParams({ shareId: id });
@@ -105,6 +113,7 @@ export default function Quiz() {
     setScores(newScores);
 
     if (currentQuestion === questions.length - 1) {
+      setIsResultSent(true);
       const totalScore = Object.values(newScores).reduce(
         (acc, val) => acc + val,
         0
@@ -148,14 +157,14 @@ export default function Quiz() {
         }
       }
 
-      navigate("/results", {
+      navigate(`/quiz/${quiz?.share_id}/results`, {
         state: {
           quizId: quiz?.id,
           answers: newScores,
           score: Math.round((totalScore / (questions.length * 10)) * 100),
           completionTime,
           isSampleQuiz,
-          showUserInfoForm: true,
+          showUserInfoForm: isResultSent,
         },
       });
     } else {

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Brain, 
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Brain,
   Home,
   FileText,
   BarChart3,
@@ -14,11 +14,14 @@ import {
   UserCog,
   Bell,
   Lock,
-  Shield
-} from 'lucide-react';
+  Shield,
+  Palette,
+  CheckCircle
+} from "lucide-react";
 import { useAuth } from "../lib/auth.tsx";
 import { cn } from "../lib/utils.ts";
-import { useTheme } from '../lib/theme.tsx';
+import { applyTheme, defaultTheme, useTheme } from "../lib/theme.tsx";
+import Cookies from "js-cookie";
 
 interface NavLinkProps {
   to: string;
@@ -30,7 +33,7 @@ interface NavLinkProps {
 
 function NavLink({ to, icon, children, end = false, onClick }: NavLinkProps) {
   const location = useLocation();
-  const isActive = end 
+  const isActive = end
     ? location.pathname === to
     : location.pathname.startsWith(to);
 
@@ -49,7 +52,7 @@ function NavLink({ to, icon, children, end = false, onClick }: NavLinkProps) {
         className: cn(
           "h-5 w-5 mr-3",
           isActive ? "text-primary" : "text-text group-hover:text-primary"
-        )
+        ),
       })}
       {children}
     </Link>
@@ -61,21 +64,27 @@ function UserMenu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const { setIsSignOut, isDarkMode } = useTheme();
+
   if (!user) return null;
 
   const handleSignOut = async () => {
-    if (confirm('Are you sure you want to sign out?')) {
+    if (confirm("Are you sure you want to sign out?")) {
+      Cookies.remove("theme");
+      applyTheme(defaultTheme, isDarkMode);
       await signOut();
-      navigate('/');
+      setIsSignOut(true);
+      navigate("/");
       setIsOpen(false);
     }
   };
 
   const settingsMenuItems = [
-    { label: 'Account Settings', icon: UserCog, path: '/settings/account' },
-    { label: 'Notifications', icon: Bell, path: '/settings/notifications' },
-    { label: 'Privacy', icon: Lock, path: '/settings/privacy' },
-    { label: 'Security', icon: Shield, path: '/settings/security' }
+    { label: "Account Settings", icon: UserCog, path: "/settings/account" },
+    // { label: "Notifications", icon: Bell, path: "/settings/notifications" },
+    // { label: "Privacy", icon: Lock, path: "/settings/privacy" },
+    // { label: "Security", icon: Shield, path: "/settings/security" },
+    { label: "theme", icon: Palette , path: "/settings/theme" },
   ];
 
   return (
@@ -85,13 +94,19 @@ function UserMenu() {
         className="flex items-center space-x-2 text-text focus:outline-none"
       >
         <User className="h-5 w-5 text-primary" />
-        <span className="text-sm font-medium hidden sm:inline">{user.email}</span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="text-sm font-medium hidden sm:inline">
+          {user.email}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {isOpen && (
         <>
-          <div 
+          <div
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
@@ -137,9 +152,13 @@ export default function Navigation() {
   const { user } = useAuth();
   const { theme } = useTheme();
 
+  console.log("navigationTheme", theme);
+  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const { isSignOut } = useTheme();
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
@@ -147,11 +166,27 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center text-text hover:text-secondary">
-              {theme.branding?.logo ?
-               <img src={theme.branding?.logo} alt='Logo' className='w-40 h-20'/> :
-              <><Brain className="h-8 w-8 text-secondary" /> <span className="ml-2 text-xl font-bold">Vidoora</span></>}
-              {theme.branding?.logoText && <span className="ml-2 text-xl font-bold">{theme.branding?.logoText}</span> }
+            <Link
+              to="/"
+              className="flex items-center text-text hover:text-secondary"
+            >
+              {theme.branding?.logo && !isSignOut ? (
+                <img
+                  src={theme.branding?.logo}
+                  alt="Logo"
+                  className="w-auto h-8"
+                />
+              ) : (
+                <>
+                  <Brain className="h-8 w-8 text-secondary" />{" "}
+                  <span className="ml-2 text-xl font-bold">Vidoora</span>
+                </>
+              )}
+              {theme.branding?.logoText &&  !isSignOut &&(
+                <span className="ml-2 text-xl font-bold">
+                  {theme.branding?.logoText}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -166,6 +201,9 @@ export default function Navigation() {
               </NavLink>
               <NavLink to="/admin/analytics" icon={<BarChart3 />}>
                 Analytics
+              </NavLink>
+              <NavLink to="/admin/submissions" icon={<CheckCircle />}>
+                Submissions
               </NavLink>
               <Link
                 to="/admin/quizzes/new"
@@ -209,17 +247,27 @@ export default function Navigation() {
       {user && (
         <div
           className={`md:hidden transition-all duration-300 ease-in-out ${
-            isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+            isMobileMenuOpen
+              ? "max-h-96 opacity-100"
+              : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
           <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
             <NavLink to="/" icon={<Home />} end onClick={closeMobileMenu}>
               Home
             </NavLink>
-            <NavLink to="/admin/quizzes" icon={<FileText />} onClick={closeMobileMenu}>
+            <NavLink
+              to="/admin/quizzes"
+              icon={<FileText />}
+              onClick={closeMobileMenu}
+            >
               My Quizzes
             </NavLink>
-            <NavLink to="/admin/analytics" icon={<BarChart3 />} onClick={closeMobileMenu}>
+            <NavLink
+              to="/admin/analytics"
+              icon={<BarChart3 />}
+              onClick={closeMobileMenu}
+            >
               Analytics
             </NavLink>
             <Link

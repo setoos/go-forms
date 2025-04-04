@@ -31,7 +31,7 @@ const handleAnswer = async (score: number) => {
 ```
 
 ### Results Analytics
-- **Route**: `/results`
+- **Route**: `quiz/:id/results`
 - **Component**: `Results.tsx`
 - **Tracking Points**:
   - Final score

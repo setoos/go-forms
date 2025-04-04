@@ -1,40 +1,73 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Cookies from "js-cookie";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../lib/auth.tsx";
-import { Brain } from 'lucide-react';
+import { Brain } from "lucide-react";
+import { supabase } from "../../lib/supabase.ts";
+import { applyTheme, defaultTheme, useTheme } from "../../lib/theme.tsx";
 
 export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const { setTheme, setIsSignOut } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    setIsSignOut(false);
 
     try {
       if (isSignUp) {
         await signUp(email, password);
-        setError('Check your email for the confirmation link.');
+        setError("Check your email for the confirmation link.");
       } else {
-        await signIn(email, password);
+        const userData = await signIn(email, password);
+
+        if (!userData?.user) {
+          setError("Failed to sign in. Please check your credentials.");
+          return;
+        }
+
+        console.log("userData",userData);
+        
+
+        const { data: preferences, error } = await supabase
+          .from("user_preferences")
+          .select("preferences")
+          .eq("user_id", userData?.user.id)
+          .single();
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        if (preferences?.preferences?.theme) {
+          Cookies.set("theme", JSON.stringify(preferences.preferences.theme));
+          setTheme(preferences.preferences.theme);
+          applyTheme(
+            preferences.preferences.theme,
+            preferences.preferences.isDarkMode || false
+          );
+        } else {
+          applyTheme(defaultTheme, false);
+        }
       }
     } catch (err) {
       if (err instanceof Error) {
-        // Handle specific error messages
-        if (err.message.includes('invalid_credentials')) {
-          setError('Invalid email or password');
-        } else if (err.message.includes('email_taken')) {
-          setError('This email is already registered');
+        if (err.message.includes("invalid_credentials")) {
+          setError("Invalid email or password");
+        } else if (err.message.includes("email_taken")) {
+          setError("This email is already registered");
         } else {
           setError(err.message);
         }
       } else {
-        setError('An unexpected error occurred');
+        setError("An unexpected error occurred");
       }
     } finally {
       setLoading(false);
@@ -45,14 +78,19 @@ export default function AuthForm() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <Link to="/" className="flex items-center justify-center text-secondary hover:text-primary">
+          <Link
+            to="/"
+            className="flex items-center justify-center text-secondary hover:text-primary"
+          >
             <Brain className="h-12 w-12" />
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-text">
-            {isSignUp ? 'Create your account' : 'Sign in to your account'}
+            {isSignUp ? "Create your account" : "Sign in to your account"}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {isSignUp ? 'Start creating engaging quizzes today' : 'Welcome back! Please sign in to continue'}
+            {isSignUp
+              ? "Start creating engaging quizzes today"
+              : "Welcome back! Please sign in to continue"}
           </p>
         </div>
 
@@ -88,7 +126,7 @@ export default function AuthForm() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                autoComplete={isSignUp ? "new-password" : "current-password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -105,8 +143,8 @@ export default function AuthForm() {
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
                 loading
-                  ? 'bg-secondary cursor-not-allowed'
-                  : 'bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
+                  ? "bg-secondary cursor-not-allowed"
+                  : "bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
               }`}
             >
               {loading ? (
@@ -114,7 +152,7 @@ export default function AuthForm() {
                   <div className="h-5 w-5 border-t-2 border-white border-solid rounded-full animate-spin"></div>
                 </span>
               ) : null}
-              {isSignUp ? 'Sign up' : 'Sign in'}
+              {isSignUp ? "Sign up" : "Sign in"}
             </button>
           </div>
 
@@ -128,7 +166,7 @@ export default function AuthForm() {
               className="font-medium text-secondary hover:text-secondary"
             >
               {isSignUp
-                ? 'Already have an account? Sign in'
+                ? "Already have an account? Sign in"
                 : "Don't have an account? Sign up"}
             </button>
           </div>

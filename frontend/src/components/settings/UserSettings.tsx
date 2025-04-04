@@ -6,9 +6,9 @@ import ThemeSettings from "./ThemeSettings.tsx";
 
 const tabs = [
   { id: 'account', label: 'Account', icon: UserCog },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'privacy', label: 'Privacy', icon: Lock },
-  { id: 'security', label: 'Security', icon: Shield },
+  // { id: 'notifications', label: 'Notifications', icon: Bell },
+  // { id: 'privacy', label: 'Privacy', icon: Lock },
+  // { id: 'security', label: 'Security', icon: Shield },
   { id: 'theme', label: 'Theme', icon: Palette },
 ];
 
