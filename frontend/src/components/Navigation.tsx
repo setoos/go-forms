@@ -5,7 +5,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 import {
-  Brain,
   // Home,
   // FileText,
   // BarChart3,
@@ -212,7 +211,6 @@ export default function Navigation() {
                 to="/"
                 className="flex items-center text-text hover:text-secondary"
               >
-                <Brain className="h-8 w-8 text-secondary" />
                 <span className="ml-2 text-xl font-bold">GoForms</span>
               </Link>
             )}

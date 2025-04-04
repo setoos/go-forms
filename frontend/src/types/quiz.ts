@@ -11,34 +11,34 @@ export type QuestionType =
   | 'definition';
 
 export interface Quiz {
-  id: string;
-  title: string;
-  description: string | null;
-  category: string | null;
-  time_limit: number | null;
-  passing_score: number | null;
-  status: 'draft' | 'published' | 'archived';
-  version: number;
-  approval_status: 'pending' | 'approved' | 'rejected';
-  approved_by: string | null;
-  approved_at: string | null;
-  rejection_reason: string | null;
-  last_published_at: string | null;
-  published_version: number | null;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  is_published: boolean;
-  deleted_at: string | null;
-  completion_count: number;
-  average_score: number;
-  share_id: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  max_attempts: number | null;
-  access_type: 'public' | 'private' | 'invite';
-  password_hash: string | null;
-  requires_auth: boolean;
+  id?: string;
+  title?: string;
+  description?: string | null;
+  category?: string | null;
+  time_limit?: number | null;
+  passing_score?: number | null;
+  status?: 'draft' | 'published' | 'archived';
+  version?: number;
+  approval_status?: 'pending' | 'approved' | 'rejected';
+  approved_by?: string | null;
+  approved_at?: string | null;
+  rejection_reason?: string | null;
+  last_published_at?: string | null;
+  published_version?: number | null;
+  created_at?: string;
+  updated_at?: string;
+  created_by?: string;
+  is_published?: boolean;
+  deleted_at?: string | null;
+  completion_count?: number;
+  average_score?: number;
+  share_id?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  max_attempts?: number | null;
+  access_type?: 'public' | 'private' | 'invite';
+  password_hash?: string | null;
+  requires_auth?: boolean;
 }
 
 export interface Question {

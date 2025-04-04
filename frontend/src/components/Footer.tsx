@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  Brain,
   Mail,
   Phone,
   MapPin,
@@ -59,7 +58,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-2">
             {theme.branding?.logo && user ? (
-              <Link to="/" className="flex items-center hover:text-secondary">
+              <Link to="/" className="flex items-center">
                 <img
                   src={theme.branding.logo}
                   alt="Logo"
@@ -70,9 +69,8 @@ export default function Footer() {
             ) : (
               <Link
                 to="/"
-                className="flex items-center text-text hover:text-secondary"
+                className="flex items-center"
               >
-                <Brain className="h-8 w-8 text-secondary" />
                 <span className="ml-2 text-xl font-bold">GoForms</span>
               </Link>
             )}
