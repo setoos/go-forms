@@ -17,20 +17,12 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [startTime] = useState<number>(Date.now());
   const isSampleQuiz = id === "sample";
 
-  const {
-    setParams,
-    isResultSent,
-    setIsResultSent,
-    answers,
-    setAnswers,
-    scores,
-    setScores,
-  } = useTheme();
-
-  console.log("location", location);
+  const { setParams, isResultSent, setIsResultSent } = useTheme();
 
   useEffect(() => {
     setParams({ shareId: id });
@@ -105,7 +97,7 @@ export default function Quiz() {
     setLoading(false);
   }
 
-  const handleAnswer = async (score: number, answer: string | number | boolean | null) => {
+  const handleAnswer = async (score: number, answer: string | number | boolean | Record<string, unknown>) => {
     const questionId = questions[currentQuestion].id;
     const newAnswers = { ...answers, [questionId]: answer };
     const newScores = { ...scores, [questionId]: score };
@@ -157,7 +149,7 @@ export default function Quiz() {
         }
       }
 
-      navigate(`/quiz/${quiz?.share_id}/results`, {
+      navigate(`/results`, {
         state: {
           quizId: quiz?.id,
           answers: newScores,
