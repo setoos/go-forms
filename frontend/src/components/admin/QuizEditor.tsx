@@ -530,7 +530,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
     try {
       // Generate share URL
       const shareId = quiz.share_id || `${window.location.origin}/quiz/${quiz.id}`;
-      setShareUrl(shareId);
+      setShareUrl(`${globalThis.location.origin}/quiz/${shareId}`);
       setShowShareModal(true);
     } catch (error) {
       console.error('Error sharing GoForm:', error);
