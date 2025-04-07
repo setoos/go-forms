@@ -63,7 +63,7 @@ export default function DashboardLayout() {
           !isQuizPage &&
           !isResultsPage && (
             <button
-              className="fixed bottom-4 left-4 md:hidden z-40 bg-purple-600 text-white p-3 rounded-full shadow-lg"
+              className="fixed bottom-4 left-4 md:hidden z-40 bg-secondary text-white p-3 rounded-full shadow-lg"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
               {isSidebarOpen ? (

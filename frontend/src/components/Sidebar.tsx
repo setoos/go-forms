@@ -43,14 +43,14 @@ function SidebarLink({ to, icon, children, end = false, onClick }: SidebarLinkPr
       className={cn(
         "flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors",
         isActive
-          ? "bg-purple-100 text-purple-900"
-          : "text-gray-600 hover:bg-purple-50 hover:text-purple-900"
+          ? "bg-accent text-primary"
+          : "text-gray-600 hover:bg-accent hover:text-primary"
       )}
     >
       {React.cloneElement(icon as React.ReactElement, {
         className: cn(
           "h-5 w-5 mr-3",
-          isActive ? "text-purple-600" : "text-gray-400"
+          isActive ? "text-secondary" : "text-gray-400"
         )
       })}
       {children}
@@ -82,7 +82,7 @@ function SidebarGroup({ title, icon, children, defaultOpen = true }: SidebarGrou
         </div>
         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
       </button>
-      <div className={`mt-1 ml-3 pl-3 border-l border-gray-200 space-y-1 ${isOpen ? 'block' : 'hidden'}`}>
+      <div className={`mt-1 ml-3 pl-3 border-l border-border space-y-1 ${isOpen ? 'block' : 'hidden'}`}>
         {children}
       </div>
     </div>
@@ -102,7 +102,7 @@ export default function Sidebar() {
   const isAdminSection = location.pathname.startsWith('/admin');
   
   return (
-    <div className="w-64 h-full bg-white border-r border-gray-200 overflow-y-auto">
+    <div className="w-64 h-full bg-background border-r border-border overflow-y-auto">
       <div className="p-4">
         <div className="space-y-1">
           {/* Main Navigation */}

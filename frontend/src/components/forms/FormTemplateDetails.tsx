@@ -41,45 +41,45 @@ const getTemplateById = (id: string) => {
     },
     lastUpdated: '2025-04-15',
     htmlContent: `
-      <form class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Subscribe to Our Newsletter</h2>
+      <form class="max-w-md mx-auto p-6 bg-background rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-text mb-6">Subscribe to Our Newsletter</h2>
         
         <div class="mb-4">
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-          <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="John Doe" required>
+          <label for="name" class="block text-sm font-medium text-text mb-1">Full Name</label>
+          <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="John Doe" required>
         </div>
         
         <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-          <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="john@example.com" required>
+          <label for="email" class="block text-sm font-medium text-text mb-1">Email Address</label>
+          <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="john@example.com" required>
         </div>
         
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Interests</label>
+          <label class="block text-sm font-medium text-text mb-1">Interests</label>
           <div class="space-y-2">
             <div class="flex items-center">
-              <input type="checkbox" id="interest-1" name="interests[]" value="product-updates" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-              <label for="interest-1" class="ml-2 text-sm text-gray-700">Product Updates</label>
+              <input type="checkbox" id="interest-1" name="interests[]" value="product-updates" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded">
+              <label for="interest-1" class="ml-2 text-sm text-text">Product Updates</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="interest-2" name="interests[]" value="industry-news" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-              <label for="interest-2" class="ml-2 text-sm text-gray-700">Industry News</label>
+              <input type="checkbox" id="interest-2" name="interests[]" value="industry-news" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded">
+              <label for="interest-2" class="ml-2 text-sm text-text">Industry News</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="interest-3" name="interests[]" value="tips-tutorials" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-              <label for="interest-3" class="ml-2 text-sm text-gray-700">Tips & Tutorials</label>
+              <input type="checkbox" id="interest-3" name="interests[]" value="tips-tutorials" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded">
+              <label for="interest-3" class="ml-2 text-sm text-text">Tips & Tutorials</label>
             </div>
           </div>
         </div>
         
         <div class="mb-4">
           <div class="flex items-center">
-            <input type="checkbox" id="consent" name="consent" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" required>
-            <label for="consent" class="ml-2 text-sm text-gray-700">I agree to receive marketing emails and can unsubscribe at any time.</label>
+            <input type="checkbox" id="consent" name="consent" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded" required>
+            <label for="consent" class="ml-2 text-sm text-text">I agree to receive marketing emails and can unsubscribe at any time.</label>
           </div>
         </div>
         
-        <button type="submit" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+        <button type="submit" class="w-full bg-secondary text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
           Subscribe Now
         </button>
       </form>
@@ -158,7 +158,7 @@ export default function FormTemplateDetails() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -166,13 +166,13 @@ export default function FormTemplateDetails() {
   if (error || !template) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error</h3>
           <p className="text-gray-500 mb-6">{error || 'Template not found'}</p>
           <button
             onClick={() => navigate('/forms/templates')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Templates
@@ -189,12 +189,12 @@ export default function FormTemplateDetails() {
         <div className="flex items-center">
           <button
             onClick={() => navigate(-1)}
-            className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+            className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{template.title}</h1>
+            <h1 className="text-2xl font-bold text-text">{template.title}</h1>
             <p className="text-gray-600">{template.description}</p>
           </div>
         </div>
@@ -203,8 +203,8 @@ export default function FormTemplateDetails() {
             onClick={() => setShowCustomizationPanel(!showCustomizationPanel)}
             className={`flex items-center px-3 py-1.5 rounded text-sm ${
               showCustomizationPanel 
-                ? 'bg-purple-600 text-white' 
-                : 'border border-purple-600 text-purple-600 hover:bg-purple-50'
+                ? 'bg-secondary text-white' 
+                : 'border border-secondary text-secondary hover:bg-accent'
             }`}
           >
             <Edit className="h-4 w-4 mr-1.5" />
@@ -212,21 +212,21 @@ export default function FormTemplateDetails() {
           </button>
           <button
             onClick={() => handleDownload('pdf')}
-            className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
           >
             <Download className="h-4 w-4 mr-1.5" />
             PDF
           </button>
           <button
             onClick={() => handleDownload('html')}
-            className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
           >
             <FileText className="h-4 w-4 mr-1.5" />
             HTML
           </button>
           <button
             onClick={handleCopyCode}
-            className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
           >
             <Copy className="h-4 w-4 mr-1.5" />
             Copy Code
@@ -237,7 +237,7 @@ export default function FormTemplateDetails() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sidebar */}
         <div className={`lg:col-span-1 ${showCustomizationPanel ? 'block' : 'hidden lg:block'}`}>
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-background rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-lg font-semibold mb-4">Template Details</h2>
             
             <div className="space-y-4">
@@ -264,7 +264,7 @@ export default function FormTemplateDetails() {
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {template.tags.map((tag: string) => (
-                    <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                    <span key={tag} className="px-2 py-0.5 bg-gray-100 text-text text-xs rounded">
                       {tag}
                     </span>
                   ))}
@@ -297,12 +297,12 @@ export default function FormTemplateDetails() {
 
           {/* Customization Panel */}
           {showCustomizationPanel && (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-background rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Customize Template</h2>
                 <button
                   onClick={handleSaveCustomizations}
-                  className="flex items-center px-3 py-1.5 bg-purple-600 text-white text-sm rounded hover:bg-purple-700"
+                  className="flex items-center px-3 py-1.5 bg-secondary text-white text-sm rounded hover:bg-primary"
                 >
                   <Save className="h-4 w-4 mr-1.5" />
                   Save
@@ -312,7 +312,7 @@ export default function FormTemplateDetails() {
               <div className="space-y-4">
                 {template.customizationOptions?.map((option: any) => (
                   <div key={option.id}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text mb-1">
                       {option.label}
                     </label>
                     
@@ -321,7 +321,7 @@ export default function FormTemplateDetails() {
                         type="text"
                         value={customizations[option.id] || ''}
                         onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                       />
                     )}
                     
@@ -331,13 +331,13 @@ export default function FormTemplateDetails() {
                           type="color"
                           value={customizations[option.id] || '#000000'}
                           onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                          className="h-8 w-8 rounded border border-gray-300 mr-2"
+                          className="h-8 w-8 rounded border border-border mr-2"
                         />
                         <input
                           type="text"
                           value={customizations[option.id] || ''}
                           onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                          className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                         />
                       </div>
                     )}
@@ -349,9 +349,9 @@ export default function FormTemplateDetails() {
                           id={option.id}
                           checked={customizations[option.id] || false}
                           onChange={(e) => handleCustomizationChange(option.id, e.target.checked)}
-                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
                         />
-                        <label htmlFor={option.id} className="ml-2 text-sm text-gray-700">
+                        <label htmlFor={option.id} className="ml-2 text-sm text-text">
                           {customizations[option.id] ? 'Enabled' : 'Disabled'}
                         </label>
                       </div>
@@ -369,7 +369,7 @@ export default function FormTemplateDetails() {
                                 newArray[index] = e.target.value;
                                 handleCustomizationChange(option.id, newArray);
                               }}
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                              className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                             />
                             <button
                               onClick={() => {
@@ -387,7 +387,7 @@ export default function FormTemplateDetails() {
                             const newArray = [...(customizations[option.id] || []), ''];
                             handleCustomizationChange(option.id, newArray);
                           }}
-                          className="text-sm text-purple-600 hover:text-purple-800"
+                          className="text-sm text-secondary hover:text-primary"
                         >
                           + Add Item
                         </button>
@@ -402,14 +402,14 @@ export default function FormTemplateDetails() {
 
         {/* Preview */}
         <div className={`lg:col-span-${showCustomizationPanel ? '2' : '3'}`}>
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">Preview</h2>
               <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setPreviewMode('desktop')}
                   className={`p-1.5 rounded-md ${
-                    previewMode === 'desktop' ? 'bg-white shadow' : 'hover:bg-gray-200'
+                    previewMode === 'desktop' ? 'bg-background shadow' : 'hover:bg-gray-200'
                   }`}
                   title="Desktop View"
                 >
@@ -420,7 +420,7 @@ export default function FormTemplateDetails() {
                 <button
                   onClick={() => setPreviewMode('tablet')}
                   className={`p-1.5 rounded-md ${
-                    previewMode === 'tablet' ? 'bg-white shadow' : 'hover:bg-gray-200'
+                    previewMode === 'tablet' ? 'bg-background shadow' : 'hover:bg-gray-200'
                   }`}
                   title="Tablet View"
                 >
@@ -431,7 +431,7 @@ export default function FormTemplateDetails() {
                 <button
                   onClick={() => setPreviewMode('mobile')}
                   className={`p-1.5 rounded-md ${
-                    previewMode === 'mobile' ? 'bg-white shadow' : 'hover:bg-gray-200'
+                    previewMode === 'mobile' ? 'bg-background shadow' : 'hover:bg-gray-200'
                   }`}
                   title="Mobile View"
                 >
@@ -444,7 +444,7 @@ export default function FormTemplateDetails() {
             
             <div className="flex justify-center bg-gray-100 rounded-lg p-6">
               <div 
-                className={`bg-white rounded-lg shadow overflow-hidden transition-all duration-300 ${
+                className={`bg-background rounded-lg shadow overflow-hidden transition-all duration-300 ${
                   previewMode === 'desktop' ? 'w-full' : 
                   previewMode === 'tablet' ? 'w-[768px]' : 
                   'w-[375px]'
@@ -456,8 +456,8 @@ export default function FormTemplateDetails() {
                     __html: template.htmlContent
                       .replace('Subscribe to Our Newsletter', customizations.title || 'Subscribe to Our Newsletter')
                       .replace('Subscribe Now', customizations.buttonText || 'Subscribe Now')
-                      .replace('bg-purple-600', `bg-[${customizations.buttonColor || '#9333ea'}]`)
-                      .replace('hover:bg-purple-700', `hover:bg-[${customizations.buttonColor || '#9333ea'}]`)
+                      .replace('bg-secondary', `bg-[${customizations.buttonColor || '#9333ea'}]`)
+                      .replace('hover:bg-primary', `hover:bg-[${customizations.buttonColor || '#9333ea'}]`)
                   }} 
                 />
               </div>

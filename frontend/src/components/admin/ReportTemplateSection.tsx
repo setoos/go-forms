@@ -72,24 +72,24 @@ export default function ReportTemplateSection({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
+    <div className="border border-border rounded-lg overflow-hidden mb-6">
       <div className="flex items-center justify-between p-4 bg-gray-50">
         <div className="flex items-center flex-1">
-          <span className="w-6 h-6 flex items-center justify-center bg-purple-600 text-white rounded-full text-sm font-medium mr-3">
+          <span className="w-6 h-6 flex items-center justify-center bg-secondary text-white rounded-full text-sm font-medium mr-3">
             {index + 1}
           </span>
           <input
             type="text"
             value={section.title}
             onChange={(e) => onSectionChange(section.id, 'title', e.target.value)}
-            className="font-medium text-gray-900 border-none focus:ring-0 focus:outline-none bg-transparent flex-1"
+            className="font-medium text-text border-none focus:ring-0 focus:outline-none bg-transparent flex-1"
             placeholder="Section Title"
           />
         </div>
         <div className="flex items-center space-x-2">
           <button
             onClick={toggleExpand}
-            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+            className="p-1 text-gray-500 hover:text-text transition-colors"
             title={isExpanded ? "Collapse section" : "Expand section"}
             type="button"
             aria-expanded={isExpanded}
@@ -99,7 +99,7 @@ export default function ReportTemplateSection({
           </button>
           <button
             onClick={handleDuplicate}
-            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+            className="p-1 text-gray-500 hover:text-text transition-colors"
             title="Duplicate section"
             type="button"
           >

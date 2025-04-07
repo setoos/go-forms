@@ -80,7 +80,7 @@ export default function Footer() {
             </p>
             <div className="space-y-2">
               <div className="flex items-center">
-                <Mail className="h-5 w-5 text-purple-500 mr-3" />
+                <Mail className="h-5 w-5 text-secondary mr-3" />
                 <a
                   href="mailto:info@goforms.ai"
                   className="text-gray-400 hover:text-white"
@@ -89,7 +89,7 @@ export default function Footer() {
                 </a>
               </div>
               <div className="flex items-center">
-                <Phone className="h-5 w-5 text-purple-500 mr-3" />
+                <Phone className="h-5 w-5 text-secondary mr-3" />
                 <a
                   href="tel:+1234567890"
                   className="text-gray-400 hover:text-white"
@@ -98,7 +98,7 @@ export default function Footer() {
                 </a>
               </div>
               <div className="flex items-center">
-                <MapPin className="h-5 w-5 text-purple-500 mr-3" />
+                <MapPin className="h-5 w-5 text-secondary mr-3" />
                 <span className="text-gray-400">
                   123 Form Street, Template City, TC 12345
                 </span>

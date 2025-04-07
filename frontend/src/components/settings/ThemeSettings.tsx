@@ -259,23 +259,16 @@ export default function ThemeSettings() {
   const applyPreset = async (preset: ThemePreset) => {
     try {
       setActivePreset(preset.id);
+  
       const presetTheme: ThemeConfig = {
         colors: preset.colors,
         fonts: preset.fonts,
-        branding: preset.branding || {
+        branding: {
           logo: logoUrl,
-          logoHeight: logoHeight
-        }
+          logoHeight: logoHeight,
+        },
       };
-      
-      // Update logo state
-      if (preset.branding?.logo) {
-        setLogoUrl(preset.branding.logo);
-      }
-      if (preset.branding?.logoHeight) {
-        setLogoHeight(preset.branding.logoHeight);
-      }
-      
+  
       await updateTheme(presetTheme);
       setTheme(presetTheme);
       showToast('Theme preset applied successfully', 'success');
@@ -284,6 +277,7 @@ export default function ThemeSettings() {
       showToast('Failed to apply theme preset', 'error');
     }
   };
+  
 
   const deletePreset = async (id: string) => {
     if (!confirm('Are you sure you want to delete this preset?')) return;

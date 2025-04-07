@@ -26,7 +26,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, change, changeLabel, color }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-background rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
         <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
           {icon}
@@ -45,7 +45,7 @@ function StatCard({ title, value, icon, change, changeLabel, color }: StatCardPr
       </div>
       
       <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      <p className="text-2xl font-bold text-text">{value}</p>
     </div>
   );
 }
@@ -61,7 +61,7 @@ export default function Dashboard() {
       icon: <FileQuestion className="h-6 w-6 text-white" />,
       change: 12,
       changeLabel: 'this month',
-      color: 'bg-purple-600'
+      color: 'bg-secondary'
     },
     { 
       title: 'Total Responses', 
@@ -111,7 +111,7 @@ export default function Dashboard() {
   
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-text">Dashboard</h1>
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -130,20 +130,20 @@ export default function Dashboard() {
         </div>
         
         {/* Upcoming Events */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h2>
+        <div className="bg-background rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold text-text mb-4">Upcoming Events</h2>
           
           <div className="space-y-4">
             {upcomingEvents.map(event => (
               <div key={event.id} className="flex items-start">
                 <div className="flex-shrink-0 mr-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-purple-600" />
+                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-secondary" />
                   </div>
                 </div>
                 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-900">{event.title}</h3>
+                  <h3 className="text-sm font-medium text-text">{event.title}</h3>
                   <p className="text-xs text-gray-500 mt-1">
                     {format(event.date, 'MMMM d, yyyy')}
                   </p>
@@ -163,7 +163,7 @@ export default function Dashboard() {
           
           <button
             onClick={() => navigate('/admin/calendar')}
-            className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50"
           >
             View Calendar
           </button>

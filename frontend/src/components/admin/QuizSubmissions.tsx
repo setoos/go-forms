@@ -274,13 +274,13 @@ export default function QuizSubmissions() {
   if (!user) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Authentication Required</h3>
           <p className="text-gray-500 mb-6">You must be logged in to view submissions</p>
           <button
             onClick={() => navigate('/auth')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Sign In
           </button>
@@ -293,13 +293,13 @@ export default function QuizSubmissions() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">GoForm Submissions</h1>
+          <h1 className="text-2xl font-bold text-text">GoForm Submissions</h1>
           <p className="text-gray-600">View and analyze all GoForm submissions</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={handleExportCSV}
-            className="flex items-center px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+            className="flex items-center px-4 py-2 border border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
           >
             <Download className="w-5 h-5 mr-2" />
             Export CSV
@@ -308,7 +308,7 @@ export default function QuizSubmissions() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -319,7 +319,7 @@ export default function QuizSubmissions() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, email, or GoForm..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
             />
           </div>
 
@@ -328,7 +328,7 @@ export default function QuizSubmissions() {
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value as '7d' | '30d' | '90d' | 'all')}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
@@ -344,7 +344,7 @@ export default function QuizSubmissions() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as 'all' | 'completed' | 'incomplete')}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               >
                 <option value="all">All Statuses</option>
                 <option value="completed">Completed</option>
@@ -359,7 +359,7 @@ export default function QuizSubmissions() {
               <select
                 value={quizFilter}
                 onChange={(e) => setQuizFilter(e.target.value)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               >
                 <option value="all">All GoForms</option>
                 {quizzes.map(quiz => (
@@ -375,19 +375,19 @@ export default function QuizSubmissions() {
       </div>
 
       {/* Submissions Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-background rounded-lg shadow-md overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+            <Loader className="h-12 w-12 text-secondary animate-spin" />
           </div>
         ) : error ? (
           <div className="text-center py-12">
             <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Submissions</h3>
+            <h3 className="text-lg font-medium text-text mb-2">Error Loading Submissions</h3>
             <p className="text-gray-500 mb-6">{error}</p>
             <button
               onClick={loadSubmissions}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               Try Again
             </button>
@@ -395,7 +395,7 @@ export default function QuizSubmissions() {
         ) : filteredSubmissions.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No submissions found</h3>
+            <h3 className="text-lg font-medium text-text mb-2">No submissions found</h3>
             <p className="text-gray-500 mb-6">
               {searchQuery || statusFilter !== 'all' || quizFilter !== 'all'
                 ? 'Try adjusting your filters to see more results'
@@ -457,12 +457,12 @@ export default function QuizSubmissions() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-gray-200">
                 {filteredSubmissions.map((submission) => (
                   <React.Fragment key={submission.id}>
                     <tr className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-text">
                           {format(new Date(submission.submission_date), 'MMM d, yyyy')}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -470,12 +470,12 @@ export default function QuizSubmissions() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-text">
                           {submission.quiz_name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-text">
                           {submission.participant_name}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -483,7 +483,7 @@ export default function QuizSubmissions() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-text">
                           {submission.score}%
                         </div>
                       </td>
@@ -500,21 +500,21 @@ export default function QuizSubmissions() {
                         <div className="flex justify-end space-x-2">
                           <button
                             onClick={() => handleViewDetails(submission)}
-                            className="text-purple-600 hover:text-purple-900"
+                            className="text-secondary hover:text-primary"
                             title="View Details"
                           >
                             <Eye className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => handleDownloadPDF(submission)}
-                            className="text-purple-600 hover:text-purple-900"
+                            className="text-secondary hover:text-primary"
                             title="Download PDF"
                           >
                             <Download className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => toggleSubmissionExpand(submission.id)}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-gray-500 hover:text-text"
                             title="Toggle Details"
                           >
                             {expandedSubmission === submission.id ? (
@@ -531,35 +531,35 @@ export default function QuizSubmissions() {
                         <td colSpan={6} className="px-6 py-4 bg-gray-50">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">Submission Details</h4>
+                              <h4 className="text-sm font-medium text-text mb-2">Submission Details</h4>
                               <div className="space-y-2">
                                 <div className="flex justify-between">
                                   <span className="text-sm text-gray-500">Submission ID:</span>
-                                  <span className="text-sm text-gray-900">{submission.id.substring(0, 8)}...</span>
+                                  <span className="text-sm text-text">{submission.id.substring(0, 8)}...</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-sm text-gray-500">Completion Time:</span>
-                                  <span className="text-sm text-gray-900">{formatDuration(submission.completion_time)}</span>
+                                  <span className="text-sm text-text">{formatDuration(submission.completion_time)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-sm text-gray-500">Questions Answered:</span>
-                                  <span className="text-sm text-gray-900">{Object.keys(submission.answers || {}).length}</span>
+                                  <span className="text-sm text-text">{Object.keys(submission.answers || {}).length}</span>
                                 </div>
                               </div>
                             </div>
                             <div>
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">Actions</h4>
+                              <h4 className="text-sm font-medium text-text mb-2">Actions</h4>
                               <div className="space-y-2">
                                 <button
                                   onClick={() => handleViewDetails(submission)}
-                                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-purple-600 bg-purple-50 rounded-md hover:bg-purple-100"
+                                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-secondary bg-accent rounded-md hover:bg-accent"
                                 >
                                   <span>View Full Details</span>
                                   <ArrowUpRight className="h-4 w-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDownloadPDF(submission)}
-                                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-purple-600 bg-purple-50 rounded-md hover:bg-purple-100"
+                                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-secondary bg-accent rounded-md hover:bg-accent"
                                 >
                                   <span>Download PDF Report</span>
                                   <Download className="h-4 w-4" />

@@ -650,13 +650,13 @@ export default function CollapsibleReportEditor() {
   if (!user) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Authentication Required</h3>
           <p className="text-gray-500 mb-6">You must be logged in to access this page</p>
           <button
             onClick={() => navigate('/auth')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Sign In
           </button>
@@ -670,7 +670,7 @@ export default function CollapsibleReportEditor() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 text-purple-600 animate-spin mx-auto mb-4" />
+            <Loader2 className="h-12 w-12 text-secondary animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Loading template editor...</p>
           </div>
         </div>
@@ -681,13 +681,13 @@ export default function CollapsibleReportEditor() {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error</h3>
           <p className="text-gray-500 mb-6">{error}</p>
           <button
             onClick={() => navigate('/admin/templates')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Return to Templates
           </button>
@@ -702,12 +702,12 @@ export default function CollapsibleReportEditor() {
         <div className="flex items-center">
           <button
             onClick={() => navigate(-1)}
-            className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+            className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-text">
               Results Report Editor
             </h1>
             <p className="text-gray-600">
@@ -718,7 +718,7 @@ export default function CollapsibleReportEditor() {
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleAllSections}
-            className="flex items-center px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-4 py-2 text-secondary border border-secondary rounded-lg hover:bg-accent"
             title={allExpanded ? "Collapse all sections" : "Expand all sections"}
           >
             {allExpanded ? (
@@ -735,14 +735,14 @@ export default function CollapsibleReportEditor() {
           </button>
           <button
             onClick={handlePreview}
-            className="flex items-center px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-4 py-2 text-secondary border border-secondary rounded-lg hover:bg-accent"
           >
             <Eye className="w-5 h-5 mr-2" />
             Preview
           </button>
           <button
             onClick={handleGeneratePDF}
-            className="flex items-center px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-4 py-2 text-secondary border border-secondary rounded-lg hover:bg-accent"
           >
             <Download className="w-5 h-5 mr-2" />
             Generate PDF
@@ -753,7 +753,7 @@ export default function CollapsibleReportEditor() {
             className={`flex items-center px-4 py-2 rounded-lg ${
               saving || !templateName.trim() || !!nameError
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-purple-600 text-white hover:bg-purple-700'
+                : 'bg-secondary text-white hover:bg-primary'
             }`}
           >
             <Save className="w-5 h-5 mr-2" />
@@ -765,18 +765,18 @@ export default function CollapsibleReportEditor() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-background rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-lg font-semibold mb-4">Template Settings</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Template Name
                 </label>
                 <input
                   type="text"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
-                  className={`w-full px-3 py-2 border ${nameError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-purple-500 focus:border-purple-500`}
+                  className={`w-full px-3 py-2 border ${nameError ? 'border-red-500' : 'border-border'} rounded-md focus:ring-accent0 focus:border-accent0`}
                   placeholder="Enter template name"
                 />
                 {nameError && (
@@ -785,13 +785,13 @@ export default function CollapsibleReportEditor() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Load Existing Template
                 </label>
                 <select
                   value={selectedTemplate}
                   onChange={(e) => handleTemplateChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-accent0 focus:border-accent0"
                 >
                   <option value="">Select a template</option>
                   {templates.map(template => (
@@ -805,7 +805,7 @@ export default function CollapsibleReportEditor() {
               <div>
                 <button
                   onClick={() => setShowTemplateSettings(!showTemplateSettings)}
-                  className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-text bg-gray-100 rounded-md hover:bg-gray-200"
                 >
                   <span className="flex items-center">
                     <Settings className="w-4 h-4 mr-2" />
@@ -817,13 +817,13 @@ export default function CollapsibleReportEditor() {
                 {showTemplateSettings && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-md space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-text mb-1">
                         Assign to Quiz
                       </label>
                       <select
                         value={selectedQuiz || ''}
                         onChange={(e) => setSelectedQuiz(e.target.value || null)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-accent0 focus:border-accent0"
                       >
                         <option value="">No specific quiz (global)</option>
                         {quizzes.map(quiz => (
@@ -840,9 +840,9 @@ export default function CollapsibleReportEditor() {
                         id="isDefault"
                         checked={isDefault}
                         onChange={(e) => setIsDefault(e.target.checked)}
-                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-secondary focus:ring-accent0 border-border rounded"
                       />
-                      <label htmlFor="isDefault" className="ml-2 block text-sm text-gray-700">
+                      <label htmlFor="isDefault" className="ml-2 block text-sm text-text">
                         Set as default template {selectedQuiz ? 'for this quiz' : '(global)'}
                       </label>
                     </div>
@@ -862,7 +862,7 @@ export default function CollapsibleReportEditor() {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Available Variables</h2>
             <div className="space-y-2 text-sm">
               <div className="p-2 bg-gray-50 rounded">
@@ -892,12 +892,12 @@ export default function CollapsibleReportEditor() {
 
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+          <div className="bg-background rounded-lg shadow-md p-6 mb-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Report Sections</h2>
               <button
                 onClick={handleAddSection}
-                className="flex items-center px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="flex items-center px-3 py-1 text-sm bg-secondary text-white rounded-md hover:bg-primary"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add Section
@@ -906,31 +906,31 @@ export default function CollapsibleReportEditor() {
             
             <div className="space-y-6">
               {sections.map((section, index) => (
-                <div key={section.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div key={section.id} className="border border-border rounded-lg overflow-hidden">
                   <div className="flex items-center justify-between p-4 bg-gray-50">
                     <div className="flex items-center flex-1">
-                      <span className="w-6 h-6 flex items-center justify-center bg-purple-600 text-white rounded-full text-sm font-medium mr-3">
+                      <span className="w-6 h-6 flex items-center justify-center bg-secondary text-white rounded-full text-sm font-medium mr-3">
                         {index + 1}
                       </span>
                       <input
                         type="text"
                         value={section.title}
                         onChange={(e) => handleSectionChange(section.id, 'title', e.target.value)}
-                        className="font-medium text-gray-900 border-none focus:ring-0 focus:outline-none bg-transparent flex-1"
+                        className="font-medium text-text border-none focus:ring-0 focus:outline-none bg-transparent flex-1"
                         placeholder="Section Title"
                       />
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => toggleSectionExpand(section.id)}
-                        className="p-1 text-gray-500 hover:text-gray-700"
+                        className="p-1 text-gray-500 hover:text-text"
                         title={section.isExpanded ? "Collapse section" : "Expand section"}
                       >
                         {section.isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
                       <button
                         onClick={() => handleDuplicateSection(section.id)}
-                        className="p-1 text-gray-500 hover:text-gray-700"
+                        className="p-1 text-gray-500 hover:text-text"
                         title="Duplicate section"
                       >
                         <Copy className="w-4 h-4" />
@@ -953,7 +953,7 @@ export default function CollapsibleReportEditor() {
                       value={section.content}
                       onChange={(content) => handleSectionChange(section.id, 'content', content)}
                       //modules={modules}
-                      className="bg-white rounded-lg"
+                      className="bg-background rounded-lg"
                       style={{ 
                         display: 'block',
                         minHeight: '200px'
@@ -968,13 +968,13 @@ export default function CollapsibleReportEditor() {
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => navigate(-1)}
-              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-6 py-3 border-2 border-border text-text rounded-lg hover:bg-gray-50"
             >
               Cancel
             </button>
             <button
               onClick={handleGeneratePDF}
-              className="flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="flex items-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               <FileText className="w-5 h-5 mr-2" />
               Generate Sample PDF
@@ -986,15 +986,15 @@ export default function CollapsibleReportEditor() {
       {/* Preview Mode */}
       {previewMode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-text">
                   Preview: {templateName || 'Untitled Template'}
                 </h2>
                 <button
                   onClick={() => setPreviewMode(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-text"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -1011,10 +1011,10 @@ export default function CollapsibleReportEditor() {
                 </div>
               ))}
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
+            <div className="p-6 border-t border-border flex justify-end">
               <button
                 onClick={() => setPreviewMode(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300"
               >
                 Close Preview
               </button>

@@ -57,14 +57,14 @@ import { useTheme } from "../lib/theme";
 //       className={cn(
 //         "flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors",
 //         isActive
-//           ? "bg-purple-100 text-purple-900"
-//           : "text-gray-600 hover:bg-purple-50 hover:text-purple-900"
+//           ? "bg-accent text-primary"
+//           : "text-gray-600 hover:bg-accent hover:text-primary"
 //       )}
 //     >
 //       {React.cloneElement(icon as React.ReactElement, {
 //         className: cn(
 //           "h-5 w-5 mr-3",
-//           isActive ? "text-purple-600" : "text-gray-400"
+//           isActive ? "text-secondary" : "text-gray-400"
 //         )
 //       })}
 //       {children}
@@ -226,7 +226,7 @@ export default function Navigation() {
               ))}
 
               <div className="relative group">
-                <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-purple-50 hover:text-purple-900">
+                <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-accent hover:text-primary">
                   <LayoutTemplate className="h-5 w-5 mr-3 text-gray-400" />
                   Templates
                   <ChevronDown className="ml-1 h-4 w-4" />
@@ -272,7 +272,7 @@ export default function Navigation() {
 
               <Link
                 to="/admin/quizzes/new"
-                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-secondary rounded-lg hover:bg-primary transition-colors"
               >
                 <PlusCircle className="h-5 w-5 mr-2" />
                 Create GoForm

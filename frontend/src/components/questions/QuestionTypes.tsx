@@ -33,19 +33,19 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
                   ? option.is_correct
                     ? 'border-green-500 bg-green-50'
                     : 'border-red-500 bg-red-50'
-                  : 'border-gray-200 hover:border-purple-500 hover:bg-purple-50'
+                  : 'border-border hover:border-secondary hover:bg-accent'
               }`}
             >
               <div className="flex items-center">
                 <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 mr-3">
                   {String.fromCharCode(65 + index)}
                 </span>
-                <p className="text-lg font-medium text-gray-900">{option.text}</p>
+                <p className="text-lg font-medium text-text">{option.text}</p>
               </div>
             </button>
             
             {showFeedback && showOptionFeedback && selectedOption?.id === option.id && option.feedback && (
-              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-border">
                 <div 
                   className="prose max-w-none"
                   dangerouslySetInnerHTML={{ 
@@ -83,9 +83,9 @@ export function TrueFalseQuestion({ question, onAnswer }: BaseQuestionProps) {
                 (question.answer_key?.correct_answer === true);
               onAnswer(isCorrect ? question.points : 0, { answer: value.toLowerCase(), correct: isCorrect });
             }}
-            className="p-6 text-center rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all duration-200"
+            className="p-6 text-center rounded-lg border-2 border-border hover:border-secondary hover:bg-accent transition-all duration-200"
           >
-            <span className="text-xl font-semibold text-gray-900">{value}</span>
+            <span className="text-xl font-semibold text-text">{value}</span>
           </button>
         ))}
       </div>
@@ -113,12 +113,12 @@ export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           placeholder="Type your answer here"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
         >
           Submit Answer
         </button>
@@ -144,13 +144,13 @@ export function ShortAnswerQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={4}
           placeholder="Type your answer here"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
         >
           Submit Answer
         </button>
@@ -190,8 +190,8 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
             const buttonClasses = [
               "w-full p-4 rounded-lg border-2 transition-colors",
               selectedLeft === pair.left_item
-                ? "border-purple-500 bg-purple-50"
-                : "border-gray-200 hover:border-purple-500 hover:bg-purple-50"
+                ? "border-secondary bg-accent"
+                : "border-border hover:border-secondary hover:bg-accent"
             ].join(" ");
 
             return (
@@ -210,7 +210,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
             <button
               key={pair.right_item}
               onClick={() => handleMatch(pair.right_item)}
-              className="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors"
+              className="w-full p-4 rounded-lg border-2 border-border hover:border-secondary hover:bg-accent transition-colors"
             >
               {pair.right_item}
             </button>
@@ -219,7 +219,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
       </div>
       <button
         onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        className="w-full mt-6 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
       >
         Submit Matches
       </button>
@@ -258,19 +258,19 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
           >
             <button
               onClick={() => index > 0 && moveItem(index, index - 1)}
-              className="p-2 text-gray-500 hover:text-gray-700"
+              className="p-2 text-gray-500 hover:text-text"
               disabled={index === 0}
             >
               ↑
             </button>
             <button
               onClick={() => index < items.length - 1 && moveItem(index, index + 1)}
-              className="p-2 text-gray-500 hover:text-gray-700"
+              className="p-2 text-gray-500 hover:text-text"
               disabled={index === items.length - 1}
             >
               ↓
             </button>
-            <div className="flex-1 p-4 bg-white rounded-lg border-2 border-gray-200">
+            <div className="flex-1 p-4 bg-background rounded-lg border-2 border-border">
               {item.item}
             </div>
           </div>
@@ -278,7 +278,7 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
       </div>
       <button
         onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        className="w-full mt-6 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
       >
         Submit Order
       </button>
@@ -309,7 +309,7 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={essay}
           onChange={(e) => setEssay(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={10}
           placeholder="Write your essay here (minimum 250 words)"
         />
@@ -319,7 +319,7 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
         <button
           type="submit"
           disabled={countWords(essay) < minWords}
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400"
+          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors disabled:bg-gray-400"
         >
           Submit Essay
         </button>
@@ -351,13 +351,13 @@ export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) 
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={6}
           placeholder="Analyze the image and provide your answer"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
         >
           Submit Analysis
         </button>
@@ -396,14 +396,14 @@ export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionPr
                 newAnswers[index] = e.target.value;
                 setAnswers(newAnswers);
               }}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
               placeholder="Fill in the blank"
             />
           </div>
         ))}
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
         >
           Submit Answers
         </button>
@@ -428,13 +428,13 @@ export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={6}
           placeholder="Write your definition and explanation"
         />
         <button
           type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
         >
           Submit Definition
         </button>

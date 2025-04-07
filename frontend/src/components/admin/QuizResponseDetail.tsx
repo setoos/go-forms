@@ -377,13 +377,13 @@ export default function QuizResponseDetail() {
   if (!user) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Authentication Required</h3>
           <p className="text-gray-500 mb-6">You must be logged in to view this response</p>
           <button
             onClick={() => navigate('/auth')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Sign In
           </button>
@@ -395,7 +395,7 @@ export default function QuizResponseDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -403,13 +403,13 @@ export default function QuizResponseDetail() {
   if (error || !response) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error</h3>
           <p className="text-gray-500 mb-6">{error || 'Response not found'}</p>
           <button
             onClick={() => navigate('/admin/submissions')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Submissions
@@ -438,50 +438,50 @@ export default function QuizResponseDetail() {
       <div className="flex items-center mb-8">
         <button
           onClick={() => navigate('/admin/submissions')}
-          className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+          className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quiz Response Details</h1>
+          <h1 className="text-2xl font-bold text-text">Quiz Response Details</h1>
           <p className="text-gray-600">{response.quiz_name}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Participant Information</h2>
+        <div className="bg-background rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold text-text mb-4">Participant Information</h2>
           <div className="space-y-4">
             <div className="flex items-start">
-              <User className="h-5 w-5 text-purple-600 mt-0.5 mr-3" />
+              <User className="h-5 w-5 text-secondary mt-0.5 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Name</p>
-                <p className="text-gray-700">{response.participant_name}</p>
+                <p className="text-sm font-medium text-text">Name</p>
+                <p className="text-text">{response.participant_name}</p>
               </div>
             </div>
             <div className="flex items-start">
-              <Mail className="h-5 w-5 text-purple-600 mt-0.5 mr-3" />
+              <Mail className="h-5 w-5 text-secondary mt-0.5 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Email</p>
-                <p className="text-gray-700">{response.participant_email}</p>
+                <p className="text-sm font-medium text-text">Email</p>
+                <p className="text-text">{response.participant_email}</p>
               </div>
             </div>
             {response.phone && (
               <div className="flex items-start">
-                <svg className="h-5 w-5 text-purple-600 mt-0.5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 text-secondary mt-0.5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Phone</p>
-                  <p className="text-gray-700">{response.phone}</p>
+                  <p className="text-sm font-medium text-text">Phone</p>
+                  <p className="text-text">{response.phone}</p>
                 </div>
               </div>
             )}
             <div className="flex items-start">
-              <Calendar className="h-5 w-5 text-purple-600 mt-0.5 mr-3" />
+              <Calendar className="h-5 w-5 text-secondary mt-0.5 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Submission Date</p>
-                <p className="text-gray-700">
+                <p className="text-sm font-medium text-text">Submission Date</p>
+                <p className="text-text">
                   {format(new Date(response.submission_date), 'MMMM d, yyyy')} at {format(new Date(response.submission_date), 'h:mm a')}
                 </p>
               </div>
@@ -489,21 +489,21 @@ export default function QuizResponseDetail() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quiz Information</h2>
+        <div className="bg-background rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold text-text mb-4">Quiz Information</h2>
           <div className="space-y-4">
             <div className="flex items-start">
-              <FileText className="h-5 w-5 text-purple-600 mt-0.5 mr-3" />
+              <FileText className="h-5 w-5 text-secondary mt-0.5 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Quiz Name</p>
-                <p className="text-gray-700">{response.quiz_name}</p>
+                <p className="text-sm font-medium text-text">Quiz Name</p>
+                <p className="text-text">{response.quiz_name}</p>
               </div>
             </div>
             <div className="flex items-start">
-              <Clock className="h-5 w-5 text-purple-600 mt-0.5 mr-3" />
+              <Clock className="h-5 w-5 text-secondary mt-0.5 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Completion Time</p>
-                <p className="text-gray-700">{formatDuration(response.completion_time)}</p>
+                <p className="text-sm font-medium text-text">Completion Time</p>
+                <p className="text-text">{formatDuration(response.completion_time)}</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -517,20 +517,20 @@ export default function QuizResponseDetail() {
                 )}
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">Status</p>
-                <p className="text-gray-700">{response.status.charAt(0).toUpperCase() + response.status.slice(1)}</p>
+                <p className="text-sm font-medium text-text">Status</p>
+                <p className="text-text">{response.status.charAt(0).toUpperCase() + response.status.slice(1)}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Score Summary</h2>
+        <div className="bg-background rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold text-text mb-4">Score Summary</h2>
           <div className="flex flex-col items-center justify-center h-full">
-            <div className="text-5xl font-bold text-purple-600 mb-2">
+            <div className="text-5xl font-bold text-secondary mb-2">
               {response.score}%
             </div>
-            <p className="text-gray-700 mb-4">
+            <p className="text-text mb-4">
               {response.score >= 90 ? 'Excellent' :
                response.score >= 80 ? 'Very Good' :
                response.score >= 70 ? 'Good' :
@@ -540,7 +540,7 @@ export default function QuizResponseDetail() {
             <div className="w-full flex space-x-2 mt-2">
               <button
                 onClick={handleDownloadPDF}
-                className="flex-1 flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="flex-1 flex items-center justify-center px-3 py-2 bg-secondary text-white rounded-md hover:bg-primary"
               >
                 <Download className="h-4 w-4 mr-1.5" />
                 Download PDF
@@ -548,7 +548,7 @@ export default function QuizResponseDetail() {
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail}
-                className={`flex-1 flex items-center justify-center px-3 py-2 border border-purple-600 text-purple-600 rounded-md hover:bg-purple-50 ${
+                className={`flex-1 flex items-center justify-center px-3 py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${
                   sendingEmail ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -564,8 +564,8 @@ export default function QuizResponseDetail() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Question Responses</h2>
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-lg font-semibold text-text mb-4">Question Responses</h2>
         <div className="space-y-6">
           {Object.entries(response.answers || {}).map(([questionId, answerData], index) => {
             const question = getQuestionById(questionId);
@@ -573,13 +573,13 @@ export default function QuizResponseDetail() {
             const score = typeof answerData === 'number' ? answerData : (optionData?.score || 0);
             
             return (
-              <div key={questionId} className="border border-gray-200 rounded-lg p-4">
+              <div key={questionId} className="border border-border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                      <span className="text-purple-600 font-medium">{index + 1}</span>
+                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                      <span className="text-secondary font-medium">{index + 1}</span>
                     </div>
-                    <h3 className="font-medium text-gray-900">{question?.text || `Question ${index + 1}`}</h3>
+                    <h3 className="font-medium text-text">{question?.text || `Question ${index + 1}`}</h3>
                   </div>
                   <div className="flex items-center">
                     {score >= 7 ? (
@@ -605,8 +605,8 @@ export default function QuizResponseDetail() {
                 
                 {/* Display option feedback if available */}
                 {optionData?.feedback && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Feedback for Score: {optionData.score}/10</h4>
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-border">
+                    <h4 className="text-sm font-medium text-text mb-2">Feedback for Score: {optionData.score}/10</h4>
                     <div 
                       className="prose max-w-none"
                       dangerouslySetInnerHTML={{ 
@@ -632,14 +632,14 @@ export default function QuizResponseDetail() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Feedback & Recommendations</h2>
+          <h2 className="text-lg font-semibold text-text">Feedback & Recommendations</h2>
           <div className="flex items-center space-x-2">
             {!editingFeedback ? (
               <button
                 onClick={() => setEditingFeedback(true)}
-                className="flex items-center px-3 py-1.5 text-purple-600 border border-purple-600 rounded hover:bg-purple-50"
+                className="flex items-center px-3 py-1.5 text-secondary border border-secondary rounded hover:bg-accent"
               >
                 <Edit className="h-4 w-4 mr-1.5" />
                 Edit Feedback
@@ -649,7 +649,7 @@ export default function QuizResponseDetail() {
                 <select
                   value={selectedTemplate}
                   onChange={(e) => handleTemplateChange(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-300 rounded text-sm"
+                  className="px-3 py-1.5 border border-border rounded text-sm"
                 >
                   <option value="">Load Template</option>
                   {templates.map(template => (
@@ -661,7 +661,7 @@ export default function QuizResponseDetail() {
                 <button
                   onClick={handleSaveFeedback}
                   disabled={saving}
-                  className="flex items-center px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700"
+                  className="flex items-center px-3 py-1.5 bg-secondary text-white rounded hover:bg-primary"
                 >
                   {saving ? (
                     <Loader className="h-4 w-4 mr-1.5 animate-spin" />
@@ -675,7 +675,7 @@ export default function QuizResponseDetail() {
                     setEditingFeedback(false);
                     setCustomFeedback(response.custom_feedback || '');
                   }}
-                  className="flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 rounded hover:bg-gray-50"
+                  className="flex items-center px-3 py-1.5 border border-border text-text rounded hover:bg-gray-50"
                 >
                   <X className="h-4 w-4 mr-1.5" />
                   Cancel

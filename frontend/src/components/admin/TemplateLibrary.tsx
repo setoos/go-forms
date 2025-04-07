@@ -422,7 +422,7 @@ export default function TemplateLibrary() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -430,13 +430,13 @@ export default function TemplateLibrary() {
   if (!user) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Authentication Required</h3>
           <p className="text-gray-500 mb-6">You must be logged in to access this page</p>
           <Link
             to="/auth"
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Sign In
           </Link>
@@ -448,13 +448,13 @@ export default function TemplateLibrary() {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Templates</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error Loading Templates</h3>
           <p className="text-gray-500 mb-6">{error}</p>
           <button
             onClick={loadTemplates}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Try Again
           </button>
@@ -467,20 +467,20 @@ export default function TemplateLibrary() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Template Library</h1>
+          <h1 className="text-2xl font-bold text-text">Template Library</h1>
           <p className="text-gray-600">Manage your document, form, and certificate templates</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={handleImportTemplate}
-            className="flex items-center px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+            className="flex items-center px-4 py-2 border border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
           >
             <FileUp className="w-5 h-5 mr-2" />
             Import Template
           </button>
           <Link
             to="/admin/reports"
-            className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
           >
             <Plus className="w-5 h-5 mr-2" />
             Create Template
@@ -488,7 +488,7 @@ export default function TemplateLibrary() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -498,7 +498,7 @@ export default function TemplateLibrary() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               placeholder="Search templates..."
             />
           </div>
@@ -508,7 +508,7 @@ export default function TemplateLibrary() {
               <select
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="appearance-none pl-8 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-8 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 {industries.map(industry => (
                   <option key={industry} value={industry}>{industry}</option>
@@ -527,7 +527,7 @@ export default function TemplateLibrary() {
                   setSortField(field as 'name' | 'created_at' | 'popularity');
                   setSortDirection(direction as 'asc' | 'desc');
                 }}
-                className="appearance-none pl-8 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-8 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="name-asc">Name (A-Z)</option>
                 <option value="name-desc">Name (Z-A)</option>
@@ -555,8 +555,8 @@ export default function TemplateLibrary() {
             onClick={() => setSelectedCategory(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium ${
               selectedCategory === null
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
             }`}
           >
             All Categories
@@ -567,8 +567,8 @@ export default function TemplateLibrary() {
               onClick={() => setSelectedCategory(category.id)}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
                 selectedCategory === category.id
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-accent text-primary'
+                  : 'bg-gray-100 text-text hover:bg-gray-200'
               }`}
             >
               {React.cloneElement(category.icon, { className: 'h-4 w-4 mr-1.5' })}
@@ -580,18 +580,18 @@ export default function TemplateLibrary() {
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+          <Loader className="h-12 w-12 text-secondary animate-spin" />
         </div>
       ) : filteredTemplates.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+          <h3 className="text-lg font-medium text-text mb-2">No templates found</h3>
           <p className="text-gray-500 mb-6">
             {searchQuery ? 'Try a different search term' : 'Create your first template to get started'}
           </p>
           <Link
             to="/admin/reports"
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
           >
             <Plus className="w-5 h-5 mr-2" />
             Create Template
@@ -604,20 +604,20 @@ export default function TemplateLibrary() {
             if (category.templates.length === 0) return null;
             
             return (
-              <div key={category.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={category.id} className="bg-background rounded-lg shadow-md overflow-hidden">
                 {/* Category Header */}
                 <div 
                   className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer"
                   onClick={() => toggleCategoryExpand(category.id)}
                 >
                   <div className="flex items-center">
-                    {React.cloneElement(category.icon, { className: 'h-6 w-6 text-purple-600 mr-3' })}
+                    {React.cloneElement(category.icon, { className: 'h-6 w-6 text-secondary mr-3' })}
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">{category.name}</h2>
+                      <h2 className="text-xl font-semibold text-text">{category.name}</h2>
                       <p className="text-sm text-gray-500">{category.templates.length} templates</p>
                     </div>
                   </div>
-                  <button className="text-gray-500 hover:text-gray-700">
+                  <button className="text-gray-500 hover:text-text">
                     {expandedCategories[category.id] ? (
                       <ChevronUp className="h-5 w-5" />
                     ) : (
@@ -682,14 +682,14 @@ export default function TemplateLibrary() {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className="bg-background divide-y divide-gray-200">
                         {category.templates.map((template) => (
                           <tr key={template.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
                                 {React.cloneElement(category.icon, { className: 'h-5 w-5 text-gray-400 mr-3' })}
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">
+                                  <div className="text-sm font-medium text-text">
                                     {template.name}
                                   </div>
                                   <div className="text-sm text-gray-500 line-clamp-1">
@@ -707,7 +707,7 @@ export default function TemplateLibrary() {
                               <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                 template.is_default
                                   ? 'bg-green-100 text-green-800'
-                                  : 'bg-gray-100 text-gray-800'
+                                  : 'bg-gray-100 text-text'
                               }`}>
                                 {template.is_default ? 'Default' : 'Standard'}
                               </span>
@@ -740,7 +740,7 @@ export default function TemplateLibrary() {
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                               <button
                                 onClick={() => handlePreview(template)}
-                                className="text-purple-600 hover:text-purple-900"
+                                className="text-secondary hover:text-primary"
                                 title="Preview"
                               >
                                 <Eye className="h-5 w-5 inline" />
@@ -761,7 +761,7 @@ export default function TemplateLibrary() {
                               </button>
                               <button
                                 onClick={() => handleExport(template)}
-                                className="text-gray-600 hover:text-gray-900"
+                                className="text-gray-600 hover:text-text"
                                 title="Export"
                               >
                                 <Download className="h-5 w-5 inline" />
@@ -798,15 +798,15 @@ export default function TemplateLibrary() {
       {/* Template Preview Modal */}
       {showPreview && selectedTemplate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-text">
                   {selectedTemplate.name}
                 </h2>
                 <button
                   onClick={() => setShowPreview(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-text"
                 >
                   &times;
                 </button>
@@ -841,7 +841,7 @@ export default function TemplateLibrary() {
                   <p className="text-sm text-gray-500">Tags</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {selectedTemplate.tags.map((tag: string) => (
-                      <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                      <span key={tag} className="px-2 py-1 bg-gray-100 text-text text-xs rounded-full">
                         {tag}
                       </span>
                     ))}
@@ -851,7 +851,7 @@ export default function TemplateLibrary() {
                   <p className="text-sm text-gray-500">Available Variables</p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {selectedTemplate.variables.map((variable: string) => (
-                      <span key={variable} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                      <span key={variable} className="px-2 py-1 bg-accent text-primary text-xs rounded-full">
                         {variable}
                       </span>
                     ))}
@@ -861,7 +861,7 @@ export default function TemplateLibrary() {
               
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-2">Template Preview</h3>
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 h-64 flex items-center justify-center">
+                <div className="border border-border rounded-lg p-4 bg-gray-50 h-64 flex items-center justify-center">
                   <div className="text-center">
                     <FileText className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-500">Preview not available in this demo</p>
@@ -876,7 +876,7 @@ export default function TemplateLibrary() {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-500">Total Uses</p>
-                      <BarChart className="h-5 w-5 text-purple-600" />
+                      <BarChart className="h-5 w-5 text-secondary" />
                     </div>
                     <p className="text-2xl font-bold">{selectedTemplate.usage_count}</p>
                   </div>
@@ -890,23 +890,23 @@ export default function TemplateLibrary() {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-500">Version</p>
-                      <Layers className="h-5 w-5 text-purple-600" />
+                      <Layers className="h-5 w-5 text-secondary" />
                     </div>
                     <p className="text-2xl font-bold">v{selectedTemplate.version}</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
+            <div className="p-6 border-t border-border flex justify-end">
               <button
                 onClick={() => setShowPreview(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 mr-2"
+                className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300 mr-2"
               >
                 Close
               </button>
               <Link
                 to={`/admin/reports?template=${selectedTemplate.id}`}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary"
               >
                 Edit Template
               </Link>

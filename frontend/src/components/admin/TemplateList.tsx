@@ -361,13 +361,13 @@ export default function TemplateList({ initialTemplates = [] }) {
   if (!user) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Required</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Authentication Required</h3>
           <p className="text-gray-500 mb-6">You must be logged in to access this page</p>
           <Link
             to="/auth"
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Sign In
           </Link>
@@ -379,13 +379,13 @@ export default function TemplateList({ initialTemplates = [] }) {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Templates</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error Loading Templates</h3>
           <p className="text-gray-500 mb-6">{error}</p>
           <button
             onClick={loadTemplates}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Try Again
           </button>
@@ -398,20 +398,20 @@ export default function TemplateList({ initialTemplates = [] }) {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Report Templates</h1>
+          <h1 className="text-2xl font-bold text-text">Report Templates</h1>
           <p className="text-gray-600">Manage your quiz result report templates</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={handleImportTemplate}
-            className="flex items-center px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+            className="flex items-center px-4 py-2 border border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
           >
             <FileUp className="w-5 h-5 mr-2" />
             Import Template
           </button>
           <Link
             to="/admin/reports"
-            className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
           >
             <Plus className="w-5 h-5 mr-2" />
             Create Template
@@ -419,7 +419,7 @@ export default function TemplateList({ initialTemplates = [] }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -429,7 +429,7 @@ export default function TemplateList({ initialTemplates = [] }) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               placeholder="Search templates..."
             />
           </div>
@@ -439,7 +439,7 @@ export default function TemplateList({ initialTemplates = [] }) {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as 'all' | 'global' | 'quiz')}
-                className="appearance-none pl-8 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-8 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="all">All Templates</option>
                 <option value="global">Global Templates</option>
@@ -454,18 +454,18 @@ export default function TemplateList({ initialTemplates = [] }) {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+            <Loader className="h-12 w-12 text-secondary animate-spin" />
           </div>
         ) : filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <h3 className="text-lg font-medium text-text mb-2">No templates found</h3>
             <p className="text-gray-500 mb-6">
               {searchQuery ? 'Try a different search term' : 'Create your first template to get started'}
             </p>
             <Link
               to="/admin/reports"
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
             >
               <Plus className="w-5 h-5 mr-2" />
               Create Template
@@ -513,13 +513,13 @@ export default function TemplateList({ initialTemplates = [] }) {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-gray-200">
                 {filteredTemplates.map((template) => (
                   <tr key={template.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <FileText className="h-5 w-5 text-gray-400 mr-3" />
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-text">
                           {template.name}
                         </div>
                       </div>
@@ -533,7 +533,7 @@ export default function TemplateList({ initialTemplates = [] }) {
                       <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         template.is_default
                           ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
+                          : 'bg-gray-100 text-text'
                       }`}>
                         {template.is_default ? 'Default' : 'Standard'}
                       </span>
@@ -547,7 +547,7 @@ export default function TemplateList({ initialTemplates = [] }) {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                       <button
                         onClick={() => handlePreview(template)}
-                        className="text-purple-600 hover:text-purple-900"
+                        className="text-secondary hover:text-primary"
                         title="Preview"
                       >
                         <Eye className="h-5 w-5 inline" />
@@ -568,7 +568,7 @@ export default function TemplateList({ initialTemplates = [] }) {
                       </button>
                       <button
                         onClick={() => handleExport(template)}
-                        className="text-gray-600 hover:text-gray-900"
+                        className="text-gray-600 hover:text-text"
                         title="Export"
                       >
                         <Download className="h-5 w-5 inline" />
@@ -601,15 +601,15 @@ export default function TemplateList({ initialTemplates = [] }) {
       {/* Template Preview Modal */}
       {showPreview && selectedTemplate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-text">
                   {selectedTemplate.name}
                 </h2>
                 <button
                   onClick={() => setShowPreview(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-text"
                 >
                   &times;
                 </button>
@@ -642,10 +642,10 @@ export default function TemplateList({ initialTemplates = [] }) {
                 })() }}
               />
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
+            <div className="p-6 border-t border-border flex justify-end">
               <button
                 onClick={() => setShowPreview(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300"
               >
                 Close
               </button>

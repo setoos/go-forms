@@ -638,14 +638,14 @@ function Results({ isAdmin = false }: ResultsProps) {
 
   if (showUserInfoForm) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-accent via-white to-accent py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-lg shadow-xl p-8">
+          <div className="bg-background rounded-lg shadow-xl p-8">
             <div className="flex items-center justify-center mb-8">
-              <Brain className="h-16 w-16 text-purple-600" />
+              <Brain className="h-16 w-16 text-secondary" />
             </div>
 
-            <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-center text-text mb-2">
               Quiz Complete!
             </h1>
             <p className="text-center text-gray-600 mb-8">
@@ -655,7 +655,7 @@ function Results({ isAdmin = false }: ResultsProps) {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Name
                 </label>
                 <input
@@ -665,13 +665,13 @@ function Results({ isAdmin = false }: ResultsProps) {
                   onChange={(e) =>
                     setUserInfo((prev) => ({ ...prev, name: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                   placeholder="Enter your name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Email
                 </label>
                 <input
@@ -681,13 +681,13 @@ function Results({ isAdmin = false }: ResultsProps) {
                   onChange={(e) =>
                     setUserInfo((prev) => ({ ...prev, email: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                   placeholder="Enter your email"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Phone
                 </label>
                 <input
@@ -697,7 +697,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   onChange={(e) =>
                     setUserInfo((prev) => ({ ...prev, phone: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                   placeholder="Enter your phone number"
                 />
               </div>
@@ -707,8 +707,8 @@ function Results({ isAdmin = false }: ResultsProps) {
                 disabled={saving}
                 className={`w-full flex items-center justify-center px-6 py-3 rounded-lg ${
                   saving
-                    ? "bg-purple-400 cursor-not-allowed"
-                    : "bg-purple-600 hover:bg-purple-700"
+                    ? "bg-secondary cursor-not-allowed"
+                    : "bg-secondary hover:bg-primary"
                 } text-white transition-colors`}
               >
                 {saving ? (
@@ -730,24 +730,24 @@ function Results({ isAdmin = false }: ResultsProps) {
     );
   } else {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-accent via-white to-accent py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <Link
               to="/"
-              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="inline-flex items-center text-gray-600 hover:text-text transition-colors"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Home
             </Link>
           </div>
 
-          <div className="bg-white rounded-lg shadow-xl p-8 mb-8">
+          <div className="bg-background rounded-lg shadow-xl p-8 mb-8">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center">
-                <Brain className="h-16 w-16 text-purple-600 mr-4" />
+                <Brain className="h-16 w-16 text-secondary mr-4" />
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">
+                  <h1 className="text-3xl font-bold text-text">
                     Your Results
                   </h1>
                   <p className="text-gray-600">
@@ -759,7 +759,7 @@ function Results({ isAdmin = false }: ResultsProps) {
               {isAdmin && (
                 <button
                   onClick={() => setEditMode(!editMode)}
-                  className="flex items-center px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+                  className="flex items-center px-4 py-2 text-secondary border border-secondary rounded-lg hover:bg-accent"
                 >
                   {editMode ? (
                     <Eye className="w-5 h-5 mr-2" />
@@ -772,23 +772,23 @@ function Results({ isAdmin = false }: ResultsProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-purple-50 p-6 rounded-lg text-center">
-                <div className="text-6xl font-bold text-purple-600 mb-2">
+              <div className="bg-accent p-6 rounded-lg text-center">
+                <div className="text-6xl font-bold text-secondary mb-2">
                   {score}
                   <span className="text-2xl text-gray-500">/100</span>
                 </div>
                 <p className="text-gray-600">Overall Score</p>
               </div>
 
-              <div className="bg-purple-50 p-6 rounded-lg text-center">
-                <div className="text-4xl font-bold text-purple-600 mb-2">
+              <div className="bg-accent p-6 rounded-lg text-center">
+                <div className="text-4xl font-bold text-secondary mb-2">
                   {Object.keys(answers).length}
                 </div>
                 <p className="text-gray-600">Questions Answered</p>
               </div>
 
-              <div className="bg-purple-50 p-6 rounded-lg text-center">
-                <div className="text-4xl font-bold text-purple-600 mb-2">
+              <div className="bg-accent p-6 rounded-lg text-center">
+                <div className="text-4xl font-bold text-secondary mb-2">
                   {Math.floor(completionTime / 60)}:
                   {String(completionTime % 60).padStart(2, "0")}
                 </div>
@@ -799,12 +799,12 @@ function Results({ isAdmin = false }: ResultsProps) {
             {editMode ? (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-text">
                     Customize Feedback
                   </h2>
                   <div className="flex items-center space-x-4">
                     <select
-                      className="px-4 py-2 border border-gray-300 rounded-lg"
+                      className="px-4 py-2 border border-border rounded-lg"
                       onChange={(e) => loadTemplate(e.target.value)}
                       value={appliedTemplate || ""}
                     >
@@ -822,11 +822,11 @@ function Results({ isAdmin = false }: ResultsProps) {
                         value={templateName}
                         onChange={(e) => setTemplateName(e.target.value)}
                         placeholder="Template name"
-                        className="px-4 py-2 border border-gray-300 rounded-lg"
+                        className="px-4 py-2 border border-border rounded-lg"
                       />
                       <button
                         onClick={saveTemplate}
-                        className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                        className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
                       >
                         <Save className="w-5 h-5 mr-2" />
                         Save Template
@@ -837,7 +837,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                 <ReactQuill
                   value={customFeedback}
                   onChange={setCustomFeedback}
-                  className="bg-white rounded-lg"
+                  className="bg-background rounded-lg"
                   modules={{
                     toolbar: {
                       container: [
@@ -858,7 +858,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   <div className="mt-4 flex justify-end">
                     <button
                       onClick={setTemplateAsDefault}
-                      className="flex items-center px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+                      className="flex items-center px-4 py-2 text-secondary border border-secondary rounded-lg hover:bg-accent"
                     >
                       <Check className="w-5 h-5 mr-2" />
                       Set as Default Template
@@ -868,10 +868,10 @@ function Results({ isAdmin = false }: ResultsProps) {
               </div>
             ) : (
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl font-bold text-text mb-4">
                   Feedback & Recommendations
                 </h2>
-                <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <div className="bg-background p-6 rounded-lg border border-border">
                   {customFeedback ? (
                     <div
                       className="prose max-w-none"
@@ -902,7 +902,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                     />
                   ) : (
                     <>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      <h3 className="text-xl font-semibold text-text mb-3">
                         {message}
                       </h3>
                       <p className="text-gray-600">{recommendation}</p>
@@ -914,14 +914,14 @@ function Results({ isAdmin = false }: ResultsProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl font-bold text-text mb-4">
                   Question Analysis
                 </h2>
                 <div className="space-y-4">
                   {Object.entries(answers).map(([questionId, score]) => (
                     <div
                       key={questionId}
-                      className="bg-white p-4 rounded-lg border border-gray-200"
+                      className="bg-background p-4 rounded-lg border border-border"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold">
@@ -939,7 +939,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-purple-600 h-2 rounded-full"
+                          className="bg-secondary h-2 rounded-full"
                           style={{ width: `${(Number(score) / 10) * 100}%` }}
                         ></div>
                       </div>
@@ -949,10 +949,10 @@ function Results({ isAdmin = false }: ResultsProps) {
               </div>
 
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl font-bold text-text mb-4">
                   Score Distribution
                 </h2>
-                <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <div className="bg-background p-6 rounded-lg border border-border">
                   <Bar
                     data={{
                       labels: ["0-2", "3-4", "5-6", "7-8", "9-10"],
@@ -1007,7 +1007,7 @@ function Results({ isAdmin = false }: ResultsProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                   onClick={() => handleDownload("pdf")}
-                  className="flex items-center justify-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="flex items-center justify-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download Full Report
@@ -1015,7 +1015,7 @@ function Results({ isAdmin = false }: ResultsProps) {
 
                 <button
                   onClick={() => handleDownload("csv")}
-                  className="flex items-center justify-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="flex items-center justify-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
                 >
                   <FileSpreadsheet className="w-5 h-5 mr-2" />
                   Download CSV Data
@@ -1026,10 +1026,10 @@ function Results({ isAdmin = false }: ResultsProps) {
                 <button
                   onClick={() => handleSendEmail()}
                   disabled={sendingEmail}
-                  className={`flex items-center justify-center px-6 py-3 border-2 border-purple-600 rounded-lg transition-colors ${
+                  className={`flex items-center justify-center px-6 py-3 border-2 border-secondary rounded-lg transition-colors ${
                     sendingEmail
                       ? "text-gray-400 border-gray-400 cursor-not-allowed"
-                      : "text-purple-600 hover:bg-purple-50"
+                      : "text-secondary hover:bg-accent"
                   }`}
                 >
                   {sendingEmail ? (
@@ -1059,7 +1059,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                       showToast("Link copied to clipboard!", "success");
                     })
                 }
-                className="flex items-center justify-center px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex items-center justify-center px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
               >
                 <Share2 className="w-5 h-5 mr-2" />
                 Share Results
@@ -1068,7 +1068,7 @@ function Results({ isAdmin = false }: ResultsProps) {
               {isSampleQuiz ? (
                 <button
                   onClick={() => navigate("/auth")}
-                  className="flex items-center justify-center px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                  className="flex items-center justify-center px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
                 >
                   <ArrowRight className="w-5 h-5 mr-2" />
                   Sign Up to Create Your Own Quiz
@@ -1076,7 +1076,7 @@ function Results({ isAdmin = false }: ResultsProps) {
               ) : (
                 <button
                   onClick={() => navigate("/")}
-                  className="flex items-center justify-center px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                  className="flex items-center justify-center px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
                 >
                   <ArrowRight className="w-5 h-5 mr-2" />
                   Take Another Quiz

@@ -34,13 +34,13 @@ function SidebarLink({ to, icon, children, end = false, onClick }: SidebarLinkPr
         flex items-center px-4 py-2 text-sm font-medium rounded-lg
         ${
           isActive
-            ? "bg-purple-100 text-purple-900"
-            : "text-gray-600 hover:bg-purple-50 hover:text-purple-900"
+            ? "bg-accent text-primary"
+            : "text-gray-600 hover:bg-accent hover:text-primary"
         }
       `}
     >
       {React.cloneElement(icon as React.ReactElement, {
-        className: `h-5 w-5 mr-3 ${isActive ? "text-purple-600" : "text-gray-400"}`
+        className: `h-5 w-5 mr-3 ${isActive ? "text-secondary" : "text-gray-400"}`
       })}
       {children}
     </Link>

@@ -64,19 +64,19 @@ const templateCategories: Category[] = [
     id: 'business-reports', 
     name: 'Business Reports', 
     description: 'Templates for quarterly, annual, and project-specific reports',
-    icon: <FileText className="h-6 w-6 text-purple-600" />
+    icon: <FileText className="h-6 w-6 text-secondary" />
   },
   { 
     id: 'standard-forms', 
     name: 'Standard Forms', 
     description: 'Templates for employee, customer, and vendor forms',
-    icon: <ClipboardList className="h-6 w-6 text-purple-600" />
+    icon: <ClipboardList className="h-6 w-6 text-secondary" />
   },
   { 
     id: 'industry-specific', 
     name: 'Industry-Specific', 
     description: 'Templates tailored for specific industries',
-    icon: <Briefcase className="h-6 w-6 text-purple-600" />
+    icon: <Briefcase className="h-6 w-6 text-secondary" />
   }
 ];
 
@@ -309,14 +309,14 @@ export default function DocumentTemplateLibrary() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Document Template Library</h1>
+        <h1 className="text-3xl font-bold text-text">Document Template Library</h1>
         <p className="mt-2 text-lg text-gray-600">
           Professional document templates for reports, forms, and industry-specific needs
         </p>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -327,7 +327,7 @@ export default function DocumentTemplateLibrary() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates (e.g., 'report', 'healthcare', 'onboarding')..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -336,7 +336,7 @@ export default function DocumentTemplateLibrary() {
               <select
                 value={selectedIndustry}
                 onChange={(e) => handleIndustryFilter(e.target.value)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 {industries.map(industry => (
                   <option key={industry.id} value={industry.id}>{industry.name}</option>
@@ -351,7 +351,7 @@ export default function DocumentTemplateLibrary() {
               <select
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value as 'popularity' | 'date')}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="popularity">Most Popular</option>
                 <option value="date">Most Recent</option>
@@ -370,7 +370,7 @@ export default function DocumentTemplateLibrary() {
                 setSelectedIndustry('all');
                 setSortBy('popularity');
               }}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters
@@ -384,8 +384,8 @@ export default function DocumentTemplateLibrary() {
             onClick={() => handleCategoryFilter(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium ${
               selectedCategory === null
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
             }`}
           >
             All Categories
@@ -396,8 +396,8 @@ export default function DocumentTemplateLibrary() {
               onClick={() => handleCategoryFilter(category.id)}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
                 selectedCategory === category.id
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-accent text-primary'
+                  : 'bg-gray-100 text-text hover:bg-gray-200'
               }`}
             >
               {React.cloneElement(category.icon, { className: 'h-4 w-4 mr-1.5' })}
@@ -414,20 +414,20 @@ export default function DocumentTemplateLibrary() {
           if (category.templates.length === 0) return null;
           
           return (
-            <div key={category.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={category.id} className="bg-background rounded-lg shadow-md overflow-hidden">
               {/* Category Header */}
               <div 
                 className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer"
                 onClick={() => toggleCategoryExpand(category.id)}
               >
                 <div className="flex items-center">
-                  {React.cloneElement(category.icon, { className: 'h-6 w-6 text-purple-600 mr-3' })}
+                  {React.cloneElement(category.icon, { className: 'h-6 w-6 text-secondary mr-3' })}
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">{category.name}</h2>
+                    <h2 className="text-xl font-semibold text-text">{category.name}</h2>
                     <p className="text-sm text-gray-500">{category.description}</p>
                   </div>
                 </div>
-                <button className="text-gray-500 hover:text-gray-700">
+                <button className="text-gray-500 hover:text-text">
                   {expandedCategories[category.id] ? (
                     <ChevronUp className="h-5 w-5" />
                   ) : (
@@ -440,7 +440,7 @@ export default function DocumentTemplateLibrary() {
               {expandedCategories[category.id] && (
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {category.templates.map(template => (
-                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                    <div key={template.id} className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                       {/* Template Preview Image */}
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
                         <img 
@@ -459,7 +459,7 @@ export default function DocumentTemplateLibrary() {
                       <div className="p-4">
                         <div className="flex flex-wrap gap-2 mb-3">
                           {template.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">
+                            <span key={tag} className="px-2 py-1 bg-accent text-primary text-xs rounded-full">
                               {tag}
                             </span>
                           ))}
@@ -484,13 +484,13 @@ export default function DocumentTemplateLibrary() {
                         <div className="flex justify-between">
                           <button
                             onClick={() => toggleTemplateExpand(template.id)}
-                            className="text-sm text-purple-600 hover:text-purple-800"
+                            className="text-sm text-secondary hover:text-primary"
                           >
                             {expandedTemplate === template.id ? 'Less info' : 'More info'}
                           </button>
                           <button
                             onClick={() => handleUseTemplate(template)}
-                            className="px-3 py-1 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+                            className="px-3 py-1 bg-secondary text-white text-sm rounded-md hover:bg-primary"
                           >
                             Use Template
                           </button>
@@ -498,9 +498,9 @@ export default function DocumentTemplateLibrary() {
                         
                         {/* Expanded Template Info */}
                         {expandedTemplate === template.id && (
-                          <div className="mt-4 pt-4 border-t border-gray-200">
+                          <div className="mt-4 pt-4 border-t border-border">
                             <div className="mb-3">
-                              <h4 className="text-sm font-medium text-gray-700 mb-1">Industry</h4>
+                              <h4 className="text-sm font-medium text-text mb-1">Industry</h4>
                               <div className="flex items-center">
                                 {industryIcons[template.industry]}
                                 <span className="text-sm text-gray-600 ml-1.5">
@@ -510,7 +510,7 @@ export default function DocumentTemplateLibrary() {
                             </div>
                             
                             <div className="mb-3">
-                              <h4 className="text-sm font-medium text-gray-700 mb-1">Type</h4>
+                              <h4 className="text-sm font-medium text-text mb-1">Type</h4>
                               <div className="flex items-center">
                                 {template.type === 'report' ? (
                                   <FileText className="h-4 w-4 text-gray-500" />
@@ -524,10 +524,10 @@ export default function DocumentTemplateLibrary() {
                             </div>
                             
                             <div className="mb-3">
-                              <h4 className="text-sm font-medium text-gray-700 mb-1">All Tags</h4>
+                              <h4 className="text-sm font-medium text-text mb-1">All Tags</h4>
                               <div className="flex flex-wrap gap-1">
                                 {template.tags.map(tag => (
-                                  <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                                  <span key={tag} className="px-2 py-0.5 bg-gray-100 text-text text-xs rounded">
                                     {tag}
                                   </span>
                                 ))}
@@ -537,21 +537,21 @@ export default function DocumentTemplateLibrary() {
                             <div className="flex gap-2 mt-4">
                               <button
                                 onClick={() => handleDownload(template, 'pdf')}
-                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Download className="h-4 w-4 mr-1.5" />
                                 PDF
                               </button>
                               <button
                                 onClick={() => handleDownload(template, 'docx')}
-                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <FileText className="h-4 w-4 mr-1.5" />
                                 DOCX
                               </button>
                               <button
                                 onClick={() => handleDownload(template, 'html')}
-                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
@@ -561,7 +561,7 @@ export default function DocumentTemplateLibrary() {
                               </button>
                               <button
                                 onClick={() => handlePreview(template)}
-                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Eye className="h-4 w-4 mr-1.5" />
                                 Preview
@@ -580,9 +580,9 @@ export default function DocumentTemplateLibrary() {
         
         {/* No results message */}
         {templatesByCategory.every(category => category.templates.length === 0) && (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+          <div className="bg-background rounded-lg shadow-md p-12 text-center">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <h3 className="text-lg font-medium text-text mb-2">No templates found</h3>
             <p className="text-gray-500 mb-6">
               Try adjusting your search or filters to find what you're looking for.
             </p>
@@ -593,7 +593,7 @@ export default function DocumentTemplateLibrary() {
                 setSelectedIndustry('all');
                 setSortBy('popularity');
               }}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               Reset Filters
             </button>
@@ -602,16 +602,16 @@ export default function DocumentTemplateLibrary() {
       </div>
       
       {/* Create Custom Template CTA */}
-      <div className="mt-12 bg-purple-50 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
+      <div className="mt-12 bg-accent rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Need a Custom Template?</h3>
+          <h3 className="text-xl font-bold text-text mb-2">Need a Custom Template?</h3>
           <p className="text-gray-600 max-w-2xl">
             Can't find what you're looking for? Create a custom template tailored to your specific needs with our powerful document editor.
           </p>
         </div>
         <button
           onClick={() => navigate('/admin/documents/new')}
-          className="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
         >
           <Plus className="h-5 w-5 mr-2" />
           Create Custom Template

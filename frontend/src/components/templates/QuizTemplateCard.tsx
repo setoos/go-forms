@@ -65,7 +65,7 @@ export default function QuizTemplateCard({
 
   return (
     <div 
-      className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+      className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
       onClick={() => onExpand(id)}
     >
       {/* Template Preview Image */}
@@ -85,7 +85,7 @@ export default function QuizTemplateCard({
       {/* Template Info */}
       <div className="p-4">
         <div className="flex flex-wrap gap-2 mb-3">
-          <span className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full flex items-center">
+          <span className="px-2 py-1 bg-accent text-primary text-xs rounded-full flex items-center">
             <Clock className="h-3 w-3 mr-1" />
             {duration} min
           </span>
@@ -128,13 +128,13 @@ export default function QuizTemplateCard({
               e.stopPropagation();
               onExpand(id);
             }}
-            className="text-sm text-purple-600 hover:text-purple-800"
+            className="text-sm text-secondary hover:text-primary"
           >
             {isExpanded ? 'Less info' : 'More info'}
           </button>
           <button
             onClick={handleUseTemplate}
-            className="px-3 py-1 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+            className="px-3 py-1 bg-secondary text-white text-sm rounded-md hover:bg-primary"
           >
             Use Template
           </button>
@@ -142,25 +142,25 @@ export default function QuizTemplateCard({
         
         {/* Expanded Template Info */}
         {isExpanded && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-border">
             <div className="flex flex-wrap gap-2 mb-4">
               <button
                 onClick={handlePreview}
-                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
               >
                 <Eye className="h-4 w-4 mr-1.5" />
                 Preview
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
               >
                 <Download className="h-4 w-4 mr-1.5" />
                 Download
               </button>
               <button
                 onClick={handleCopyTemplateId}
-                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"
+                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
               >
                 <Copy className="h-4 w-4 mr-1.5" />
                 Copy ID

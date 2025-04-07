@@ -46,12 +46,12 @@ const recentActivities = [
 
 export default function RecentActivity() {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-background rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+        <h2 className="text-lg font-semibold text-text">Recent Activity</h2>
         <Link 
           to="/admin/analytics" 
-          className="text-sm text-purple-600 hover:text-purple-800 flex items-center"
+          className="text-sm text-secondary hover:text-primary flex items-center"
         >
           View All
           <ArrowRight className="h-4 w-4 ml-1" />
@@ -63,8 +63,8 @@ export default function RecentActivity() {
           <div key={activity.id} className="flex items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
             <div className="flex-shrink-0 mr-3">
               {activity.type.includes('quiz') ? (
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                  <FileQuestion className="h-5 w-5 text-purple-600" />
+                <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                  <FileQuestion className="h-5 w-5 text-secondary" />
                 </div>
               ) : (
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -75,7 +75,7 @@ export default function RecentActivity() {
             
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-900 truncate">
+                <h3 className="text-sm font-medium text-text truncate">
                   {activity.type === 'quiz_created' && 'Created quiz'}
                   {activity.type === 'template_edited' && 'Edited template'}
                   {activity.type === 'quiz_response' && 'New quiz response'}
@@ -89,7 +89,7 @@ export default function RecentActivity() {
               </div>
               
               <p className="text-sm text-gray-600 mt-1 truncate">
-                <Link to={activity.link} className="font-medium hover:text-purple-600">
+                <Link to={activity.link} className="font-medium hover:text-secondary">
                   {activity.title}
                 </Link>
                 {activity.type === 'quiz_response' && (

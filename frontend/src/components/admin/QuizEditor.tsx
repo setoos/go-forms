@@ -589,7 +589,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
       </div>
     );
   }
@@ -597,13 +597,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   if (error) {
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+        <div className="bg-background rounded-lg shadow-xl p-8 text-center">
           <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
+          <h2 className="text-2xl font-bold text-text mb-4">Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/admin/quizzes')}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
             Back to GoForms
           </button>
@@ -619,12 +619,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
         <div className="flex items-center">
           <button
             onClick={() => navigate('/admin/quizzes')}
-            className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+            className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-text">
               {id === 'new' || templateId ? 'Create GoForm' : 'Edit GoForm'}
             </h1>
             <p className="text-gray-600">
@@ -638,14 +638,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             <>
               <button
                 onClick={handlePreview}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="flex items-center px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
               >
                 <Eye className="h-5 w-5 mr-2" />
                 Preview
               </button>
               <button
                 onClick={handleShare}
-                className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="flex items-center px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
               >
                 <Share2 className="h-5 w-5 mr-2" />
                 Share
@@ -658,7 +658,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             className={`flex items-center px-4 py-2 rounded-lg ${
               saving
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-purple-600 hover:bg-purple-700'
+                : 'bg-secondary hover:bg-primary'
             } text-white`}
           >
             {saving ? (
@@ -677,16 +677,16 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       </div>
       
       {/* Steps */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              activeStep === 'questions' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
+              activeStep === 'questions' ? 'bg-secondary text-white' : 'bg-gray-200 text-gray-600'
             }`}>
               1
             </div>
             <div className="ml-3">
-              <h3 className="font-medium text-gray-900">Questions</h3>
+              <h3 className="font-medium text-text">Questions</h3>
               <p className="text-sm text-gray-500">Add and edit questions</p>
             </div>
           </div>
@@ -695,12 +695,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           
           <div className="flex items-center">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              activeStep === 'details' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600'
+              activeStep === 'details' ? 'bg-secondary text-white' : 'bg-gray-200 text-gray-600'
             }`}>
               2
             </div>
             <div className="ml-3">
-              <h3 className="font-medium text-gray-900">Details</h3>
+              <h3 className="font-medium text-text">Details</h3>
               <p className="text-sm text-gray-500">Configure GoForm settings</p>
             </div>
           </div>
@@ -709,12 +709,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       
       {/* Questions Step */}
       {activeStep === 'questions' && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-background rounded-lg shadow-md p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Questions</h2>
+            <h2 className="text-xl font-semibold text-text">Questions</h2>
             <button
               onClick={handleAddQuestion}
-              className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               <Plus className="h-5 w-5 mr-2" />
               Add Question
@@ -722,15 +722,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </div>
           
           {questions.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-4">
-                <FileText className="h-8 w-8 text-purple-600" />
+            <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent mb-4">
+                <FileText className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No questions yet</h3>
+              <h3 className="text-lg font-medium text-text mb-2">No questions yet</h3>
               <p className="text-gray-500 mb-4">Add your first question to get started</p>
               <button
                 onClick={handleAddQuestion}
-                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
               >
                 <Plus className="h-5 w-5 mr-2" />
                 Add Question
@@ -741,18 +741,18 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               {questions.map((question, index) => (
                 <div 
                   key={question.id} 
-                  className="border border-gray-200 rounded-lg overflow-hidden"
+                  className="border border-border rounded-lg overflow-hidden"
                 >
                   <div 
                     className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer"
                     onClick={() => toggleQuestionExpand(index)}
                   >
                     <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                        <span className="text-purple-600 font-medium">{index + 1}</span>
+                      <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                        <span className="text-secondary font-medium">{index + 1}</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-text">
                           {question.text || 'Untitled Question'}
                         </p>
                         <p className="text-xs text-gray-500">
@@ -766,7 +766,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           e.stopPropagation();
                           handleDuplicateQuestion(index);
                         }}
-                        className="p-1.5 text-gray-500 hover:text-gray-700 mr-1"
+                        className="p-1.5 text-gray-500 hover:text-text mr-1"
                         title="Duplicate question"
                       >
                         <Copy className="h-4 w-4" />
@@ -792,29 +792,29 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   </div>
                   
                   {expandedQuestion === index && (
-                    <div className="p-4 border-t border-gray-200">
+                    <div className="p-4 border-t border-border">
                       <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-text mb-1">
                           Question Text
                         </label>
                         <input
                           type="text"
                           value={question.text}
                           onChange={(e) => handleQuestionChange(index, 'text', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Enter question text"
                         />
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-text mb-1">
                             Question Type
                           </label>
                           <select
                             value={question.type}
                             onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           >
                             {questionTypes.map(type => (
                               <option key={type.value} value={type.value}>
@@ -825,13 +825,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-text mb-1">
                             Cognitive Level
                           </label>
                           <select
                             value={question.cognitive_level || 'understanding'}
                             onChange={(e) => handleQuestionChange(index, 'cognitive_level', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           >
                             {cognitiveLevels.map(level => (
                               <option key={level.value} value={level.value}>
@@ -842,13 +842,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-text mb-1">
                             Difficulty Level
                           </label>
                           <select
                             value={question.difficulty_level || 'medium'}
                             onChange={(e) => handleQuestionChange(index, 'difficulty_level', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           >
                             {difficultyLevels.map(level => (
                               <option key={level.value} value={level.value}>
@@ -860,13 +860,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                       </div>
                       
                       <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-text mb-1">
                           Instructions (Optional)
                         </label>
                         <textarea
                           value={question.instructions || ''}
                           onChange={(e) => handleQuestionChange(index, 'instructions', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Enter instructions for this question"
                           rows={2}
                         />
@@ -876,12 +876,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                       {question.type === 'multiple_choice' && (
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
-                            <label className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-medium text-text">
                               Options
                             </label>
                             <button
                               onClick={() => handleAddOption(index)}
-                              className="text-sm text-purple-600 hover:text-purple-800"
+                              className="text-sm text-secondary hover:text-primary"
                             >
                               + Add Option
                             </button>
@@ -889,14 +889,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           
                           <div className="space-y-4">
                             {question.options?.map((option, optionIndex) => (
-                              <div key={option.id} className="border border-gray-200 rounded-lg p-4">
+                              <div key={option.id} className="border border-border rounded-lg p-4">
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="flex items-center">
                                     <input
                                       type="checkbox"
                                       checked={option.is_correct}
                                       onChange={(e) => handleOptionChange(index, optionIndex, 'is_correct', e.target.checked)}
-                                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mr-2"
+                                      className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded mr-2"
                                     />
                                     <span className="text-sm font-medium">
                                       {option.is_correct ? 'Correct Answer' : 'Incorrect Answer'}
@@ -905,7 +905,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   <div className="flex items-center">
                                     <button
                                       onClick={() => toggleOptionEditor(index, optionIndex)}
-                                      className="p-1.5 text-gray-500 hover:text-gray-700 mr-1"
+                                      className="p-1.5 text-gray-500 hover:text-text mr-1"
                                       title={activeOptionEditors[`${index}-${optionIndex}`] ? "Hide rich editor" : "Show rich editor"}
                                     >
                                       {activeOptionEditors[`${index}-${optionIndex}`] ? (
@@ -925,34 +925,34 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                 </div>
                                 
                                 <div className="mb-3">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  <label className="block text-sm font-medium text-text mb-1">
                                     Option Text
                                   </label>
                                   <input
                                     type="text"
                                     value={option.text}
                                     onChange={(e) => handleOptionChange(index, optionIndex, 'text', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                     placeholder="Option text"
                                   />
                                 </div>
                                 
                                 <div className="mb-3">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  <label className="block text-sm font-medium text-text mb-1">
                                     Score
                                   </label>
                                   <input
                                     type="number"
                                     value={option.score}
                                     onChange={(e) => handleOptionChange(index, optionIndex, 'score', parseInt(e.target.value))}
-                                    className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                     placeholder="Score"
                                   />
                                 </div>
                                 
                                 {/* {activeOptionEditors[`${index}-${optionIndex}`] && ( */}
                                   <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-text mb-1">
                                       Feedback (Rich Content)
                                     </label>
                                     <ReactQuill
@@ -975,7 +975,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                             {(!question.options || question.options.length === 0) && (
                               <button
                                 onClick={() => handleAddOption(index)}
-                                className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:text-gray-700 hover:border-gray-400"
+                                className="w-full py-2 border-2 border-dashed border-border rounded-lg text-gray-500 hover:text-text hover:border-border"
                               >
                                 + Add Option
                               </button>
@@ -988,28 +988,28 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-text mb-1">
                             Points
                           </label>
                           <input
                             type="number"
                             value={question.points || 10}
                             onChange={(e) => handleQuestionChange(index, 'points', parseInt(e.target.value))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                             placeholder="Points"
                             min={0}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-text mb-1">
                             Time Limit (seconds, optional)
                           </label>
                           <input
                             type="number"
                             value={question.time_limit || ''}
                             onChange={(e) => handleQuestionChange(index, 'time_limit', e.target.value ? parseInt(e.target.value) : null)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                            className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                             placeholder="Time limit in seconds"
                             min={0}
                           />
@@ -1025,7 +1025,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           <div className="mt-8 flex justify-end">
             <button
               onClick={handleContinueToDetails}
-              className="flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="flex items-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               Continue to Details
             </button>
@@ -1035,32 +1035,32 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       
       {/* Details Step */}
       {activeStep === 'details' && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-background rounded-lg shadow-md p-6 mb-8">
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">GoForm Details</h2>
+            <h2 className="text-xl font-semibold text-text mb-4">GoForm Details</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Title
                 </label>
                 <input
                   type="text"
                   value={quiz.title}
                   onChange={(e) => handleQuizChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter GoForm title"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text mb-1">
                   Description
                 </label>
                 <textarea
                   value={quiz.description || ''}
                   onChange={(e) => handleQuizChange('description', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter GoForm description"
                   rows={3}
                 />
@@ -1068,13 +1068,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text mb-1">
                     Category
                   </label>
                   <select
                     value={quiz.category || ''}
                     onChange={(e) => handleQuizChange('category', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   >
                     <option value="">Select a category</option>
                     {QUIZ_CATEGORIES.map(category => (
@@ -1086,7 +1086,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text mb-1">
                     Status
                   </label>
                   <div className="flex items-center space-x-4">
@@ -1095,9 +1095,9 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         type="checkbox"
                         checked={quiz.is_published}
                         onChange={(e) => handleQuizChange('is_published', e.target.checked)}
-                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
                       />
-                      <span className="ml-2 text-sm text-gray-700">Published</span>
+                      <span className="ml-2 text-sm text-text">Published</span>
                     </label>
                   </div>
                 </div>
@@ -1106,7 +1106,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               <div>
                 <button
                   onClick={() => setExpandedSettings(!expandedSettings)}
-                  className="flex items-center text-sm text-gray-700 hover:text-gray-900"
+                  className="flex items-center text-sm text-text hover:text-text"
                 >
                   {expandedSettings ? (
                     <ChevronUp className="h-4 w-4 mr-1" />
@@ -1121,28 +1121,28 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-text mb-1">
                           Time Limit (minutes, optional)
                         </label>
                         <input
                           type="number"
                           value={quiz.time_limit || ''}
                           onChange={(e) => handleQuizChange('time_limit', e.target.value ? parseInt(e.target.value) : null)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Time limit in minutes"
                           min={0}
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-text mb-1">
                           Passing Score (%, optional)
                         </label>
                         <input
                           type="number"
                           value={quiz.passing_score || ''}
                           onChange={(e) => handleQuizChange('passing_score', e.target.value ? parseInt(e.target.value) : null)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Passing score percentage"
                           min={0}
                           max={100}
@@ -1158,7 +1158,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           <div className="flex justify-between">
             <button
               onClick={handleBackToQuestions}
-              className="flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="flex items-center px-6 py-3 border border-border text-text rounded-lg hover:bg-gray-50"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Questions
@@ -1170,7 +1170,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               className={`flex items-center px-6 py-3 rounded-lg ${
                 saving
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-purple-600 hover:bg-purple-700'
+                  : 'bg-secondary hover:bg-primary'
               } text-white`}
             >
               {saving ? (
@@ -1192,19 +1192,19 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+          <div className="bg-background rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Share GoForm</h3>
+              <h3 className="text-lg font-semibold text-text">Share GoForm</h3>
               <button
                 onClick={() => setShowShareModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-text"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Share URL
               </label>
               <div className="flex">
@@ -1212,11 +1212,11 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   type="text"
                   value={shareUrl}
                   readOnly
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:ring-purple-500 focus:border-purple-500"
+                  className="flex-1 px-3 py-2 border border-border rounded-l-md focus:ring-secondary focus:border-secondary"
                 />
                 <button
                   onClick={handleCopyShareUrl}
-                  className="px-3 py-2 bg-purple-600 text-white rounded-r-md hover:bg-purple-700"
+                  className="px-3 py-2 bg-secondary text-white rounded-r-md hover:bg-primary"
                 >
                   {copied ? (
                     <CheckCircle className="h-5 w-5" />
@@ -1230,7 +1230,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             <div className="flex justify-end">
               <button
                 onClick={() => setShowShareModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300"
               >
                 Close
               </button>

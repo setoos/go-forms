@@ -40,7 +40,7 @@ export default function FormTemplateCard({
 
   return (
     <div 
-      className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+      className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Template Preview Image */}
@@ -61,7 +61,7 @@ export default function FormTemplateCard({
       <div className="p-4">
         <div className="flex flex-wrap gap-2 mb-3">
           {tags.slice(0, 3).map(tag => (
-            <span key={tag} className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">
+            <span key={tag} className="px-2 py-1 bg-accent text-primary text-xs rounded-full">
               {tag}
             </span>
           ))}
@@ -85,21 +85,21 @@ export default function FormTemplateCard({
           <div className="flex space-x-2">
             <button
               onClick={(e) => handleDownload('pdf', e)}
-              className="p-1.5 text-gray-500 hover:text-gray-700"
+              className="p-1.5 text-gray-500 hover:text-text"
               title="Download PDF"
             >
               <Download className="h-4 w-4" />
             </button>
             <button
               onClick={(e) => handleDownload('html', e)}
-              className="p-1.5 text-gray-500 hover:text-gray-700"
+              className="p-1.5 text-gray-500 hover:text-text"
               title="Download HTML"
             >
               <FileText className="h-4 w-4" />
             </button>
             <button
               onClick={(e) => handlePreview(e)}
-              className="p-1.5 text-gray-500 hover:text-gray-700"
+              className="p-1.5 text-gray-500 hover:text-text"
               title="Preview"
             >
               <ExternalLink className="h-4 w-4" />
@@ -107,7 +107,7 @@ export default function FormTemplateCard({
           </div>
           <button
             onClick={handleCardClick}
-            className="px-3 py-1 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+            className="px-3 py-1 bg-secondary text-white text-sm rounded-md hover:bg-primary"
           >
             Use Template
           </button>

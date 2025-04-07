@@ -213,7 +213,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   };
 
-  console.log("theme", theme);
 
   useEffect(() => {
     setTheme(savedTheme);
@@ -222,8 +221,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const {
         data: { user: _user },
       } = await supabase.auth.getUser();
-
-      console.log("_user", !_user);
 
       if (!_user) {
         setTheme(defaultTheme);
@@ -306,7 +303,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             }
 
             const userId = quizData.created_by;
-            console.log("Fetched user_id from shareId:", userId);
 
             const { data: preferences } = await supabase
               .from("user_preferences")
@@ -381,8 +377,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  console.log("quizzes",quizzes);
-  
 
   async function loadQuizzes() {
     const {

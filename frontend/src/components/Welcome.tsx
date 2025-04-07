@@ -29,26 +29,26 @@ export default function Welcome() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 text-white">
+      <div className="relative bg-gradient-to-r from-primary via-primary to-primary text-white">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=2070')] bg-cover bg-center mix-blend-overlay opacity-20 pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Transform Your Marketing Strategy with Data-Driven Insights
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-purple-100">
+            <p className="text-xl md:text-2xl mb-8 text-accent">
               Get a comprehensive assessment of your marketing performance and unlock actionable strategies for growth.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 onClick={() => navigate('/quiz/sample')}
-                className="px-8 py-4 bg-white text-purple-900 rounded-lg font-semibold hover:bg-purple-50 transition-colors flex items-center justify-center"
+                className="px-8 py-4 bg-background text-primary rounded-lg font-semibold hover:bg-accent transition-colors flex items-center justify-center"
               >
                 Take Free Assessment
                 <ArrowRight className="w-5 h-5 ml-2" />
               </button>
               <button 
-                className="px-8 py-4 bg-purple-700 text-white rounded-lg font-semibold hover:bg-purple-600 transition-colors flex items-center justify-center"
+                className="px-8 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-colors flex items-center justify-center"
                 onClick={() => navigate('/auth')}
               >
                 Create Account
@@ -60,10 +60,10 @@ export default function Welcome() {
       </div>
 
       {/* Features Section */}
-      <div className="py-24 bg-white">
+      <div className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-text mb-4">
               All-in-One Platform for Forms & Quizzes
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -72,8 +72,8 @@ export default function Welcome() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-purple-50 rounded-xl p-8 hover:bg-purple-100 transition-colors">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+            <div className="bg-accent rounded-xl p-8 hover:bg-accent transition-colors">
+              <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <FileQuestion className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Interactive Quizzes</h3>
@@ -82,15 +82,15 @@ export default function Welcome() {
               </p>
               <button
                 onClick={() => navigate('/admin/quizzes')}
-                className="mt-4 text-purple-600 hover:text-purple-800 font-medium inline-flex items-center"
+                className="mt-4 text-secondary hover:text-primary font-medium inline-flex items-center"
               >
                 Explore Quizzes
                 <ArrowRight className="ml-1 h-4 w-4" />
               </button>
             </div>
 
-            {/* <div className="bg-purple-50 rounded-xl p-8 hover:bg-purple-100 transition-colors">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+            {/* <div className="bg-accent rounded-xl p-8 hover:bg-accent transition-colors">
+              <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <ClipboardList className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Form Templates</h3>
@@ -99,15 +99,15 @@ export default function Welcome() {
               </p>
               <button
                 onClick={() => navigate('/forms/templates')}
-                className="mt-4 text-purple-600 hover:text-purple-800 font-medium inline-flex items-center"
+                className="mt-4 text-secondary hover:text-primary font-medium inline-flex items-center"
               >
                 Browse Templates
                 <ArrowRight className="ml-1 h-4 w-4" />
               </button>
             </div> */}
 
-            <div className="bg-purple-50 rounded-xl p-8 hover:bg-purple-100 transition-colors">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+            <div className="bg-accent rounded-xl p-8 hover:bg-accent transition-colors">
+              <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <FileEdit className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Custom Reports</h3>
@@ -116,7 +116,7 @@ export default function Welcome() {
               </p>
               <button
                 onClick={() => navigate('/admin/reports')}
-                className="mt-4 text-purple-600 hover:text-purple-800 font-medium inline-flex items-center"
+                className="mt-4 text-secondary hover:text-primary font-medium inline-flex items-center"
               >
                 View Reports
                 <ArrowRight className="ml-1 h-4 w-4" />
@@ -130,7 +130,7 @@ export default function Welcome() {
       <div className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-text mb-4">
               Unlock Your Marketing Potential
             </h2>
             <p className="text-xl text-gray-600">
@@ -139,8 +139,8 @@ export default function Welcome() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+            <div className="bg-background rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
+              <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Performance Analysis</h3>
@@ -149,8 +149,8 @@ export default function Welcome() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+            <div className="bg-background rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
+              <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <Target className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Strategic Recommendations</h3>
@@ -159,8 +159,8 @@ export default function Welcome() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+            <div className="bg-background rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
+              <div className="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <Users className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Audience Insights</h3>
@@ -173,10 +173,10 @@ export default function Welcome() {
       </div>
 
       {/* Assessment Process */}
-      <div className="bg-white py-24">
+      <div className="bg-background py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-text mb-4">
               How It Works
             </h2>
             <p className="text-xl text-gray-600">
@@ -202,12 +202,12 @@ export default function Welcome() {
                 description: 'Follow actionable recommendations to improve your strategy'
               }
             ].map((item) => (
-              <div key={item.step} className="bg-white p-8 rounded-lg shadow-sm">
+              <div key={item.step} className="bg-background p-8 rounded-lg shadow-sm">
                 <div className="flex items-center mb-4">
-                  <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                  <span className="w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center font-bold">
                     {item.step}
                   </span>
-                  <div className="h-1 flex-1 bg-purple-200 ml-4"></div>
+                  <div className="h-1 flex-1 bg-accent ml-4"></div>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-600">{item.description}</p>
@@ -221,7 +221,7 @@ export default function Welcome() {
       <div className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-text mb-4">
               What Our Clients Say
             </h2>
             <p className="text-xl text-gray-600">
@@ -231,7 +231,7 @@ export default function Welcome() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-6 rounded-lg shadow-md">
+              <div key={i} className="bg-background p-6 rounded-lg shadow-md">
                 <div className="flex items-center mb-4">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star key={star} className="w-5 h-5 text-yellow-400 fill-current" />
@@ -247,7 +247,7 @@ export default function Welcome() {
                     className="w-10 h-10 rounded-full mr-3"
                   />
                   <div>
-                    <p className="font-medium text-gray-900">Marketing Director</p>
+                    <p className="font-medium text-text">Marketing Director</p>
                     <p className="text-sm text-gray-500">Tech Company</p>
                   </div>
                 </div>
@@ -258,23 +258,23 @@ export default function Welcome() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-purple-900 text-white py-24">
+      <div className="bg-primary text-white py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Transform Your Marketing Strategy?
           </h2>
-          <p className="text-xl text-purple-100 mb-8">
+          <p className="text-xl text-accent mb-8">
             Take our free assessment and get personalized recommendations to improve your marketing performance
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
-              className="px-8 py-4 bg-white text-purple-900 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
+              className="px-8 py-4 bg-background text-primary rounded-lg font-semibold hover:bg-accent transition-colors"
               onClick={() => navigate('/quiz/sample')}
             >
               Start Free Assessment
             </button>
             <button 
-              className="px-8 py-4 bg-purple-800 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+              className="px-8 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary transition-colors"
               onClick={() => navigate('/auth')}
             >
               Create Account
