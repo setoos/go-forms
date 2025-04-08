@@ -36,6 +36,7 @@ import { useAuth } from "../lib/auth";
 import { applyTheme, defaultTheme, useTheme } from "../lib/theme";
 import Cookies from "js-cookie";
 // import { cn } from '../lib/utils';
+// import GoFormlogo from "../../public/goformlogo.jpg"
 
 // interface NavLinkProps {
 //   to: string;
@@ -78,7 +79,7 @@ function UserMenu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
-  const {isDarkMode} = useTheme();
+  const { isDarkMode } = useTheme();
 
   if (!user) return null;
 
@@ -193,7 +194,7 @@ export default function Navigation() {
   // const isFormsSection = location.pathname.startsWith('/forms');
 
   return (
-    <nav className="sticky top-0 z-50 bg-background shadow-sm">
+    <nav className={`sticky top-0 z-50 shadow-sm ${user ? "bg-background" : "bg-[#224B39]"}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
@@ -216,7 +217,11 @@ export default function Navigation() {
                 to="/"
                 className="flex items-center text-text hover:text-secondary"
               >
-                <span className="ml-2 text-xl font-bold">GoForms</span>
+                <img
+                  src="../../public/goformlogo.jpg"
+                  alt="Logo"
+                  className="h-10 w-auto"
+                />
               </Link>
             )}
           </div>
@@ -317,7 +322,7 @@ export default function Navigation() {
             ) : (
               <Link
                 to="/auth"
-                className="flex items-center px-4 py-2 text-sm font-medium text-secondary border border-secondary rounded-lg hover:bg-accent transition-colors"
+                className={`${user ? "text-secondary border-secondary" : "text-white border-white hover:text-black"} flex items-center px-4 py-2 text-sm font-medium border  rounded-lg hover:bg-accent transition-colors`}
               >
                 Sign In
               </Link>

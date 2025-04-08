@@ -5,8 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function calculateScore(answers: Record<number, number>): number {
-  return Object.values(answers).reduce((acc, score) => acc + score, 0);
+export function calculateScore(
+  answers: Record<string, { value: number; impact_analysis: string }>
+): number {
+  return Object.values(answers).reduce((acc, answer) => acc + answer.value, 0);
 }
 
 export function getScoreResponse(score: number): {

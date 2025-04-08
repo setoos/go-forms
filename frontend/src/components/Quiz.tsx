@@ -18,7 +18,7 @@ export default function Quiz() {
   const [error, setError] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
-  const [scores, setScores] = useState<Record<string, number>>({});
+  const [scores, setScores] = useState<Record<string, { value: number; impact_analysis: string }>>({});
   const [startTime] = useState<number>(Date.now());
   const isSampleQuiz = id === "sample";
 
@@ -102,27 +102,60 @@ export default function Quiz() {
     score: number,
     answer: string | number | boolean | Record<string, unknown>
   ) => {
-    const questionId = questions[currentQuestion].id;
-    const newAnswers = { ...answers, [questionId]: answer };
-    const newScores = { ...scores, [questionId]: score };
+    const question = questions[currentQuestion];
+    const questionId = question.id;
+  
+    // Determine selectedOptionId if available (for MCQs)
+    const selectedOptionId =
+      typeof answer === "object" && "optionId" in answer
+        ? (answer as any).optionId
+        : answer;
+  
+    // Try to find selected option (MCQs)
+    const selectedOption = question.options?.find(
+      (opt) => opt.id === selectedOptionId
+    );
+  
+    // Use selectedOptionId if found, otherwise store full answer
+    const newAnswers = {
+      ...answers,
+      [questionId]: selectedOptionId ?? answer,
+    };
+  
+    // Determine impact analysis from answer or selectedOption
+    const impactAnalysis =
+      typeof answer === "object" && answer !== null && "feedback" in answer
+        ? (answer as any).feedback ?? "No impact analysis available"
+        : selectedOption?.feedback ?? "No impact analysis available";
+  
+    // Update scores
+    const newScores = {
+      ...scores,
+      [questionId]: {
+        value: score ?? 0,
+        impact_analysis: impactAnalysis,
+      },
+    };
+  
     setAnswers(newAnswers);
     setScores(newScores);
-
+  
     if (currentQuestion === questions.length - 1) {
       setIsResultSent(true);
+  
       const totalScore = Object.values(newScores).reduce(
-        (acc, val) => acc + val,
+        (acc, val) => acc + (typeof val === "object" ? val.value : 0),
         0
       );
+  
       const completionTime = Math.floor((Date.now() - startTime) / 1000);
-
+  
       if (!isSampleQuiz) {
         try {
-          // Create quiz attempt
           const { data: attempt, error: attemptError } = await supabase
             .from("quiz_attempts")
             .insert({
-              quiz_id: id,
+              quiz_id: quiz?.id,
               score: Math.round(totalScore),
               answers: newAnswers,
               started_at: new Date(startTime).toISOString(),
@@ -130,29 +163,28 @@ export default function Quiz() {
             })
             .select()
             .single();
-
+  
           if (attemptError) throw attemptError;
-
-          // Create quiz sessions for each question
+  
           const sessions = Object.entries(newAnswers).map(
-            ([questionId, answer]) => ({
+            ([qId, selectedOptionId]) => ({
               attempt_id: attempt.id,
-              question_id: questionId,
-              final_answer: answer,
+              question_id: qId,
+              final_answer: selectedOptionId,
               time_spent: Math.floor(completionTime / questions.length),
             })
           );
-
+  
           const { error: sessionsError } = await supabase
             .from("quiz_sessions")
             .insert(sessions);
-
+  
           if (sessionsError) throw sessionsError;
         } catch (error) {
           console.error("Error saving quiz attempt:", error);
         }
       }
-
+  
       navigate(`/results`, {
         state: {
           quizId: quiz?.id,
@@ -235,7 +267,8 @@ export default function Quiz() {
               Question {currentQuestion + 1} of {questions.length}
             </span>
             <span className="text-sm text-gray-500">
-              Score: {Object.values(scores).reduce((acc, val) => acc + val, 0)}
+              Score: {Object.values(scores).reduce((acc, val) => acc + val.value, 0)}
+
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -258,17 +291,14 @@ export default function Quiz() {
         {quiz.share_id && !globalThis.location.href.includes(quiz.share_id) && (
           <div className="mt-8 pt-8 border-t border-border">
             <a
-              href={`${globalThis.location.origin}/quiz/${encodeURIComponent(
-                quiz.share_id
-              )}`}
+              href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-gray-500"
             >
               Share this quiz:{" "}
               <span className="text-primary">
-                {globalThis.location.origin}/quiz/
-                {encodeURIComponent(quiz.share_id)}
+                {globalThis.location.origin}/quiz/{quiz.share_id}
               </span>
             </a>
           </div>

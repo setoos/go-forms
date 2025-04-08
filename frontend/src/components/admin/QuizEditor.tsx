@@ -1,77 +1,82 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Save, 
-  Plus, 
-  Trash2, 
-  Eye, 
-  Copy, 
-  Settings, 
-  ChevronDown, 
-  ChevronUp, 
-  AlertTriangle, 
-  Loader, 
-  CheckCircle, 
-  X, 
-  Share2, 
-  Link as LinkIcon, 
-  Clock, 
-  Award, 
-  Tag, 
-  FileText, 
-  Briefcase, 
-  BookOpen, 
-  Users, 
-  Shield
-} from 'lucide-react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../lib/auth';
-import { showToast } from '../../lib/toast';
-import { saveQuiz, validateQuiz, getQuiz, getQuizTemplate } from '../../lib/quiz';
-import type { Quiz, Question, Option } from '../../types/quiz';
-import { QUIZ_CATEGORIES } from '../../types/quiz';
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import {
+  ArrowLeft,
+  Save,
+  Plus,
+  Trash2,
+  Eye,
+  Copy,
+  Settings,
+  ChevronDown,
+  ChevronUp,
+  AlertTriangle,
+  Loader,
+  CheckCircle,
+  X,
+  Share2,
+  Link as LinkIcon,
+  Clock,
+  Award,
+  Tag,
+  FileText,
+  Briefcase,
+  BookOpen,
+  Users,
+  Shield,
+} from "lucide-react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../lib/auth";
+import { showToast } from "../../lib/toast";
+import {
+  saveQuiz,
+  validateQuiz,
+  getQuiz,
+  getQuizTemplate,
+} from "../../lib/quiz";
+import type { Quiz, Question, Option } from "../../types/quiz";
+import { QUIZ_CATEGORIES } from "../../types/quiz";
 
 // Question type options
 const questionTypes = [
-  { value: 'multiple_choice', label: 'Multiple Choice' },
-  { value: 'true_false', label: 'True/False' },
-  { value: 'fill_blank', label: 'Fill in the Blank' },
-  { value: 'short_answer', label: 'Short Answer' },
-  { value: 'matching', label: 'Matching' },
-  { value: 'ordering', label: 'Ordering' },
-  { value: 'essay', label: 'Essay' },
-  { value: 'picture_based', label: 'Picture-Based' },
-  { value: 'complete_statement', label: 'Complete Statement' },
-  { value: 'definition', label: 'Definition' }
+  { value: "multiple_choice", label: "Multiple Choice" },
+  { value: "true_false", label: "True/False" },
+  { value: "fill_blank", label: "Fill in the Blank" },
+  { value: "short_answer", label: "Short Answer" },
+  { value: "matching", label: "Matching" },
+  { value: "ordering", label: "Ordering" },
+  { value: "essay", label: "Essay" },
+  { value: "picture_based", label: "Picture-Based" },
+  { value: "complete_statement", label: "Complete Statement" },
+  { value: "definition", label: "Definition" },
 ];
 
 // Cognitive level options
 const cognitiveLevels = [
-  { value: 'recall', label: 'Recall' },
-  { value: 'understanding', label: 'Understanding' },
-  { value: 'application', label: 'Application' },
-  { value: 'analysis', label: 'Analysis' }
+  { value: "recall", label: "Recall" },
+  { value: "understanding", label: "Understanding" },
+  { value: "application", label: "Application" },
+  { value: "analysis", label: "Analysis" },
 ];
 
 // Difficulty level options
 const difficultyLevels = [
-  { value: 'easy', label: 'Easy' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'hard', label: 'Hard' }
+  { value: "easy", label: "Easy" },
+  { value: "medium", label: "Medium" },
+  { value: "hard", label: "Hard" },
 ];
 
 // Category icons
 const categoryIcons: Record<string, React.ReactNode> = {
-  'Marketing': <Briefcase className="h-5 w-5" />,
-  'Technology': <FileText className="h-5 w-5" />,
-  'Business': <Briefcase className="h-5 w-5" />,
-  'Education': <BookOpen className="h-5 w-5" />,
-  'Science': <FileText className="h-5 w-5" />,
-  'General Knowledge': <FileText className="h-5 w-5" />,
-  'Other': <FileText className="h-5 w-5" />
+  Marketing: <Briefcase className="h-5 w-5" />,
+  Technology: <FileText className="h-5 w-5" />,
+  Business: <Briefcase className="h-5 w-5" />,
+  Education: <BookOpen className="h-5 w-5" />,
+  Science: <FileText className="h-5 w-5" />,
+  "General Knowledge": <FileText className="h-5 w-5" />,
+  Other: <FileText className="h-5 w-5" />,
 };
 
 export default function QuizEditor({ initialQuiz, initialQuestions }) {
@@ -82,49 +87,57 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   const [loading, setLoading] = useState(!initialQuiz);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeStep, setActiveStep] = useState<'questions' | 'details'>('questions');
+  const [activeStep, setActiveStep] = useState<"questions" | "details">(
+    "questions"
+  );
   const [showShareModal, setShowShareModal] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
+  const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [expandedSettings, setExpandedSettings] = useState(false);
-  const quillRefs = useRef<{[key: string]: ReactQuill | null}>({});
-  
+  const quillRefs = useRef<{ [key: string]: ReactQuill | null }>({});
+
   // Get template ID from URL query params
   const queryParams = new URLSearchParams(location.search);
-  const templateId = queryParams.get('template');
-  const editMode = queryParams.get('edit');
+  const templateId = queryParams.get("template");
+  const editMode = queryParams.get("edit");
 
   // Quiz state
-  const [quiz, setQuiz] = useState<Quiz>(initialQuiz || {
-    id: '',
-    title: '',
-    description: '',
-    category: '',
-    time_limit: null,
-    passing_score: null,
-    status: 'draft',
-    is_published: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    created_by: user?.id || '',
-    version: 1,
-    approval_status: 'pending',
-    share_id: null
-  });
-  
+  const [quiz, setQuiz] = useState<Quiz>(
+    initialQuiz || {
+      id: "",
+      title: "",
+      description: "",
+      category: "",
+      time_limit: null,
+      passing_score: null,
+      status: "draft",
+      is_published: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      created_by: user?.id || "",
+      version: 1,
+      approval_status: "pending",
+      share_id: null,
+    }
+  );
+
   // Questions state
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions || []);
+  const [questions, setQuestions] = useState<Question[]>(
+    initialQuestions || []
+  );
   const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
-  const [activeOptionEditors, setActiveOptionEditors] = useState<{[key: string]: boolean}>({});
-  
+  const [activeOptionEditors, setActiveOptionEditors] = useState<{
+    [key: string]: boolean;
+  }>({});
+
   // Load quiz data
   useEffect(() => {
     if (!user) {
-      setError('You must be logged in to create or edit GoForms');
+      setError("You must be logged in to create or edit GoForms");
       setLoading(false);
       return;
     }
-    
+
     if (initialQuiz && initialQuestions) {
       // If props are provided, use them
       setQuiz(initialQuiz);
@@ -132,100 +145,101 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       setLoading(false);
       return;
     }
-    
+
     const loadData = async () => {
       try {
         setLoading(true);
-        
+
         if (templateId) {
           // Load from template
           const templateData = await getQuizTemplate(templateId);
-          
+
           if (templateData) {
             setQuiz({
               ...templateData.quiz,
               created_by: user.id,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             });
             setQuestions(templateData.questions);
-            
+
             // If edit mode is specified, set the active step
-            if (editMode === 'questions') {
-              setActiveStep('questions');
-            } else if (editMode === 'details') {
-              setActiveStep('details');
+            if (editMode === "questions") {
+              setActiveStep("questions");
+            } else if (editMode === "details") {
+              setActiveStep("details");
             }
           }
-        } else if (id && id !== 'new') {
+        } else if (id && id !== "new") {
           // Load existing quiz
-          const { quiz: loadedQuiz, questions: loadedQuestions } = await getQuiz(id);
-          
+          const { quiz: loadedQuiz, questions: loadedQuestions } =
+            await getQuiz(id);
+
           if (loadedQuiz.created_by !== user.id) {
-            setError('You do not have permission to edit this GoForm');
+            setError("You do not have permission to edit this GoForm");
             setLoading(false);
             return;
           }
-          
+
           setQuiz(loadedQuiz);
           setQuestions(loadedQuestions);
         } else {
           // New quiz
           setQuiz({
             ...quiz,
-            created_by: user.id
+            created_by: user.id,
           });
         }
-        
+
         setLoading(false);
       } catch (error) {
-        console.error('Error loading GoForm:', error);
-        setError('Failed to load GoForm data');
+        console.error("Error loading GoForm:", error);
+        setError("Failed to load GoForm data");
         setLoading(false);
       }
     };
-    
+
     loadData();
   }, [id, user, templateId, editMode, initialQuiz, initialQuestions]);
-  
+
   // Handle quiz field changes
   const handleQuizChange = (field: keyof Quiz, value: any) => {
-    setQuiz(prev => ({ ...prev, [field]: value }));
+    setQuiz((prev) => ({ ...prev, [field]: value }));
   };
-  
+
   // Add a new question
   const handleAddQuestion = () => {
     const newQuestion: Question = {
       id: `temp-${Date.now()}`,
       quiz_id: quiz.id,
-      text: '',
-      type: 'multiple_choice',
+      text: "",
+      type: "multiple_choice",
       order: questions.length,
       points: 10,
-      cognitive_level: 'understanding',
-      difficulty_level: 'medium',
+      cognitive_level: "understanding",
+      difficulty_level: "medium",
       required: true,
       created_at: new Date().toISOString(),
-      options: []
+      options: [],
     };
-    
+
     setQuestions([...questions, newQuestion]);
     setExpandedQuestion(questions.length);
   };
-  
+
   // Delete a question
   const handleDeleteQuestion = (index: number) => {
     const newQuestions = [...questions];
     newQuestions.splice(index, 1);
-    
+
     // Update order for remaining questions
     const updatedQuestions = newQuestions.map((q, i) => ({
       ...q,
-      order: i
+      order: i,
     }));
-    
+
     setQuestions(updatedQuestions);
-    
+
     // If the expanded question was deleted, collapse all
     if (expandedQuestion === index) {
       setExpandedQuestion(null);
@@ -234,7 +248,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       setExpandedQuestion(expandedQuestion - 1);
     }
   };
-  
+
   // Duplicate a question
   const handleDuplicateQuestion = (index: number) => {
     const questionToDuplicate = questions[index];
@@ -243,349 +257,464 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       id: `temp-${Date.now()}`,
       text: `${questionToDuplicate.text} (Copy)`,
       order: questions.length,
-      options: questionToDuplicate.options ? [...questionToDuplicate.options.map(o => ({
-        ...o,
-        id: `temp-${Date.now()}-${o.order}`
-      }))] : [],
-      matching_pairs: questionToDuplicate.matching_pairs ? [...questionToDuplicate.matching_pairs.map(p => ({
-        ...p,
-        id: `temp-${Date.now()}-${p.order}`
-      }))] : [],
-      ordering_items: questionToDuplicate.ordering_items ? [...questionToDuplicate.ordering_items.map(i => ({
-        ...i,
-        id: `temp-${Date.now()}-${i.order}`
-      }))] : [],
-      essay_rubrics: questionToDuplicate.essay_rubrics ? [...questionToDuplicate.essay_rubrics.map(r => ({
-        ...r,
-        id: `temp-${Date.now()}`
-      }))] : []
+      options: questionToDuplicate.options
+        ? [
+            ...questionToDuplicate.options.map((o) => ({
+              ...o,
+              id: `temp-${Date.now()}-${o.order}`,
+            })),
+          ]
+        : [],
+      matching_pairs: questionToDuplicate.matching_pairs
+        ? [
+            ...questionToDuplicate.matching_pairs.map((p) => ({
+              ...p,
+              id: `temp-${Date.now()}-${p.order}`,
+            })),
+          ]
+        : [],
+      ordering_items: questionToDuplicate.ordering_items
+        ? [
+            ...questionToDuplicate.ordering_items.map((i) => ({
+              ...i,
+              id: `temp-${Date.now()}-${i.order}`,
+            })),
+          ]
+        : [],
+      essay_rubrics: questionToDuplicate.essay_rubrics
+        ? [
+            ...questionToDuplicate.essay_rubrics.map((r) => ({
+              ...r,
+              id: `temp-${Date.now()}`,
+            })),
+          ]
+        : [],
     };
-    
+
     setQuestions([...questions, newQuestion]);
     setExpandedQuestion(questions.length);
   };
-  
+
   // Update a question
-  const handleQuestionChange = (index: number, field: keyof Question, value: any) => {
+  const handleQuestionChange = (
+    index: number,
+    field: keyof Question,
+    value: any
+  ) => {
     const newQuestions = [...questions];
     newQuestions[index] = {
       ...newQuestions[index],
-      [field]: value
+      [field]: value,
     };
-    
+
     // If changing question type, reset options
-    if (field === 'type') {
+    if (field === "type") {
       newQuestions[index].options = [];
       newQuestions[index].matching_pairs = [];
       newQuestions[index].ordering_items = [];
       newQuestions[index].essay_rubrics = [];
       newQuestions[index].answer_key = null;
     }
-    
+
     setQuestions(newQuestions);
   };
-  
+
   // Add an option to a question
   const handleAddOption = (questionIndex: number) => {
     const newQuestions = [...questions];
     const options = newQuestions[questionIndex].options || [];
-    
+
     const newOption: Option = {
       id: `temp-${Date.now()}-${options.length}`,
       question_id: newQuestions[questionIndex].id,
-      text: '',
+      text: "",
       score: 0,
-      feedback: '',
+      feedback: "",
       order: options.length,
-      is_correct: false
+      // is_correct: false
     };
-    
+
     newQuestions[questionIndex].options = [...options, newOption];
     setQuestions(newQuestions);
-    
+
     // Set this option's editor as active
-    setActiveOptionEditors(prev => ({
+    setActiveOptionEditors((prev) => ({
       ...prev,
-      [`${questionIndex}-${options.length}`]: true
+      [`${questionIndex}-${options.length}`]: true,
     }));
   };
-  
+
   // Delete an option
   const handleDeleteOption = (questionIndex: number, optionIndex: number) => {
     const newQuestions = [...questions];
     const options = [...(newQuestions[questionIndex].options || [])];
     options.splice(optionIndex, 1);
-    
+
     // Update order for remaining options
     const updatedOptions = options.map((o, i) => ({
       ...o,
-      order: i
+      order: i,
     }));
-    
+
     newQuestions[questionIndex].options = updatedOptions;
     setQuestions(newQuestions);
-    
+
     // Remove this option's editor from active editors
     const editorKey = `${questionIndex}-${optionIndex}`;
     const newActiveEditors = { ...activeOptionEditors };
     delete newActiveEditors[editorKey];
     setActiveOptionEditors(newActiveEditors);
   };
-  
+
   // Update an option
-  const handleOptionChange = (questionIndex: number, optionIndex: number, field: keyof Option, value: any) => {
+  const handleOptionChange = (
+    questionIndex: number,
+    optionIndex: number,
+    field: keyof Option,
+    value: any
+  ) => {
     const newQuestions = [...questions];
     const options = [...(newQuestions[questionIndex].options || [])];
-    
+
     options[optionIndex] = {
       ...options[optionIndex],
-      [field]: value
+      [field]: value,
     };
-    
+
     // If changing score, update is_correct
-    if (field === 'score') {
-      options[optionIndex].is_correct = value > 0;
-    }
-    
+    // if (field === 'score') {
+    //   options[optionIndex].is_correct = value > 0;
+    // }
+
     // If changing is_correct, update score
-    if (field === 'is_correct') {
-      options[optionIndex].score = value ? 10 : 0;
-    }
-    
+    // if (field === 'is_correct') {
+    //   options[optionIndex].score = value ? 10 : 0;
+    // }
+
     newQuestions[questionIndex].options = options;
     setQuestions(newQuestions);
   };
-  
+
   // Toggle question expansion
   const toggleQuestionExpand = (index: number) => {
     setExpandedQuestion(expandedQuestion === index ? null : index);
   };
-  
+
   // Toggle option editor
   const toggleOptionEditor = (questionIndex: number, optionIndex: number) => {
     const editorKey = `${questionIndex}-${optionIndex}`;
-    setActiveOptionEditors(prev => ({
+    setActiveOptionEditors((prev) => ({
       ...prev,
-      [editorKey]: !prev[editorKey]
+      [editorKey]: !prev[editorKey],
     }));
   };
-  
+
   // Handle image upload for the rich text editor
   const handleImageUpload = async () => {
     // Create a file input element
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/jpeg, image/png, image/gif');
-    
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/jpeg, image/png, image/gif");
+
     // When a file is selected
     input.onchange = async () => {
       if (!input.files || !input.files[0]) return;
-      
+
       const file = input.files[0];
-      
+
       // Validate file type
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const validTypes = ["image/jpeg", "image/png", "image/gif"];
       if (!validTypes.includes(file.type)) {
-        showToast('Invalid file type. Please upload JPG, PNG, or GIF images.', 'error');
+        showToast(
+          "Invalid file type. Please upload JPG, PNG, or GIF images.",
+          "error"
+        );
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        showToast('Image is too large. Maximum size is 5MB.', 'error');
+        showToast("Image is too large. Maximum size is 5MB.", "error");
         return;
       }
-      
+
       try {
         // Show loading toast
-        showToast('Uploading image...', 'info');
-        
+        showToast("Uploading image...", "info");
+
         // Upload to Supabase Storage
         const fileName = `${Date.now()}-${file.name}`;
         const { data, error } = await supabase.storage
-          .from('quiz-images')
+          .from("quiz-images")
           .upload(`public/${fileName}`, file, {
-            cacheControl: '3600',
-            upsert: false
+            cacheControl: "3600",
+            upsert: false,
           });
-        
+
         if (error) throw error;
-        
+
         // Get public URL
         const { data: publicURL } = supabase.storage
-          .from('quiz-images')
+          .from("quiz-images")
           .getPublicUrl(`public/${fileName}`);
-        
-        if (!publicURL) throw new Error('Failed to get public URL');
-        
+
+        if (!publicURL) throw new Error("Failed to get public URL");
+
         // Find the active editor
-        const activeEditorKey = Object.keys(activeOptionEditors).find(key => activeOptionEditors[key]);
+        const activeEditorKey = Object.keys(activeOptionEditors).find(
+          (key) => activeOptionEditors[key]
+        );
         if (activeEditorKey) {
-          const [questionIndex, optionIndex] = activeEditorKey.split('-').map(Number);
-          const quill = quillRefs.current[`option-${questionIndex}-${optionIndex}`]?.getEditor();
-          
+          const [questionIndex, optionIndex] = activeEditorKey
+            .split("-")
+            .map(Number);
+          const quill =
+            quillRefs.current[
+              `option-${questionIndex}-${optionIndex}`
+            ]?.getEditor();
+
           if (quill) {
             const range = quill.getSelection(true);
-            quill.insertEmbed(range.index, 'image', publicURL.publicUrl);
+            quill.insertEmbed(range.index, "image", publicURL.publicUrl);
             quill.setSelection(range.index + 1);
           }
         }
-        
-        showToast('Image uploaded successfully', 'success');
+
+        showToast("Image uploaded successfully", "success");
       } catch (error) {
-        console.error('Error uploading image:', error);
-        showToast('Error uploading image: ' + (error instanceof Error ? error.message : 'Unknown error'), 'error');
+        console.error("Error uploading image:", error);
+        showToast(
+          "Error uploading image: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+          "error"
+        );
       }
     };
-    
+
     // Trigger file selection
     input.click();
   };
-  
+
   // Custom modules for ReactQuill
   const modules = {
     toolbar: {
       container: [
         [{ header: [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }],
         [{ color: [] }, { background: [] }],
-        ['link', 'image'],
-        ['clean']
+        ["link", "image"],
+        ["clean"],
       ],
       handlers: {
-        image: handleImageUpload
-      }
-    }
+        image: handleImageUpload,
+      },
+    },
   };
-  
+
   // Save the quiz
   const handleSave = async () => {
     try {
       // Validate quiz
       const errors = await validateQuiz(quiz);
       if (errors.length > 0) {
-        showToast(errors[0], 'error');
+        showToast(errors[0], "error");
         return;
       }
-      
+
       // Validate questions
       if (questions.length === 0) {
-        showToast('Please add at least one question', 'error');
+        showToast("Please add at least one question", "error");
         return;
       }
-      
+
       for (let i = 0; i < questions.length; i++) {
         const question = questions[i];
-        
+
         if (!question.text.trim()) {
-          showToast(`Question ${i + 1} is missing text`, 'error');
+          showToast(`Question ${i + 1} is missing text`, "error");
           return;
         }
-        
-        if (question.type === 'multiple_choice' && (!question.options || question.options.length < 2)) {
-          showToast(`Question ${i + 1} needs at least two options`, 'error');
+
+        if (
+          question.type === "multiple_choice" &&
+          (!question.options || question.options.length < 2)
+        ) {
+          showToast(`Question ${i + 1} needs at least two options`, "error");
           return;
         }
-        
-        if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
-          showToast(`Question ${i + 1} needs at least one correct option`, 'error');
-          return;
-        }
+
+        // if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
+        //   showToast(`Question ${i + 1} needs at least one correct option`, 'error');
+        //   return;
+        // }
       }
-      
+
       setSaving(true);
-      
+
       // Save quiz
       const quizId = await saveQuiz(quiz, questions);
-      
-      showToast('GoForm saved successfully', 'success');
-      
+
+      showToast("GoForm saved successfully", "success");
+
       // Redirect to quiz list
-      navigate('/admin/quizzes');
+      navigate("/admin/quizzes");
     } catch (error) {
-      console.error('Error saving GoForm:', error);
-      showToast('Failed to save GoForm', 'error');
+      console.error("Error saving GoForm:", error);
+      showToast("Failed to save GoForm", "error");
     } finally {
       setSaving(false);
     }
   };
-  
+
   // Preview the quiz
   const handlePreview = () => {
     if (quiz.id) {
-      window.open(`/quiz/${quiz.id}`, '_blank');
+      window.open(`/quiz/${quiz.id}`, "_blank");
     } else {
-      showToast('Please save the GoForm first to preview it', 'error');
+      showToast("Please save the GoForm first to preview it", "error");
     }
   };
-  
+
   // Share the quiz
   const handleShare = async () => {
     if (!quiz.id) {
-      showToast('Please save the GoForm first to share it', 'error');
+      showToast("Please save the GoForm first to share it", "error");
       return;
     }
-    
+
     try {
       // Generate share URL
-      const shareId = quiz.share_id || `${window.location.origin}/quiz/${quiz.id}`;
+      const shareId =
+        quiz.share_id || `${window.location.origin}/quiz/${quiz.id}`;
       setShareUrl(`${globalThis.location.origin}/quiz/${shareId}`);
       setShowShareModal(true);
     } catch (error) {
-      console.error('Error sharing GoForm:', error);
-      showToast('Failed to share GoForm', 'error');
+      console.error("Error sharing GoForm:", error);
+      showToast("Failed to share GoForm", "error");
     }
   };
-  
+
   // Copy share URL
   const handleCopyShareUrl = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      showToast('Share URL copied to clipboard', 'success');
+      showToast("Share URL copied to clipboard", "success");
     } catch (error) {
-      console.error('Error copying share URL:', error);
-      showToast('Failed to copy share URL', 'error');
+      console.error("Error copying share URL:", error);
+      showToast("Failed to copy share URL", "error");
     }
   };
-  
+
   // Continue to details
   const handleContinueToDetails = () => {
     // Validate questions
     if (questions.length === 0) {
-      showToast('Please add at least one question', 'error');
+      showToast("Please add at least one question", "error");
       return;
     }
-    
+
     for (let i = 0; i < questions.length; i++) {
       const question = questions[i];
-      
+
       if (!question.text.trim()) {
-        showToast(`Question ${i + 1} is missing text`, 'error');
+        showToast(`Question ${i + 1} is missing text`, "error");
         return;
       }
-      
-      if (question.type === 'multiple_choice' && (!question.options || question.options.length < 2)) {
-        showToast(`Question ${i + 1} needs at least two options`, 'error');
+
+      if (
+        question.type === "multiple_choice" &&
+        (!question.options || question.options.length < 2)
+      ) {
+        showToast(`Question ${i + 1} needs at least two options`, "error");
         return;
       }
-      
-      if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
-        showToast(`Question ${i + 1} needs at least one correct option`, 'error');
-        return;
-      }
+
+      // if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
+      //   showToast(`Question ${i + 1} needs at least one correct option`, 'error');
+      //   return;
+      // }
     }
-    
-    setActiveStep('details');
+
+    setActiveStep("details");
   };
-  
+
   // Back to questions
   const handleBackToQuestions = () => {
-    setActiveStep('questions');
+    setActiveStep("questions");
   };
-  
+
+  function addMatchingPair(questionIndex: number) {
+    const newQuestions = [...questions];
+    newQuestions[questionIndex].matching_pairs = [
+      ...(newQuestions[questionIndex].matching_pairs || []),
+      {
+        id: "",
+        question_id: "",
+        left_item: "",
+        right_item: "",
+        order: newQuestions[questionIndex].matching_pairs?.length || 0,
+        created_at: new Date().toISOString(),
+        feedback: "",
+      },
+    ];
+    setQuestions(newQuestions);
+  }
+
+  function addOrderingItem(questionIndex: number) {
+    const newQuestions = [...questions];
+    newQuestions[questionIndex].ordering_items = [
+      ...(newQuestions[questionIndex].ordering_items || []),
+      {
+        id: "",
+        question_id: "",
+        item: "",
+        correct_position:
+          (newQuestions[questionIndex].ordering_items?.length || 0) + 1,
+        order: newQuestions[questionIndex].ordering_items?.length || 0,
+        created_at: new Date().toISOString(),
+        feedback: "",
+      },
+    ];
+    setQuestions(newQuestions);
+  }
+
+  function addEssayRubric(questionIndex: number) {
+    const newQuestions = [...questions];
+    newQuestions[questionIndex].essay_rubrics = [
+      ...(newQuestions[questionIndex].essay_rubrics || []),
+      {
+        id: "",
+        question_id: "",
+        criteria: "",
+        description: "",
+        max_points: 5,
+        created_at: new Date().toISOString(),
+        feedback: "",
+      },
+    ];
+    setQuestions(newQuestions);
+  }
+
+  function updateQuestion(index: number, updates: Partial<Question>) {
+    const newQuestions = [...questions];
+    newQuestions[index] = { ...newQuestions[index], ...updates };
+
+    // Reset question-specific data when type changes
+    if (updates.type) {
+      newQuestions[index].options = [];
+      newQuestions[index].matching_pairs = [];
+      newQuestions[index].ordering_items = [];
+      newQuestions[index].essay_rubrics = [];
+      newQuestions[index].answer_key = null;
+      newQuestions[index].rubric = null;
+    }
+
+    setQuestions(newQuestions);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -593,7 +722,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="max-w-3xl mx-auto">
@@ -602,7 +731,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           <h2 className="text-2xl font-bold text-text mb-4">Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={() => navigate('/admin/quizzes')}
+            onClick={() => navigate("/admin/quizzes")}
             className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
             Back to GoForms
@@ -611,28 +740,30 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       </div>
     );
   }
-  
+
   return (
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center">
           <button
-            onClick={() => navigate('/admin/quizzes')}
+            onClick={() => navigate("/admin/quizzes")}
             className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
             <h1 className="text-2xl font-bold text-text">
-              {id === 'new' || templateId ? 'Create GoForm' : 'Edit GoForm'}
+              {id === "new" || templateId ? "Create GoForm" : "Edit GoForm"}
             </h1>
             <p className="text-gray-600">
-              {activeStep === 'questions' ? 'Add and edit questions' : 'Configure GoForm settings'}
+              {activeStep === "questions"
+                ? "Add and edit questions"
+                : "Configure GoForm settings"}
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           {quiz.id && (
             <>
@@ -657,8 +788,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             disabled={saving}
             className={`flex items-center px-4 py-2 rounded-lg ${
               saving
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-secondary hover:bg-primary'
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-secondary hover:bg-primary"
             } text-white`}
           >
             {saving ? (
@@ -675,14 +806,18 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </button>
         </div>
       </div>
-      
+
       {/* Steps */}
       <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              activeStep === 'questions' ? 'bg-secondary text-white' : 'bg-gray-200 text-gray-600'
-            }`}>
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                activeStep === "questions"
+                  ? "bg-secondary text-white"
+                  : "bg-gray-200 text-gray-600"
+              }`}
+            >
               1
             </div>
             <div className="ml-3">
@@ -690,13 +825,17 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               <p className="text-sm text-gray-500">Add and edit questions</p>
             </div>
           </div>
-          
+
           <div className="w-16 h-0.5 bg-gray-200"></div>
-          
+
           <div className="flex items-center">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              activeStep === 'details' ? 'bg-secondary text-white' : 'bg-gray-200 text-gray-600'
-            }`}>
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                activeStep === "details"
+                  ? "bg-secondary text-white"
+                  : "bg-gray-200 text-gray-600"
+              }`}
+            >
               2
             </div>
             <div className="ml-3">
@@ -706,9 +845,9 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </div>
         </div>
       </div>
-      
+
       {/* Questions Step */}
-      {activeStep === 'questions' && (
+      {activeStep === "questions" && (
         <div className="bg-background rounded-lg shadow-md p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-text">Questions</h2>
@@ -720,14 +859,18 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               Add Question
             </button>
           </div>
-          
+
           {questions.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent mb-4">
                 <FileText className="h-8 w-8 text-secondary" />
               </div>
-              <h3 className="text-lg font-medium text-text mb-2">No questions yet</h3>
-              <p className="text-gray-500 mb-4">Add your first question to get started</p>
+              <h3 className="text-lg font-medium text-text mb-2">
+                No questions yet
+              </h3>
+              <p className="text-gray-500 mb-4">
+                Add your first question to get started
+              </p>
               <button
                 onClick={handleAddQuestion}
                 className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
@@ -739,24 +882,27 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           ) : (
             <div className="space-y-6">
               {questions.map((question, index) => (
-                <div 
-                  key={question.id} 
+                <div
+                  key={question.id}
                   className="border border-border rounded-lg overflow-hidden"
                 >
-                  <div 
+                  <div
                     className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer"
                     onClick={() => toggleQuestionExpand(index)}
                   >
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
-                        <span className="text-secondary font-medium">{index + 1}</span>
+                        <span className="text-secondary font-medium">
+                          {index + 1}
+                        </span>
                       </div>
                       <div>
                         <p className="font-medium text-text">
-                          {question.text || 'Untitled Question'}
+                          {question.text || "Untitled Question"}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {questionTypes.find(t => t.value === question.type)?.label || 'Multiple Choice'}
+                          {questionTypes.find((t) => t.value === question.type)
+                            ?.label || "Multiple Choice"}
                         </p>
                       </div>
                     </div>
@@ -790,7 +936,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                       </button>
                     </div>
                   </div>
-                  
+
                   {expandedQuestion === index && (
                     <div className="p-4 border-t border-border">
                       <div className="mb-4">
@@ -800,12 +946,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         <input
                           type="text"
                           value={question.text}
-                          onChange={(e) => handleQuestionChange(index, 'text', e.target.value)}
+                          onChange={(e) =>
+                            handleQuestionChange(index, "text", e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Enter question text"
                         />
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
                           <label className="block text-sm font-medium text-text mb-1">
@@ -813,44 +961,62 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           </label>
                           <select
                             value={question.type}
-                            onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
+                            onChange={(e) =>
+                              handleQuestionChange(
+                                index,
+                                "type",
+                                e.target.value
+                              )
+                            }
                             className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           >
-                            {questionTypes.map(type => (
+                            {questionTypes.map((type) => (
                               <option key={type.value} value={type.value}>
                                 {type.label}
                               </option>
                             ))}
                           </select>
                         </div>
-                        
+
                         <div>
                           <label className="block text-sm font-medium text-text mb-1">
                             Cognitive Level
                           </label>
                           <select
-                            value={question.cognitive_level || 'understanding'}
-                            onChange={(e) => handleQuestionChange(index, 'cognitive_level', e.target.value)}
+                            value={question.cognitive_level || "understanding"}
+                            onChange={(e) =>
+                              handleQuestionChange(
+                                index,
+                                "cognitive_level",
+                                e.target.value
+                              )
+                            }
                             className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           >
-                            {cognitiveLevels.map(level => (
+                            {cognitiveLevels.map((level) => (
                               <option key={level.value} value={level.value}>
                                 {level.label}
                               </option>
                             ))}
                           </select>
                         </div>
-                        
+
                         <div>
                           <label className="block text-sm font-medium text-text mb-1">
                             Difficulty Level
                           </label>
                           <select
-                            value={question.difficulty_level || 'medium'}
-                            onChange={(e) => handleQuestionChange(index, 'difficulty_level', e.target.value)}
+                            value={question.difficulty_level || "medium"}
+                            onChange={(e) =>
+                              handleQuestionChange(
+                                index,
+                                "difficulty_level",
+                                e.target.value
+                              )
+                            }
                             className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           >
-                            {difficultyLevels.map(level => (
+                            {difficultyLevels.map((level) => (
                               <option key={level.value} value={level.value}>
                                 {level.label}
                               </option>
@@ -858,22 +1024,28 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           </select>
                         </div>
                       </div>
-                      
+
                       <div className="mb-4">
                         <label className="block text-sm font-medium text-text mb-1">
                           Instructions (Optional)
                         </label>
                         <textarea
-                          value={question.instructions || ''}
-                          onChange={(e) => handleQuestionChange(index, 'instructions', e.target.value)}
+                          value={question.instructions || ""}
+                          onChange={(e) =>
+                            handleQuestionChange(
+                              index,
+                              "instructions",
+                              e.target.value
+                            )
+                          }
                           className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Enter instructions for this question"
                           rows={2}
                         />
                       </div>
-                      
+
                       {/* Multiple Choice Options */}
-                      {question.type === 'multiple_choice' && (
+                      {question.type === "multiple_choice" && (
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
                             <label className="block text-sm font-medium text-text">
@@ -886,12 +1058,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               + Add Option
                             </button>
                           </div>
-                          
+
                           <div className="space-y-4">
                             {question.options?.map((option, optionIndex) => (
-                              <div key={option.id} className="border border-border rounded-lg p-4">
+                              <div
+                                key={option.id}
+                                className="border border-border rounded-lg p-4"
+                              >
                                 <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center">
+                                  {/* <div className="flex items-center">
                                     <input
                                       type="checkbox"
                                       checked={option.is_correct}
@@ -901,21 +1076,33 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     <span className="text-sm font-medium">
                                       {option.is_correct ? 'Correct Answer' : 'Incorrect Answer'}
                                     </span>
-                                  </div>
+                                  </div> */}
                                   <div className="flex items-center">
                                     <button
-                                      onClick={() => toggleOptionEditor(index, optionIndex)}
+                                      onClick={() =>
+                                        toggleOptionEditor(index, optionIndex)
+                                      }
                                       className="p-1.5 text-gray-500 hover:text-text mr-1"
-                                      title={activeOptionEditors[`${index}-${optionIndex}`] ? "Hide rich editor" : "Show rich editor"}
+                                      title={
+                                        activeOptionEditors[
+                                          `${index}-${optionIndex}`
+                                        ]
+                                          ? "Hide rich editor"
+                                          : "Show rich editor"
+                                      }
                                     >
-                                      {activeOptionEditors[`${index}-${optionIndex}`] ? (
+                                      {activeOptionEditors[
+                                        `${index}-${optionIndex}`
+                                      ] ? (
                                         <ChevronUp className="h-4 w-4" />
                                       ) : (
                                         <ChevronDown className="h-4 w-4" />
                                       )}
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteOption(index, optionIndex)}
+                                      onClick={() =>
+                                        handleDeleteOption(index, optionIndex)
+                                      }
                                       className="p-1.5 text-red-500 hover:text-red-700"
                                       title="Delete option"
                                     >
@@ -923,7 +1110,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     </button>
                                   </div>
                                 </div>
-                                
+
                                 <div className="mb-3">
                                   <label className="block text-sm font-medium text-text mb-1">
                                     Option Text
@@ -931,12 +1118,19 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   <input
                                     type="text"
                                     value={option.text}
-                                    onChange={(e) => handleOptionChange(index, optionIndex, 'text', e.target.value)}
+                                    onChange={(e) =>
+                                      handleOptionChange(
+                                        index,
+                                        optionIndex,
+                                        "text",
+                                        e.target.value
+                                      )
+                                    }
                                     className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                     placeholder="Option text"
                                   />
                                 </div>
-                                
+
                                 <div className="mb-3">
                                   <label className="block text-sm font-medium text-text mb-1">
                                     Score
@@ -944,35 +1138,55 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   <input
                                     type="number"
                                     value={option.score}
-                                    onChange={(e) => handleOptionChange(index, optionIndex, 'score', parseInt(e.target.value))}
+                                    onChange={(e) =>
+                                      handleOptionChange(
+                                        index,
+                                        optionIndex,
+                                        "score",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
                                     className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                     placeholder="Score"
                                   />
                                 </div>
-                                
+
                                 {/* {activeOptionEditors[`${index}-${optionIndex}`] && ( */}
-                                  <div>
-                                    <label className="block text-sm font-medium text-text mb-1">
-                                      Feedback (Rich Content)
-                                    </label>
-                                    <ReactQuill
-                                      ref={(el) => quillRefs.current[`option-${index}-${optionIndex}`] = el}
-                                      value={option.feedback || ''}
-                                      onChange={(content) => handleOptionChange(index, optionIndex, 'feedback', content)}
-                                      // //modules={modules}
-                                      placeholder="Enter rich feedback content for this option..."
-                                      theme="snow"
-                                      className="mb-4"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      This rich content will be displayed in the PDF report when this option is selected.
-                                    </p>
-                                  </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-text mb-1">
+                                    Feedback (Rich Content)
+                                  </label>
+                                  <ReactQuill
+                                    ref={(el) => {
+                                      quillRefs.current[
+                                        `option-${index}-${optionIndex}`
+                                      ] = el;
+                                    }}
+                                    value={option.feedback || ""}
+                                    onChange={(content) =>
+                                      handleOptionChange(
+                                        index,
+                                        optionIndex,
+                                        "feedback",
+                                        content
+                                      )
+                                    }
+                                    // //modules={modules}
+                                    placeholder="Enter rich feedback content for this option..."
+                                    theme="snow"
+                                    className="mb-4"
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    This rich content will be displayed in the
+                                    PDF report when this option is selected.
+                                  </p>
+                                </div>
                                 {/* )} */}
                               </div>
                             ))}
-                            
-                            {(!question.options || question.options.length === 0) && (
+
+                            {(!question.options ||
+                              question.options.length === 0) && (
                               <button
                                 onClick={() => handleAddOption(index)}
                                 className="w-full py-2 border-2 border-dashed border-border rounded-lg text-gray-500 hover:text-text hover:border-border"
@@ -983,9 +1197,513 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           </div>
                         </div>
                       )}
-                      
-                      {/* Other question type specific fields would go here */}
-                      
+
+                      {question.type === "matching" && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">Matching Pairs</h4>
+                            <button
+                              onClick={() => addMatchingPair(index)}
+                              className="text-secondary hover:text-primary"
+                            >
+                              <Plus className="w-5 h-5" />
+                            </button>
+                          </div>
+
+                          {question.matching_pairs?.map((pair, pairIndex) => (
+                            <div
+                              key={pairIndex}
+                              className="space-y-3 border p-4 rounded-md"
+                            >
+                              <div className="flex gap-4">
+                                <input
+                                  type="text"
+                                  value={pair.left_item}
+                                  onChange={(e) => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].matching_pairs![
+                                      pairIndex
+                                    ].left_item = e.target.value;
+                                    setQuestions(newQuestions);
+                                  }}
+                                  className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  placeholder="Left item"
+                                />
+                                <input
+                                  type="text"
+                                  value={pair.right_item}
+                                  onChange={(e) => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].matching_pairs![
+                                      pairIndex
+                                    ].right_item = e.target.value;
+                                    setQuestions(newQuestions);
+                                  }}
+                                  className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  placeholder="Right item"
+                                />
+                                <button
+                                  onClick={() => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].matching_pairs!.splice(
+                                      pairIndex,
+                                      1
+                                    );
+                                    setQuestions(newQuestions);
+                                  }}
+                                  className="text-red-600 hover:text-red-800"
+                                >
+                                  <Trash2 className="w-5 h-5" />
+                                </button>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-text mb-1">
+                                  Feedback (Rich Content)
+                                </label>
+                                <ReactQuill
+                                  ref={(el) => {
+                                    quillRefs.current[
+                                      `matching-${index}-${pairIndex}`
+                                    ] = el;
+                                  }}
+                                  value={pair.feedback || ""}
+                                  onChange={(content) => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].matching_pairs![
+                                      pairIndex
+                                    ].feedback = content;
+                                    setQuestions(newQuestions);
+                                  }}
+                                  placeholder="Enter rich feedback content for this pair..."
+                                  theme="snow"
+                                  className="mb-2"
+                                />
+                                <p className="text-xs text-gray-500">
+                                  This rich content will be displayed in the PDF
+                                  report for this matching pair.
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {question.type === "ordering" && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">Ordering Items</h4>
+                            <button
+                              onClick={() => addOrderingItem(index)}
+                              className="text-secondary hover:text-primary"
+                            >
+                              <Plus className="w-5 h-5" />
+                            </button>
+                          </div>
+
+                          {question.ordering_items?.map((item, itemIndex) => (
+                            <div
+                              key={itemIndex}
+                              className="space-y-3 border p-4 rounded-md"
+                            >
+                              <div className="flex gap-4">
+                                <input
+                                  type="text"
+                                  value={item.item}
+                                  onChange={(e) => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].ordering_items![
+                                      itemIndex
+                                    ].item = e.target.value;
+                                    setQuestions(newQuestions);
+                                  }}
+                                  className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  placeholder="Item text"
+                                />
+                                <input
+                                  type="number"
+                                  value={item.correct_position}
+                                  onChange={(e) => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].ordering_items![
+                                      itemIndex
+                                    ].correct_position = parseInt(
+                                      e.target.value
+                                    );
+                                    setQuestions(newQuestions);
+                                  }}
+                                  className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  placeholder="Position"
+                                />
+                                <button
+                                  onClick={() => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].ordering_items!.splice(
+                                      itemIndex,
+                                      1
+                                    );
+                                    setQuestions(newQuestions);
+                                  }}
+                                  className="text-red-600 hover:text-red-800"
+                                >
+                                  <Trash2 className="w-5 h-5" />
+                                </button>
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-text mb-1">
+                                  Feedback (Rich Content)
+                                </label>
+                                <ReactQuill
+                                  ref={(el) => {
+                                    quillRefs.current[
+                                      `ordering-${index}-${itemIndex}`
+                                    ] = el;
+                                  }}
+                                  value={item.feedback || ""}
+                                  onChange={(content) => {
+                                    const newQuestions = [...questions];
+                                    newQuestions[index].ordering_items![
+                                      itemIndex
+                                    ].feedback = content;
+                                    setQuestions(newQuestions);
+                                  }}
+                                  placeholder="Enter feedback content for this item..."
+                                  theme="snow"
+                                  className="mb-2"
+                                />
+                                <p className="text-xs text-gray-500">
+                                  This feedback will appear in the PDF for this
+                                  ordering item.
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {question.type === "essay" && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">Rubric Criteria</h4>
+                            <button
+                              onClick={() => addEssayRubric(index)}
+                              className="text-secondary hover:text-primary"
+                            >
+                              <Plus className="w-5 h-5" />
+                            </button>
+                          </div>
+
+                          {question.essay_rubrics?.map(
+                            (rubric, rubricIndex) => (
+                              <div
+                                key={rubricIndex}
+                                className="space-y-3 border p-4 rounded-md"
+                              >
+                                <div className="flex gap-4 flex-wrap">
+                                  <input
+                                    type="text"
+                                    value={rubric.criteria}
+                                    onChange={(e) => {
+                                      const newQuestions = [...questions];
+                                      newQuestions[index].essay_rubrics![
+                                        rubricIndex
+                                      ].criteria = e.target.value;
+                                      setQuestions(newQuestions);
+                                    }}
+                                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                    placeholder="Criteria"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={rubric.description || ""}
+                                    onChange={(e) => {
+                                      const newQuestions = [...questions];
+                                      newQuestions[index].essay_rubrics![
+                                        rubricIndex
+                                      ].description = e.target.value;
+                                      setQuestions(newQuestions);
+                                    }}
+                                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                    placeholder="Description"
+                                  />
+                                  <input
+                                    type="number"
+                                    value={rubric.max_points}
+                                    onChange={(e) => {
+                                      const newQuestions = [...questions];
+                                      newQuestions[index].essay_rubrics![
+                                        rubricIndex
+                                      ].max_points = parseInt(e.target.value);
+                                      setQuestions(newQuestions);
+                                    }}
+                                    className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                    placeholder="Points"
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      const newQuestions = [...questions];
+                                      newQuestions[index].essay_rubrics!.splice(
+                                        rubricIndex,
+                                        1
+                                      );
+                                      setQuestions(newQuestions);
+                                    }}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+
+                                <div>
+                                  <label className="block text-sm font-medium text-text mb-1">
+                                    Feedback (Rich Content)
+                                  </label>
+                                  <ReactQuill
+                                    ref={(el) => {
+                                      quillRefs.current[
+                                        `essay-${index}-${rubricIndex}`
+                                      ] = el;
+                                    }}
+                                    value={rubric.feedback || ""}
+                                    onChange={(content) => {
+                                      const newQuestions = [...questions];
+                                      newQuestions[index].essay_rubrics![
+                                        rubricIndex
+                                      ].feedback = content;
+                                      setQuestions(newQuestions);
+                                    }}
+                                    placeholder="Enter feedback for this rubric criterion..."
+                                    theme="snow"
+                                    className="mb-2"
+                                  />
+                                  <p className="text-xs text-gray-500">
+                                    This rich content will appear in the essay
+                                    grading report.
+                                  </p>
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+
+                      {question.type === "picture_based" && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-1">
+                              Image URL
+                            </label>
+                            <input
+                              type="url"
+                              value={question.media_url || ""}
+                              onChange={(e) =>
+                                updateQuestion(index, {
+                                  media_url: e.target.value,
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                              placeholder="Enter image URL"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-1">
+                              Feedback (Rich Content)
+                            </label>
+                            <ReactQuill
+                              ref={(el) => {
+                                quillRefs.current[`picture-${index}`] = el;
+                              }}
+                              value={question.feedback || ""}
+                              onChange={(content) =>
+                                updateQuestion(index, { feedback: content })
+                              }
+                              placeholder="Enter rich feedback content for this image-based question..."
+                              theme="snow"
+                              className="mb-2"
+                            />
+                            <p className="text-xs text-gray-500">
+                              This feedback will be shown in the PDF when this
+                              question is answered.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {(question.type === "true_false" ||
+                        question.type === "fill_blank") && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-1">
+                              Correct Answer
+                            </label>
+                            {question.type === "true_false" ? (
+                              <select
+                                value={
+                                  question.answer_key?.correct_answer?.toString() ||
+                                  "true"
+                                }
+                                onChange={(e) =>
+                                  updateQuestion(index, {
+                                    answer_key: {
+                                      correct_answer: e.target.value === "true",
+                                      explanation:
+                                        question.answer_key?.explanation || "",
+                                    },
+                                  })
+                                }
+                                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                              >
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={
+                                  question.answer_key?.correct_answer || ""
+                                }
+                                onChange={(e) =>
+                                  updateQuestion(index, {
+                                    answer_key: {
+                                      correct_answer: e.target.value,
+                                      alternative_answers:
+                                        question.answer_key
+                                          ?.alternative_answers || [],
+                                      explanation:
+                                        question.answer_key?.explanation || "",
+                                    },
+                                  })
+                                }
+                                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                placeholder="Enter correct answer"
+                              />
+                            )}
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-text mb-1">
+                              Feedback (Rich Content)
+                            </label>
+                            <ReactQuill
+                              ref={(el) => {
+                                quillRefs.current[`answer-${index}`] = el;
+                              }}
+                              value={question.answer_key?.explanation || ""}
+                              onChange={(content) =>
+                                updateQuestion(index, {
+                                  answer_key: {
+                                    ...question.answer_key,
+                                    explanation: content,
+                                  },
+                                })
+                              }
+                              placeholder="Enter explanation or feedback..."
+                              theme="snow"
+                              className="mb-2"
+                            />
+                            <p className="text-xs text-gray-500">
+                              This explanation will appear in reports and after
+                              submission.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {question.type === "definition" && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Feedback (Rich Content)
+                            </label>
+
+                            <ReactQuill
+                              ref={(el) => {
+                                if (el) {
+                                  quillRefs.current[`definition-${index}`] = el;
+                                }
+                              }}
+                              value={question.feedback || ""}
+                              onChange={(content) =>
+                                updateQuestion(index, { feedback: content })
+                              }
+                              placeholder="Enter rich feedback content for this question..."
+                              theme="snow"
+                              className="mb-2"
+                            />
+
+                            <p className="text-xs text-gray-500">
+                              This feedback will be shown in the PDF when this
+                              question is answered.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {question.type === "complete_statement" && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Feedback (Rich Content)
+                            </label>
+
+                            <ReactQuill
+                              ref={(el) => {
+                                if (el) {
+                                  quillRefs.current[
+                                    `complete-statement-${index}`
+                                  ] = el;
+                                }
+                              }}
+                              value={question.feedback || ""}
+                              onChange={(content) =>
+                                updateQuestion(index, { feedback: content })
+                              }
+                              placeholder="Enter rich feedback content for this complete statement question..."
+                              theme="snow"
+                              className="mb-2"
+                            />
+
+                            <p className="text-xs text-gray-500">
+                              This feedback will be shown in the PDF when this
+                              question is answered.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {question.type === "short_answer" && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Feedback (Rich Content)
+                            </label>
+
+                            <ReactQuill
+                              ref={(el) => {
+                                if (el) {
+                                  quillRefs.current[`short-answer-${index}`] =
+                                    el;
+                                }
+                              }}
+                              value={question.feedback || ""}
+                              onChange={(content) =>
+                                updateQuestion(index, { feedback: content })
+                              }
+                              placeholder="Enter rich feedback content for this short answer question..."
+                              theme="snow"
+                              className="mb-2"
+                            />
+
+                            <p className="text-xs text-gray-500">
+                              This feedback will be shown in the PDF when this
+                              question is answered.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-text mb-1">
@@ -994,21 +1712,33 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           <input
                             type="number"
                             value={question.points || 10}
-                            onChange={(e) => handleQuestionChange(index, 'points', parseInt(e.target.value))}
+                            onChange={(e) =>
+                              handleQuestionChange(
+                                index,
+                                "points",
+                                parseInt(e.target.value)
+                              )
+                            }
                             className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                             placeholder="Points"
                             min={0}
                           />
                         </div>
-                        
+
                         <div>
                           <label className="block text-sm font-medium text-text mb-1">
                             Time Limit (seconds, optional)
                           </label>
                           <input
                             type="number"
-                            value={question.time_limit || ''}
-                            onChange={(e) => handleQuestionChange(index, 'time_limit', e.target.value ? parseInt(e.target.value) : null)}
+                            value={question.time_limit || ""}
+                            onChange={(e) =>
+                              handleQuestionChange(
+                                index,
+                                "time_limit",
+                                e.target.value ? parseInt(e.target.value) : null
+                              )
+                            }
                             className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                             placeholder="Time limit in seconds"
                             min={0}
@@ -1021,7 +1751,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               ))}
             </div>
           )}
-          
+
           <div className="mt-8 flex justify-end">
             <button
               onClick={handleContinueToDetails}
@@ -1032,13 +1762,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </div>
         </div>
       )}
-      
+
       {/* Details Step */}
-      {activeStep === 'details' && (
+      {activeStep === "details" && (
         <div className="bg-background rounded-lg shadow-md p-6 mb-8">
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-text mb-4">GoForm Details</h2>
-            
+            <h2 className="text-xl font-semibold text-text mb-4">
+              GoForm Details
+            </h2>
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text mb-1">
@@ -1047,44 +1779,48 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 <input
                   type="text"
                   value={quiz.title}
-                  onChange={(e) => handleQuizChange('title', e.target.value)}
+                  onChange={(e) => handleQuizChange("title", e.target.value)}
                   className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter GoForm title"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-text mb-1">
                   Description
                 </label>
                 <textarea
-                  value={quiz.description || ''}
-                  onChange={(e) => handleQuizChange('description', e.target.value)}
+                  value={quiz.description || ""}
+                  onChange={(e) =>
+                    handleQuizChange("description", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter GoForm description"
                   rows={3}
                 />
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-text mb-1">
                     Category
                   </label>
                   <select
-                    value={quiz.category || ''}
-                    onChange={(e) => handleQuizChange('category', e.target.value)}
+                    value={quiz.category || ""}
+                    onChange={(e) =>
+                      handleQuizChange("category", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   >
                     <option value="">Select a category</option>
-                    {QUIZ_CATEGORIES.map(category => (
+                    {QUIZ_CATEGORIES.map((category) => (
                       <option key={category} value={category}>
                         {category}
                       </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-text mb-1">
                     Status
@@ -1094,7 +1830,9 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                       <input
                         type="checkbox"
                         checked={quiz.is_published}
-                        onChange={(e) => handleQuizChange('is_published', e.target.checked)}
+                        onChange={(e) =>
+                          handleQuizChange("is_published", e.target.checked)
+                        }
                         className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
                       />
                       <span className="ml-2 text-sm text-text">Published</span>
@@ -1102,7 +1840,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <button
                   onClick={() => setExpandedSettings(!expandedSettings)}
@@ -1116,7 +1854,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   <Settings className="h-4 w-4 mr-1" />
                   Advanced Settings
                 </button>
-                
+
                 {expandedSettings && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1126,22 +1864,32 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         </label>
                         <input
                           type="number"
-                          value={quiz.time_limit || ''}
-                          onChange={(e) => handleQuizChange('time_limit', e.target.value ? parseInt(e.target.value) : null)}
+                          value={quiz.time_limit || ""}
+                          onChange={(e) =>
+                            handleQuizChange(
+                              "time_limit",
+                              e.target.value ? parseInt(e.target.value) : null
+                            )
+                          }
                           className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Time limit in minutes"
                           min={0}
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-text mb-1">
                           Passing Score (%, optional)
                         </label>
                         <input
                           type="number"
-                          value={quiz.passing_score || ''}
-                          onChange={(e) => handleQuizChange('passing_score', e.target.value ? parseInt(e.target.value) : null)}
+                          value={quiz.passing_score || ""}
+                          onChange={(e) =>
+                            handleQuizChange(
+                              "passing_score",
+                              e.target.value ? parseInt(e.target.value) : null
+                            )
+                          }
                           className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                           placeholder="Passing score percentage"
                           min={0}
@@ -1154,7 +1902,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-between">
             <button
               onClick={handleBackToQuestions}
@@ -1163,14 +1911,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Questions
             </button>
-            
+
             <button
               onClick={handleSave}
               disabled={saving}
               className={`flex items-center px-6 py-3 rounded-lg ${
                 saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-secondary hover:bg-primary'
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-secondary hover:bg-primary"
               } text-white`}
             >
               {saving ? (
@@ -1188,7 +1936,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </div>
         </div>
       )}
-      
+
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1202,7 +1950,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-text mb-1">
                 Share URL
@@ -1226,7 +1974,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 </button>
               </div>
             </div>
-            
+
             <div className="flex justify-end">
               <button
                 onClick={() => setShowShareModal(false)}
