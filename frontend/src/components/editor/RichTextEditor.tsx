@@ -215,7 +215,7 @@ export default function RichTextEditor({
   
   return (
     <div className={`rich-text-editor ${htmlMode ? 'html-mode' : ''}`}>
-      <div className="editor-toolbar bg-gray-50 p-2 rounded-t-lg border border-border flex items-center justify-between">
+      <div className="editor-toolbar bg-gray-50 p-2 rounded-t-lg border border-gray-300 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <button
             onClick={handleHtmlModeToggle}
@@ -307,7 +307,7 @@ export default function RichTextEditor({
             //modules={modules}
             placeholder={placeholder}
             readOnly={readOnly}
-            className="rounded-b-lg border-x border-b border-border"
+            className="rounded-b-lg border-x border-b border-gray-300"
             style={{ height, display: 'block' }}
             preserveWhitespace={true}
             theme="snow"

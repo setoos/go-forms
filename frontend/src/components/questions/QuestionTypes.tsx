@@ -33,7 +33,7 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
                   ? option.is_correct
                     ? 'border-green-500 bg-green-50'
                     : 'border-red-500 bg-red-50'
-                  : 'border-border hover:border-secondary hover:bg-accent'
+                  : 'border-gray-200 hover:border-secondary hover:bg-accent'
               }`}
             >
               <div className="flex items-center">
@@ -45,7 +45,7 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
             </button>
             
             {showFeedback && showOptionFeedback && selectedOption?.id === option.id && option.feedback && (
-              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-border">
+              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div 
                   className="prose max-w-none"
                   dangerouslySetInnerHTML={{ 
@@ -83,7 +83,7 @@ export function TrueFalseQuestion({ question, onAnswer }: BaseQuestionProps) {
                 (question.answer_key?.correct_answer === true);
               onAnswer(isCorrect ? question.points : 0, { answer: value.toLowerCase(), correct: isCorrect });
             }}
-            className="p-6 text-center rounded-lg border-2 border-border hover:border-secondary hover:bg-accent transition-all duration-200"
+            className="p-6 text-center rounded-lg border-2 border-gray-200 hover:border-secondary hover:bg-accent transition-all duration-200"
           >
             <span className="text-xl font-semibold text-text">{value}</span>
           </button>
@@ -113,7 +113,7 @@ export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           placeholder="Type your answer here"
         />
         <button
@@ -144,7 +144,7 @@ export function ShortAnswerQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={4}
           placeholder="Type your answer here"
         />
@@ -191,7 +191,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
               "w-full p-4 rounded-lg border-2 transition-colors",
               selectedLeft === pair.left_item
                 ? "border-secondary bg-accent"
-                : "border-border hover:border-secondary hover:bg-accent"
+                : "border-gray-200 hover:border-secondary hover:bg-accent"
             ].join(" ");
 
             return (
@@ -210,7 +210,7 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
             <button
               key={pair.right_item}
               onClick={() => handleMatch(pair.right_item)}
-              className="w-full p-4 rounded-lg border-2 border-border hover:border-secondary hover:bg-accent transition-colors"
+              className="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:bg-accent transition-colors"
             >
               {pair.right_item}
             </button>
@@ -270,7 +270,7 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
             >
               ↓
             </button>
-            <div className="flex-1 p-4 bg-background rounded-lg border-2 border-border">
+            <div className="flex-1 p-4 bg-background rounded-lg border-2 border-gray-200">
               {item.item}
             </div>
           </div>
@@ -309,7 +309,7 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={essay}
           onChange={(e) => setEssay(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={10}
           placeholder="Write your essay here (minimum 250 words)"
         />
@@ -351,7 +351,7 @@ export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) 
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={6}
           placeholder="Analyze the image and provide your answer"
         />
@@ -396,7 +396,7 @@ export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionPr
                 newAnswers[index] = e.target.value;
                 setAnswers(newAnswers);
               }}
-              className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
               placeholder="Fill in the blank"
             />
           </div>
@@ -428,7 +428,7 @@ export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={6}
           placeholder="Write your definition and explanation"
         />

@@ -154,7 +154,7 @@ export default function QuizTemplateHome() {
           <input
             type="text"
             placeholder="Search for templates (e.g., 'algebra', 'leadership', 'safety')..."
-            className="block w-full pl-10 pr-3 py-4 border border-border rounded-lg leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
+            className="block w-full pl-10 pr-3 py-4 border border-gray-300 rounded-lg leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 navigate('/templates/library');

@@ -40,7 +40,7 @@ export default function FormTemplateCard({
 
   return (
     <div 
-      className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+      className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Template Preview Image */}

@@ -48,25 +48,25 @@ export default function QuickActions() {
   //     label: 'Lead Magnets', 
   //     icon: <Mail className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/lead-magnet'),
-  //     color: 'bg-background border border-border hover:bg-gray-50 text-text'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   },
   //   { 
   //     label: 'HR Forms', 
   //     icon: <Users className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/hr'),
-  //     color: 'bg-background border border-border hover:bg-gray-50 text-text'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   },
   //   { 
   //     label: 'Academic Quizzes', 
   //     icon: <GraduationCap className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/academic'),
-  //     color: 'bg-background border border-border hover:bg-gray-50 text-text'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   },
   //   { 
   //     label: 'Certificates', 
   //     icon: <Award className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/certificate'),
-  //     color: 'bg-background border border-border hover:bg-gray-50 text-text'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   }
   // ];
   

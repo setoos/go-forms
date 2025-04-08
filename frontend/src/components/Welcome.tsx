@@ -16,15 +16,26 @@ import {
 import { useAuth } from '../lib/auth';
 import Dashboard from './Dashboard';
 import Footer from './Footer';
+import { useTheme } from '../lib/theme';
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const {loading, themeLoading} = useTheme();
+
   // If user is logged in, show dashboard instead
-  if (user) {
+  if (user && !themeLoading) {
     return <Dashboard />;
   }
+
+if(themeLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+}
 
   return (
     <div className="min-h-screen">

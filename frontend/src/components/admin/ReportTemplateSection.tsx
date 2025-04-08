@@ -72,7 +72,7 @@ export default function ReportTemplateSection({
   };
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden mb-6">
+    <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
       <div className="flex items-center justify-between p-4 bg-gray-50">
         <div className="flex items-center flex-1">
           <span className="w-6 h-6 flex items-center justify-center bg-secondary text-white rounded-full text-sm font-medium mr-3">

@@ -46,27 +46,27 @@ const getTemplateById = (id: string) => {
         
         <div class="mb-4">
           <label for="name" class="block text-sm font-medium text-text mb-1">Full Name</label>
-          <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="John Doe" required>
+          <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="John Doe" required>
         </div>
         
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium text-text mb-1">Email Address</label>
-          <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="john@example.com" required>
+          <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="john@example.com" required>
         </div>
         
         <div class="mb-6">
           <label class="block text-sm font-medium text-text mb-1">Interests</label>
           <div class="space-y-2">
             <div class="flex items-center">
-              <input type="checkbox" id="interest-1" name="interests[]" value="product-updates" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded">
+              <input type="checkbox" id="interest-1" name="interests[]" value="product-updates" class="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded">
               <label for="interest-1" class="ml-2 text-sm text-text">Product Updates</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="interest-2" name="interests[]" value="industry-news" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded">
+              <input type="checkbox" id="interest-2" name="interests[]" value="industry-news" class="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded">
               <label for="interest-2" class="ml-2 text-sm text-text">Industry News</label>
             </div>
             <div class="flex items-center">
-              <input type="checkbox" id="interest-3" name="interests[]" value="tips-tutorials" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded">
+              <input type="checkbox" id="interest-3" name="interests[]" value="tips-tutorials" class="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded">
               <label for="interest-3" class="ml-2 text-sm text-text">Tips & Tutorials</label>
             </div>
           </div>
@@ -74,7 +74,7 @@ const getTemplateById = (id: string) => {
         
         <div class="mb-4">
           <div class="flex items-center">
-            <input type="checkbox" id="consent" name="consent" class="h-4 w-4 text-secondary focus:ring-secondary border-border rounded" required>
+            <input type="checkbox" id="consent" name="consent" class="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded" required>
             <label for="consent" class="ml-2 text-sm text-text">I agree to receive marketing emails and can unsubscribe at any time.</label>
           </div>
         </div>
@@ -212,21 +212,21 @@ export default function FormTemplateDetails() {
           </button>
           <button
             onClick={() => handleDownload('pdf')}
-            className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
           >
             <Download className="h-4 w-4 mr-1.5" />
             PDF
           </button>
           <button
             onClick={() => handleDownload('html')}
-            className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
           >
             <FileText className="h-4 w-4 mr-1.5" />
             HTML
           </button>
           <button
             onClick={handleCopyCode}
-            className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
           >
             <Copy className="h-4 w-4 mr-1.5" />
             Copy Code
@@ -321,7 +321,7 @@ export default function FormTemplateDetails() {
                         type="text"
                         value={customizations[option.id] || ''}
                         onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                       />
                     )}
                     
@@ -331,13 +331,13 @@ export default function FormTemplateDetails() {
                           type="color"
                           value={customizations[option.id] || '#000000'}
                           onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                          className="h-8 w-8 rounded border border-border mr-2"
+                          className="h-8 w-8 rounded border border-gray-300 mr-2"
                         />
                         <input
                           type="text"
                           value={customizations[option.id] || ''}
                           onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                          className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                         />
                       </div>
                     )}
@@ -349,7 +349,7 @@ export default function FormTemplateDetails() {
                           id={option.id}
                           checked={customizations[option.id] || false}
                           onChange={(e) => handleCustomizationChange(option.id, e.target.checked)}
-                          className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                          className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                         />
                         <label htmlFor={option.id} className="ml-2 text-sm text-text">
                           {customizations[option.id] ? 'Enabled' : 'Disabled'}
@@ -369,7 +369,7 @@ export default function FormTemplateDetails() {
                                 newArray[index] = e.target.value;
                                 handleCustomizationChange(option.id, newArray);
                               }}
-                              className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                             />
                             <button
                               onClick={() => {

@@ -316,7 +316,7 @@ export default function BillingSettings() {
         ) : (
           <div className="space-y-4">
             {billingData.paymentMethods.map((method) => (
-              <div key={method.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
+              <div key={method.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div className="flex items-center">
                   {method.type === 'credit_card' ? (
                     <CreditCardIcon className="h-5 w-5 text-gray-500 mr-3" />
@@ -351,7 +351,7 @@ export default function BillingSettings() {
         
         {/* Add Payment Method Form */}
         {showAddPaymentMethod && (
-          <div className="mt-6 p-4 border border-border rounded-lg">
+          <div className="mt-6 p-4 border border-gray-200 rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium">Add Payment Method</h4>
               <button
@@ -372,7 +372,7 @@ export default function BillingSettings() {
                     type="text"
                     value={newPaymentMethod.cardNumber}
                     onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, cardNumber: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
                   />
@@ -387,7 +387,7 @@ export default function BillingSettings() {
                       type="text"
                       value={newPaymentMethod.expiryDate}
                       onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, expiryDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                       placeholder="MM/YY"
                       maxLength={5}
                     />
@@ -401,7 +401,7 @@ export default function BillingSettings() {
                       type="text"
                       value={newPaymentMethod.cvc}
                       onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, cvc: e.target.value })}
-                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                       placeholder="123"
                       maxLength={4}
                     />
@@ -416,7 +416,7 @@ export default function BillingSettings() {
                     type="text"
                     value={newPaymentMethod.name}
                     onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                     placeholder="John Doe"
                   />
                 </div>
@@ -427,7 +427,7 @@ export default function BillingSettings() {
                     id="default-payment"
                     checked={newPaymentMethod.isDefault}
                     onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, isDefault: e.target.checked })}
-                    className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                    className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                   />
                   <label htmlFor="default-payment" className="ml-2 block text-sm text-text">
                     Set as default payment method
@@ -536,7 +536,7 @@ export default function BillingSettings() {
               className={`border rounded-lg p-4 ${
                 selectedPlan === plan.id 
                   ? 'border-secondary bg-accent' 
-                  : 'border-border hover:border-accent'
+                  : 'border-gray-200 hover:border-accent'
               } cursor-pointer transition-colors`}
               onClick={() => setSelectedPlan(plan.id)}
             >

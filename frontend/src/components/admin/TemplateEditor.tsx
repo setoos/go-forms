@@ -701,7 +701,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                   type="text"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
-                  className={`w-full px-3 py-2 border ${nameError ? 'border-red-500' : 'border-border'} rounded-md focus:ring-secondary focus:border-secondary`}
+                  className={`w-full px-3 py-2 border ${nameError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-secondary focus:border-secondary`}
                   placeholder="Enter template name"
                 />
                 {nameError && (
@@ -717,7 +717,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                   id="templateSelector"
                   value={selectedTemplate}
                   onChange={(e) => handleTemplateChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                 >
                   <option value="">Select a template</option>
                   {templates.map(template => (
@@ -751,7 +751,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                         id="quizSelector"
                         value={selectedQuiz || ''}
                         onChange={(e) => setSelectedQuiz(e.target.value || null)}
-                        className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                       >
                         <option value="">No specific quiz (global)</option>
                         {quizzes.map(quiz => (
@@ -768,7 +768,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                         id="isDefault"
                         checked={isDefault}
                         onChange={(e) => setIsDefault(e.target.checked)}
-                        className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                        className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                       />
                       <label htmlFor="isDefault" className="ml-2 block text-sm text-text">
                         Set as default template {selectedQuiz ? 'for this quiz' : '(global)'}
@@ -827,7 +827,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
               {sections.map((section, index) => (
                 <div 
                   key={`${section.id}-${editorKey}`} 
-                  className="border border-border rounded-lg overflow-hidden"
+                  className="border border-gray-200 rounded-lg overflow-hidden"
                   data-section-expanded={section.isExpanded}
                 >
                   <div className="flex items-center justify-between p-4 bg-gray-50">
@@ -894,7 +894,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => navigate('/admin/templates')}
-              className="px-6 py-3 border-2 border-border text-text rounded-lg hover:bg-gray-50"
+              className="px-6 py-3 border-2 border-gray-300 text-text rounded-lg hover:bg-gray-50"
               type="button"
             >
               Cancel
@@ -915,7 +915,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
       {previewMode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border">
+            <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-text">
                   Preview: {templateName || 'Untitled Template'}
@@ -940,7 +940,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                 </div>
               ))}
             </div>
-            <div className="p-6 border-t border-border flex justify-end">
+            <div className="p-6 border-t border-gray-200 flex justify-end">
               <button
                 onClick={() => setPreviewMode(false)}
                 className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300"

@@ -33,7 +33,8 @@ import {
   // FileQuestion
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
-import { useTheme } from "../lib/theme";
+import { applyTheme, defaultTheme, useTheme } from "../lib/theme";
+import Cookies from "js-cookie";
 // import { cn } from '../lib/utils';
 
 // interface NavLinkProps {
@@ -77,10 +78,14 @@ function UserMenu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const {isDarkMode} = useTheme();
+
   if (!user) return null;
 
   const handleSignOut = async () => {
     if (confirm("Are you sure you want to sign out?")) {
+      Cookies.remove("theme");
+      applyTheme(defaultTheme, isDarkMode);
       await signOut();
       navigate("/");
       setIsOpen(false);

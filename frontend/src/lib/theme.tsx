@@ -104,6 +104,8 @@ interface ThemeContextType {
   ) => void;
   scores: Record<string, number>;
   setScores: (scores: Record<string, number>) => void;
+  themeLoading: boolean;
+  setThemeLoading: (loading: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -134,6 +136,8 @@ const ThemeContext = createContext<ThemeContextType>({
   setAnswers: () => {},
   scores: {},
   setScores: () => {},
+  themeLoading: false,
+  setThemeLoading: () => {},
 });
 
 export function useTheme() {
@@ -197,6 +201,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isResultSent, setIsResultSent] = useState(false);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
+  const [themeLoading, setThemeLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [selectedQuiz, setSelectedQuiz] = useState<string | undefined>(
@@ -213,8 +218,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   };
 
-
   useEffect(() => {
+    setThemeLoading(true);
     setTheme(savedTheme);
     applyTheme(savedTheme, isDarkMode);
     async function fetchData() {
@@ -228,6 +233,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       }
     }
     fetchData();
+    setThemeLoading(false);
   }, []);
 
   const updateTheme = async (newTheme: Partial<ThemeConfig>) => {
@@ -287,6 +293,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const {
           data: { user },
         } = await supabase.auth.getUser();
+
         if (!user) {
           if (params?.shareId) {
             applyTheme(defaultTheme, false);
@@ -320,6 +327,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             } else {
               applyTheme(defaultTheme, false);
             }
+          } else {
+            applyTheme(defaultTheme, false);
           }
           return;
         }
@@ -331,6 +340,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (preferences?.preferences?.theme) {
+          setLoading(false);
           setTheme(preferences.preferences.theme);
           setIsDarkMode(preferences.preferences.isDarkMode || false);
           applyTheme(
@@ -343,6 +353,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Error loading theme:", error);
         applyTheme(defaultTheme, false);
+      } finally {
+          setThemeLoading(false);
+          setLoading(false);
       }
     };
 
@@ -351,10 +364,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoading(true);
+      setThemeLoading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
+      setLoading(false);
+      setThemeLoading(false);
     };
 
     fetchUser();
@@ -376,7 +393,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       loadQuizzes();
     }
   }, [user]);
-
 
   async function loadQuizzes() {
     const {
@@ -486,6 +502,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setAnswers,
         scores,
         setScores,
+        themeLoading,
+        setThemeLoading,
       }}
     >
       {children}

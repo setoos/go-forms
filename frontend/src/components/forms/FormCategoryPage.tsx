@@ -269,7 +269,7 @@ export default function FormCategoryPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -278,7 +278,7 @@ export default function FormCategoryPage() {
               <select
                 value={selectedIndustry}
                 onChange={(e) => handleIndustryFilter(e.target.value)}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 {industries.map(industry => (
                   <option key={industry} value={industry}>{industry}</option>
@@ -295,7 +295,7 @@ export default function FormCategoryPage() {
                 setSelectedSubcategory(null);
                 setSelectedIndustry('All Industries');
               }}
-              className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters
@@ -354,7 +354,7 @@ export default function FormCategoryPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTemplates.map(template => (
-              <div key={template.id} className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+              <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                 {/* Template Preview Image */}
                 <div className="relative h-48 bg-gray-200 overflow-hidden">
                   <img 

@@ -665,7 +665,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   onChange={(e) =>
                     setUserInfo((prev) => ({ ...prev, name: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                   placeholder="Enter your name"
                 />
               </div>
@@ -681,7 +681,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   onChange={(e) =>
                     setUserInfo((prev) => ({ ...prev, email: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                   placeholder="Enter your email"
                 />
               </div>
@@ -697,7 +697,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   onChange={(e) =>
                     setUserInfo((prev) => ({ ...prev, phone: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                   placeholder="Enter your phone number"
                 />
               </div>
@@ -804,7 +804,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   </h2>
                   <div className="flex items-center space-x-4">
                     <select
-                      className="px-4 py-2 border border-border rounded-lg"
+                      className="px-4 py-2 border border-gray-300 rounded-lg"
                       onChange={(e) => loadTemplate(e.target.value)}
                       value={appliedTemplate || ""}
                     >
@@ -822,7 +822,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                         value={templateName}
                         onChange={(e) => setTemplateName(e.target.value)}
                         placeholder="Template name"
-                        className="px-4 py-2 border border-border rounded-lg"
+                        className="px-4 py-2 border border-gray-300 rounded-lg"
                       />
                       <button
                         onClick={saveTemplate}
@@ -871,7 +871,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                 <h2 className="text-2xl font-bold text-text mb-4">
                   Feedback & Recommendations
                 </h2>
-                <div className="bg-background p-6 rounded-lg border border-border">
+                <div className="bg-background p-6 rounded-lg border border-gray-200">
                   {customFeedback ? (
                     <div
                       className="prose max-w-none"
@@ -921,7 +921,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                   {Object.entries(answers).map(([questionId, score]) => (
                     <div
                       key={questionId}
-                      className="bg-background p-4 rounded-lg border border-border"
+                      className="bg-background p-4 rounded-lg border border-gray-200"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold">
@@ -952,7 +952,7 @@ function Results({ isAdmin = false }: ResultsProps) {
                 <h2 className="text-2xl font-bold text-text mb-4">
                   Score Distribution
                 </h2>
-                <div className="bg-background p-6 rounded-lg border border-border">
+                <div className="bg-background p-6 rounded-lg border border-gray-200">
                   <Bar
                     data={{
                       labels: ["0-2", "3-4", "5-6", "7-8", "9-10"],

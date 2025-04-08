@@ -368,7 +368,7 @@ export default function SubmissionDetail() {
         <h2 className="text-lg font-semibold text-text mb-4">Question Responses</h2>
         <div className="space-y-6">
           {Object.entries(submission.answers || {}).map(([questionId, score], index) => (
-            <div key={questionId} className="border border-border rounded-lg p-4">
+            <div key={questionId} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
                   <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">

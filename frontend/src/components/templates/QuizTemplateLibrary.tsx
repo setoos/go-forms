@@ -604,7 +604,7 @@ export default function QuizTemplateLibrary() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -613,7 +613,7 @@ export default function QuizTemplateLibrary() {
               <select
                 value={selectedAudienceLevel || ''}
                 onChange={(e) => handleAudienceLevelFilter(e.target.value || null)}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="">All Audience Levels</option>
                 {audienceLevels.map(level => (
@@ -629,7 +629,7 @@ export default function QuizTemplateLibrary() {
               <select
                 value={selectedDuration?.toString() || ''}
                 onChange={(e) => handleDurationFilter(e.target.value ? parseInt(e.target.value) : null)}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="">Any Duration</option>
                 <option value="30">Under 30 minutes</option>
@@ -645,7 +645,7 @@ export default function QuizTemplateLibrary() {
               <select
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value as 'popularity' | 'date')}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="popularity">Most Popular</option>
                 <option value="date">Most Recent</option>
@@ -664,7 +664,7 @@ export default function QuizTemplateLibrary() {
                 setSelectedDuration(null);
                 setSortBy('popularity');
               }}
-              className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters
@@ -765,7 +765,7 @@ export default function QuizTemplateLibrary() {
               {expandedCategories[category.id] && (
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {category.templates.map(template => (
-                    <div key={template.id} className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                       {/* Template Preview Image */}
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
                         <img 
@@ -835,7 +835,7 @@ export default function QuizTemplateLibrary() {
                         
                         {/* Expanded Template Info */}
                         {expandedTemplate === template.id && (
-                          <div className="mt-4 pt-4 border-t border-border">
+                          <div className="mt-4 pt-4 border-t border-gray-200">
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-text mb-1">Question Types</h4>
                               <div className="flex flex-wrap gap-1">
@@ -883,14 +883,14 @@ export default function QuizTemplateLibrary() {
                             <div className="flex flex-wrap gap-2 mt-4">
                               <button
                                 onClick={() => handlePreview(template.id)}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Eye className="h-4 w-4 mr-1.5" />
                                 Preview
                               </button>
                               <button
                                 onClick={() => handleDownload(template.id)}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Download className="h-4 w-4 mr-1.5" />
                                 Download
@@ -900,7 +900,7 @@ export default function QuizTemplateLibrary() {
                                   navigator.clipboard.writeText(template.id);
                                   showToast('Template ID copied to clipboard', 'success');
                                 }}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Copy className="h-4 w-4 mr-1.5" />
                                 Copy ID

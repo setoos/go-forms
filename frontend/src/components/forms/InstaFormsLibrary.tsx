@@ -589,7 +589,7 @@ export default function InstaFormsLibrary() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -598,7 +598,7 @@ export default function InstaFormsLibrary() {
               <select
                 value={selectedIndustry}
                 onChange={(e) => handleIndustryFilter(e.target.value)}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 {industries.map(industry => (
                   <option key={industry} value={industry}>{industry}</option>
@@ -616,7 +616,7 @@ export default function InstaFormsLibrary() {
                 setSelectedSubcategory(null);
                 setSelectedIndustry('All Industries');
               }}
-              className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters
@@ -717,7 +717,7 @@ export default function InstaFormsLibrary() {
               {expandedCategories[category.id] && (
                 <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {category.templates.map(template => (
-                    <div key={template.id} className="border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                    <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                       {/* Template Preview Image */}
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
                         <img 
@@ -784,7 +784,7 @@ export default function InstaFormsLibrary() {
                         
                         {/* Expanded Template Info */}
                         {expandedTemplate === template.id && (
-                          <div className="mt-4 pt-4 border-t border-border">
+                          <div className="mt-4 pt-4 border-t border-gray-200">
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-text mb-1">Industry</h4>
                               <p className="text-sm text-gray-600">{template.industry}</p>
@@ -823,28 +823,28 @@ export default function InstaFormsLibrary() {
                             <div className="flex flex-wrap gap-2 mt-4">
                               <button
                                 onClick={() => handleDownload(template, 'pdf')}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Download className="h-4 w-4 mr-1.5" />
                                 PDF
                               </button>
                               <button
                                 onClick={() => handleDownload(template, 'digital')}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <FileText className="h-4 w-4 mr-1.5" />
                                 HTML
                               </button>
                               <button
                                 onClick={() => window.open('#', '_blank')}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <ExternalLink className="h-4 w-4 mr-1.5" />
                                 Preview
                               </button>
                               <button
                                 onClick={() => window.print()}
-                                className="flex items-center px-3 py-1.5 border border-border rounded text-sm text-text hover:bg-gray-50"
+                                className="flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm text-text hover:bg-gray-50"
                               >
                                 <Printer className="h-4 w-4 mr-1.5" />
                                 Print

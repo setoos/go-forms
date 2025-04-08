@@ -351,7 +351,7 @@ export default function ReportTemplates() {
         <div className="flex space-x-3">
           <button
             onClick={handleImportTemplate}
-            className="flex items-center px-4 py-2 border border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
+            className="flex items-center px-4 py-2 border border-secondary text-secondary rounded-lg hover:bg-purple-50 transition-colors"
           >
             <FileUp className="w-5 h-5 mr-2" />
             Import Template
@@ -376,7 +376,7 @@ export default function ReportTemplates() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
               placeholder="Search templates..."
             />
           </div>
@@ -512,7 +512,7 @@ export default function ReportTemplates() {
       {showPreview && selectedTemplate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border">
+            <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-text">
                   {selectedTemplate.name}
@@ -552,7 +552,7 @@ export default function ReportTemplates() {
                 })() }}
               />
             </div>
-            <div className="p-6 border-t border-border flex justify-end">
+            <div className="p-6 border-t border-gray-200 flex justify-end">
               <button
                 onClick={() => setShowPreview(false)}
                 className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300"

@@ -498,7 +498,7 @@ export default function TemplateLibrary() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               placeholder="Search templates..."
             />
           </div>
@@ -508,7 +508,7 @@ export default function TemplateLibrary() {
               <select
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="appearance-none pl-8 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-8 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 {industries.map(industry => (
                   <option key={industry} value={industry}>{industry}</option>
@@ -527,7 +527,7 @@ export default function TemplateLibrary() {
                   setSortField(field as 'name' | 'created_at' | 'popularity');
                   setSortDirection(direction as 'asc' | 'desc');
                 }}
-                className="appearance-none pl-8 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-8 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="name-asc">Name (A-Z)</option>
                 <option value="name-desc">Name (Z-A)</option>
@@ -799,7 +799,7 @@ export default function TemplateLibrary() {
       {showPreview && selectedTemplate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border">
+            <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-text">
                   {selectedTemplate.name}
@@ -861,7 +861,7 @@ export default function TemplateLibrary() {
               
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-2">Template Preview</h3>
-                <div className="border border-border rounded-lg p-4 bg-gray-50 h-64 flex items-center justify-center">
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 h-64 flex items-center justify-center">
                   <div className="text-center">
                     <FileText className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-500">Preview not available in this demo</p>
@@ -897,7 +897,7 @@ export default function TemplateLibrary() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex justify-end">
+            <div className="p-6 border-t border-gray-200 flex justify-end">
               <button
                 onClick={() => setShowPreview(false)}
                 className="px-4 py-2 bg-gray-200 text-text rounded-md hover:bg-gray-300 mr-2"

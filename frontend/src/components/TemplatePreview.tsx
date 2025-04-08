@@ -223,14 +223,14 @@ export default function TemplatePreview() {
         <div className="flex items-center space-x-4">
           <button
             onClick={handleCopyHtml}
-            className="flex items-center px-3 py-1.5 text-sm border border-border rounded-md hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <Copy className="w-4 h-4 mr-1.5" />
             Copy HTML
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center px-3 py-1.5 text-sm border border-border rounded-md hover:bg-gray-50"
+            className="flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <Printer className="w-4 h-4 mr-1.5" />
             Print
@@ -259,7 +259,7 @@ export default function TemplatePreview() {
                     type="text"
                     value={value}
                     onChange={(e) => handleVariableChange(key, e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
               ))}

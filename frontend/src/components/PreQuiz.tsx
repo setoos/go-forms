@@ -107,7 +107,7 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
               required
               value={userInfo.name}
               onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
               placeholder="Enter your name"
             />
           </div>
@@ -121,7 +121,7 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
               required
               value={userInfo.email}
               onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
               placeholder="Enter your email"
             />
           </div>
@@ -135,7 +135,7 @@ export default function PreQuiz({ quiz, onStart }: PreQuizProps) {
               required
               value={userInfo.phone}
               onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
               placeholder="Enter your phone number"
             />
           </div>

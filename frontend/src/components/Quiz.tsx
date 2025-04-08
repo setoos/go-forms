@@ -38,9 +38,10 @@ export default function Quiz() {
       setLoading(true);
       setError(null);
 
-      const query = id && isValidUUID(id)
-        ? `id.eq.${id},share_id.eq.${id}`
-        : `share_id.eq.${id}`;
+      const query =
+        id && isValidUUID(id)
+          ? `id.eq.${id},share_id.eq.${id}`
+          : `share_id.eq.${id}`;
 
       // First get the quiz data
       const { data: quizData, error: quizError } = await supabase
@@ -97,7 +98,10 @@ export default function Quiz() {
     setLoading(false);
   }
 
-  const handleAnswer = async (score: number, answer: string | number | boolean | Record<string, unknown>) => {
+  const handleAnswer = async (
+    score: number,
+    answer: string | number | boolean | Record<string, unknown>
+  ) => {
     const questionId = questions[currentQuestion].id;
     const newAnswers = { ...answers, [questionId]: answer };
     const newScores = { ...scores, [questionId]: score };
@@ -254,14 +258,17 @@ export default function Quiz() {
         {quiz.share_id && !globalThis.location.href.includes(quiz.share_id) && (
           <div className="mt-8 pt-8 border-t border-border">
             <a
-              href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
+              href={`${globalThis.location.origin}/quiz/${encodeURIComponent(
+                quiz.share_id
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-gray-500"
             >
               Share this quiz:{" "}
               <span className="text-primary">
-                {globalThis.location.origin}/quiz/{quiz.share_id}
+                {globalThis.location.origin}/quiz/
+                {encodeURIComponent(quiz.share_id)}
               </span>
             </a>
           </div>

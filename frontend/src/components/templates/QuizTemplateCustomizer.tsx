@@ -286,7 +286,7 @@ export default function QuizTemplateCustomizer() {
         <div className="flex items-center space-x-3">
           <button
             onClick={handlePreview}
-            className="flex items-center px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
+            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
           >
             <Eye className="h-5 w-5 mr-2" />
             Preview
@@ -377,7 +377,7 @@ export default function QuizTemplateCustomizer() {
               </div>
             </div>
             
-            <div className="mt-6 pt-6 border-t border-border">
+            <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-sm font-medium text-text mb-2">Question Types</h3>
               <div className="flex flex-wrap gap-2">
                 {template.questionTypes.map(type => (
@@ -428,7 +428,7 @@ export default function QuizTemplateCustomizer() {
                   id="title"
                   value={customizedTemplate.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter quiz title"
                 />
               </div>
@@ -442,7 +442,7 @@ export default function QuizTemplateCustomizer() {
                   value={customizedTemplate.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter quiz description"
                 />
               </div>
@@ -456,7 +456,7 @@ export default function QuizTemplateCustomizer() {
                     id="audienceLevel"
                     value={customizedTemplate.audienceLevel}
                     onChange={(e) => handleInputChange('audienceLevel', e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   >
                     {audienceLevels.map(level => (
                       <option key={level.id} value={level.id}>{level.name}</option>
@@ -475,7 +475,7 @@ export default function QuizTemplateCustomizer() {
                     onChange={(e) => handleInputChange('duration', parseInt(e.target.value))}
                     min={5}
                     max={180}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   />
                 </div>
               </div>
@@ -497,7 +497,7 @@ export default function QuizTemplateCustomizer() {
                     id={`question-type-${type.id}`}
                     checked={customizedTemplate.selectedQuestionTypes.includes(type.id)}
                     onChange={() => toggleQuestionType(type.id)}
-                    className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                    className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                   />
                   <label htmlFor={`question-type-${type.id}`} className="ml-2 block text-sm text-text">
                     {type.name}
@@ -529,7 +529,7 @@ export default function QuizTemplateCustomizer() {
                   onChange={(e) => handleInputChange('passingScore', parseInt(e.target.value))}
                   min={0}
                   max={100}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                 />
               </div>
               
@@ -541,7 +541,7 @@ export default function QuizTemplateCustomizer() {
                   id="feedbackType"
                   value={customizedTemplate.feedbackType}
                   onChange={(e) => handleInputChange('feedbackType', e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                 >
                   {feedbackTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.name}</option>
@@ -557,7 +557,7 @@ export default function QuizTemplateCustomizer() {
                   id="certificateEnabled"
                   checked={customizedTemplate.certificateEnabled}
                   onChange={(e) => handleInputChange('certificateEnabled', e.target.checked)}
-                  className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
                 <label htmlFor="certificateEnabled" className="ml-2 block text-sm text-text">
                   Enable completion certificates
@@ -570,7 +570,7 @@ export default function QuizTemplateCustomizer() {
                   id="analyticsEnabled"
                   checked={customizedTemplate.analyticsEnabled}
                   onChange={(e) => handleInputChange('analyticsEnabled', e.target.checked)}
-                  className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
                 <label htmlFor="analyticsEnabled" className="ml-2 block text-sm text-text">
                   Enable detailed analytics and reporting
@@ -593,7 +593,7 @@ export default function QuizTemplateCustomizer() {
                   id="logo"
                   value={customizedTemplate.brandingOptions.logo}
                   onChange={(e) => handleBrandingChange('logo', e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="https://example.com/logo.png"
                 />
               </div>
@@ -608,13 +608,13 @@ export default function QuizTemplateCustomizer() {
                     id="primaryColor"
                     value={customizedTemplate.brandingOptions.primaryColor}
                     onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
-                    className="h-10 w-10 border border-border rounded-l-md"
+                    className="h-10 w-10 border border-gray-300 rounded-l-md"
                   />
                   <input
                     type="text"
                     value={customizedTemplate.brandingOptions.primaryColor}
                     onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-border rounded-r-md focus:ring-secondary focus:border-secondary"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-secondary focus:border-secondary"
                   />
                 </div>
               </div>
@@ -627,7 +627,7 @@ export default function QuizTemplateCustomizer() {
                   id="showHeader"
                   checked={customizedTemplate.brandingOptions.showHeader}
                   onChange={(e) => handleBrandingChange('showHeader', e.target.checked)}
-                  className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
                 <label htmlFor="showHeader" className="ml-2 block text-sm text-text">
                   Show header with logo and title
@@ -640,7 +640,7 @@ export default function QuizTemplateCustomizer() {
                   id="showFooter"
                   checked={customizedTemplate.brandingOptions.showFooter}
                   onChange={(e) => handleBrandingChange('showFooter', e.target.checked)}
-                  className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
                 <label htmlFor="showFooter" className="ml-2 block text-sm text-text">
                   Show footer with branding
@@ -694,7 +694,7 @@ export default function QuizTemplateCustomizer() {
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => navigate(-1)}
-              className="px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
             >
               Cancel
             </button>

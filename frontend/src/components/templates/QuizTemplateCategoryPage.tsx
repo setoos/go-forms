@@ -302,7 +302,7 @@ export default function QuizTemplateCategoryPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -311,7 +311,7 @@ export default function QuizTemplateCategoryPage() {
               <select
                 value={selectedAudienceLevel || ''}
                 onChange={(e) => handleAudienceLevelFilter(e.target.value || null)}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="">All Audience Levels</option>
                 {audienceLevels.map(level => (
@@ -327,7 +327,7 @@ export default function QuizTemplateCategoryPage() {
               <select
                 value={selectedDuration?.toString() || ''}
                 onChange={(e) => handleDurationFilter(e.target.value ? parseInt(e.target.value) : null)}
-                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="">Any Duration</option>
                 <option value="30">Under 30 minutes</option>
@@ -346,7 +346,7 @@ export default function QuizTemplateCategoryPage() {
                 setSelectedAudienceLevel(null);
                 setSelectedDuration(null);
               }}
-              className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters

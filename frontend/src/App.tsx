@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from './lib/theme';
+import { ThemeProvider, useTheme } from './lib/theme';
 import { AuthProvider, useAuth } from './lib/auth';
 import Welcome from './components/Welcome';
 import Quiz from './components/Quiz';
@@ -52,6 +52,17 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const { themeLoading , loading} = useTheme();
+
+  
+  if(themeLoading && loading) { 
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <ThemeProvider>

@@ -290,7 +290,7 @@ export default function QuizTemplatePreview() {
               </div>
             </div>
             
-            <div className="mt-6 pt-6 border-t border-border">
+            <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-sm font-medium text-text mb-2">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {template.tags.map(tag => (
@@ -315,7 +315,7 @@ export default function QuizTemplatePreview() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleDownload}
-                className="flex items-center justify-center px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
+                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
               >
                 <Download className="h-5 w-5 mr-2" />
                 Download
@@ -323,7 +323,7 @@ export default function QuizTemplatePreview() {
               
               <button
                 onClick={handleCopyTemplateId}
-                className="flex items-center justify-center px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
+                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
               >
                 <Copy className="h-5 w-5 mr-2" />
                 Copy ID
@@ -336,14 +336,14 @@ export default function QuizTemplatePreview() {
         <div className="lg:col-span-2">
           {/* Tabs */}
           <div className="bg-background rounded-lg shadow-md mb-6">
-            <div className="border-b border-border">
+            <div className="border-b border-gray-200">
               <nav className="flex -mb-px">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'overview'
                       ? 'border-secondary text-secondary'
-                      : 'border-transparent text-gray-500 hover:text-text hover:border-border'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Overview
@@ -353,7 +353,7 @@ export default function QuizTemplatePreview() {
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'questions'
                       ? 'border-secondary text-secondary'
-                      : 'border-transparent text-gray-500 hover:text-text hover:border-border'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Sample Questions
@@ -363,7 +363,7 @@ export default function QuizTemplatePreview() {
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'features'
                       ? 'border-secondary text-secondary'
-                      : 'border-transparent text-gray-500 hover:text-text hover:border-border'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Features
@@ -373,7 +373,7 @@ export default function QuizTemplatePreview() {
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'reporting'
                       ? 'border-secondary text-secondary'
-                      : 'border-transparent text-gray-500 hover:text-text hover:border-border'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Reporting
@@ -477,7 +477,7 @@ export default function QuizTemplatePreview() {
                   
                   <div className="space-y-4">
                     {template.sampleQuestions.map((question, index) => (
-                      <div key={question.id} className="border border-border rounded-lg overflow-hidden">
+                      <div key={question.id} className="border border-gray-200 rounded-lg overflow-hidden">
                         <div 
                           className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer"
                           onClick={() => toggleQuestionExpand(question.id)}
@@ -512,11 +512,11 @@ export default function QuizTemplatePreview() {
                                     className={`p-3 rounded-lg ${
                                       option.isCorrect 
                                         ? 'bg-green-50 border border-green-200' 
-                                        : 'bg-gray-50 border border-border'
+                                        : 'bg-gray-50 border border-gray-200'
                                     }`}
                                   >
                                     <div className="flex items-center">
-                                      <div className="w-6 h-6 rounded-full bg-background border border-border flex items-center justify-center mr-3">
+                                      <div className="w-6 h-6 rounded-full bg-background border border-gray-300 flex items-center justify-center mr-3">
                                         {option.id}
                                       </div>
                                       <span>{option.text}</span>
@@ -666,7 +666,7 @@ export default function QuizTemplatePreview() {
                   
                   <div className="bg-accent p-4 rounded-lg">
                     <h3 className="font-medium mb-3">Analytics Dashboard Preview</h3>
-                    <div className="aspect-video bg-background rounded-lg border border-border flex items-center justify-center">
+                    <div className="aspect-video bg-background rounded-lg border border-gray-200 flex items-center justify-center">
                       <div className="text-center p-4">
                         <BarChart className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                         <p className="text-gray-500">Analytics dashboard preview</p>
