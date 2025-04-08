@@ -21,7 +21,7 @@ export default function QuickActions() {
       label: 'Create Quiz', 
       icon: <PlusCircle className="h-5 w-5" />, 
       onClick: () => navigate('/admin/quizzes/new'),
-      color: 'bg-purple-600 hover:bg-purple-700 text-white'
+      color: 'bg-secondary hover:bg-primary text-white'
     },
     { 
       label: 'My GoForms', 
@@ -48,31 +48,31 @@ export default function QuickActions() {
   //     label: 'Lead Magnets', 
   //     icon: <Mail className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/lead-magnet'),
-  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   },
   //   { 
   //     label: 'HR Forms', 
   //     icon: <Users className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/hr'),
-  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   },
   //   { 
   //     label: 'Academic Quizzes', 
   //     icon: <GraduationCap className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/academic'),
-  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   },
   //   { 
   //     label: 'Certificates', 
   //     icon: <Award className="h-5 w-5" />, 
   //     onClick: () => navigate('/forms/categories/certificate'),
-  //     color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+  //     color: 'bg-background border border-gray-300 hover:bg-gray-50 text-text'
   //   }
   // ];
   
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+    <div className="bg-background rounded-lg shadow-md p-6">
+      <h2 className="text-lg font-semibold text-text mb-4">Quick Actions</h2>
       
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {quickActions.map((action, index) => (
@@ -87,7 +87,7 @@ export default function QuickActions() {
         ))}
       </div>
       
-      {/* <h3 className="text-sm font-medium text-gray-700 mb-3">Form Categories</h3>
+      {/* <h3 className="text-sm font-medium text-text mb-3">Form Categories</h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {formCategories.map((category, index) => (
           <button

@@ -33,8 +33,10 @@ import {
   // FileQuestion
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
-import { useTheme } from "../lib/theme";
+import { applyTheme, defaultTheme, useTheme } from "../lib/theme";
+import Cookies from "js-cookie";
 // import { cn } from '../lib/utils';
+// import GoFormlogo from "../../public/goformlogo.jpg"
 
 // interface NavLinkProps {
 //   to: string;
@@ -57,14 +59,14 @@ import { useTheme } from "../lib/theme";
 //       className={cn(
 //         "flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors",
 //         isActive
-//           ? "bg-purple-100 text-purple-900"
-//           : "text-gray-600 hover:bg-purple-50 hover:text-purple-900"
+//           ? "bg-accent text-primary"
+//           : "text-gray-600 hover:bg-accent hover:text-primary"
 //       )}
 //     >
 //       {React.cloneElement(icon as React.ReactElement, {
 //         className: cn(
 //           "h-5 w-5 mr-3",
-//           isActive ? "text-purple-600" : "text-gray-400"
+//           isActive ? "text-secondary" : "text-gray-400"
 //         )
 //       })}
 //       {children}
@@ -77,10 +79,14 @@ function UserMenu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const { isDarkMode } = useTheme();
+
   if (!user) return null;
 
   const handleSignOut = async () => {
     if (confirm("Are you sure you want to sign out?")) {
+      Cookies.remove("theme");
+      applyTheme(defaultTheme, isDarkMode);
       await signOut();
       navigate("/");
       setIsOpen(false);
@@ -188,7 +194,7 @@ export default function Navigation() {
   // const isFormsSection = location.pathname.startsWith('/forms');
 
   return (
-    <nav className="sticky top-0 z-50 bg-background shadow-sm">
+    <nav className={`sticky top-0 z-50 shadow-sm ${user ? "bg-background" : "bg-[#224B39]"}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
@@ -211,7 +217,11 @@ export default function Navigation() {
                 to="/"
                 className="flex items-center text-text hover:text-secondary"
               >
-                <span className="ml-2 text-xl font-bold">GoForms</span>
+                <img
+                  src="../../public/goformlogo.jpg"
+                  alt="Logo"
+                  className="h-10 w-auto"
+                />
               </Link>
             )}
           </div>
@@ -226,7 +236,7 @@ export default function Navigation() {
               ))}
 
               <div className="relative group">
-                <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-purple-50 hover:text-purple-900">
+                <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-accent hover:text-primary">
                   <LayoutTemplate className="h-5 w-5 mr-3 text-gray-400" />
                   Templates
                   <ChevronDown className="ml-1 h-4 w-4" />
@@ -272,7 +282,7 @@ export default function Navigation() {
 
               <Link
                 to="/admin/quizzes/new"
-                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-secondary rounded-lg hover:bg-primary transition-colors"
               >
                 <PlusCircle className="h-5 w-5 mr-2" />
                 Create GoForm
@@ -312,7 +322,7 @@ export default function Navigation() {
             ) : (
               <Link
                 to="/auth"
-                className="flex items-center px-4 py-2 text-sm font-medium text-secondary border border-secondary rounded-lg hover:bg-accent transition-colors"
+                className={`${user ? "text-secondary border-secondary" : "text-white border-white hover:text-black"} flex items-center px-4 py-2 text-sm font-medium border  rounded-lg hover:bg-accent transition-colors`}
               >
                 Sign In
               </Link>

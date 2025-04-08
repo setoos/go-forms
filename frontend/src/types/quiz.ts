@@ -64,6 +64,8 @@ export interface Question {
   matching_pairs?: MatchingPair[];
   ordering_items?: OrderingItem[];
   essay_rubrics?: EssayRubric[];
+  feedback: string | null;
+
 }
 
 export interface Option {
@@ -73,7 +75,7 @@ export interface Option {
   score: number;
   feedback: string | null;
   order: number;
-  is_correct: boolean;
+  // is_correct: boolean;
 }
 
 export interface MatchingPair {
@@ -83,6 +85,8 @@ export interface MatchingPair {
   right_item: string;
   order: number;
   created_at: string;
+  feedback: string | null;
+
 }
 
 export interface OrderingItem {
@@ -92,6 +96,8 @@ export interface OrderingItem {
   correct_position: number;
   order: number;
   created_at: string;
+  feedback: string | null;
+
 }
 
 export interface EssayRubric {
@@ -101,6 +107,8 @@ export interface EssayRubric {
   description: string | null;
   max_points: number;
   created_at: string;
+  feedback: string | null;
+
 }
 
 export interface QuizResponse {
@@ -114,6 +122,7 @@ export interface QuizResponse {
   completion_time: number | null;
   timestamp: string;
   custom_feedback?: string;
+  impact_analysis?: string | null;
 }
 
 export interface QuizState {

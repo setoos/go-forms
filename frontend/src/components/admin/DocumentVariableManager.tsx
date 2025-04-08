@@ -229,13 +229,13 @@ export default function DocumentVariableManager({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-background rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold">Document Variables</h2>
         {!readOnly && (
           <button
             onClick={handleAddVariable}
-            className="flex items-center px-3 py-1.5 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+            className="flex items-center px-3 py-1.5 bg-secondary text-white text-sm rounded-md hover:bg-primary"
           >
             <Plus className="h-4 w-4 mr-1.5" />
             Add Variable
@@ -251,7 +251,7 @@ export default function DocumentVariableManager({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search variables..."
-            className="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+            className="block w-full pl-3 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
           />
         </div>
         
@@ -260,8 +260,8 @@ export default function DocumentVariableManager({
             onClick={() => handleTypeFilter(null)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium ${
               selectedType === null
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
             }`}
           >
             All Types
@@ -272,8 +272,8 @@ export default function DocumentVariableManager({
               onClick={() => handleTypeFilter(type)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium ${
                 selectedType === type
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-accent text-primary'
+                  : 'bg-gray-100 text-text hover:bg-gray-200'
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -284,12 +284,12 @@ export default function DocumentVariableManager({
 
       {/* Variable Editor */}
       {editingVariable && (
-        <div className="mb-6 p-4 border border-gray-200 rounded-lg">
+        <div className="mb-6 p-4 border border-border rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-md font-medium">{isAdding ? 'Add New Variable' : 'Edit Variable'}</h3>
             <button
               onClick={handleCancelEdit}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-text"
             >
               <X className="h-5 w-5" />
             </button>
@@ -304,27 +304,27 @@ export default function DocumentVariableManager({
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Variable Name
               </label>
               <input
                 type="text"
                 value={editingVariable.name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                 placeholder="e.g., Customer Name"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Variable Key
               </label>
               <input
                 type="text"
                 value={editingVariable.key}
                 onChange={(e) => setEditingVariable({ ...editingVariable, key: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                 placeholder="e.g., customer_name"
               />
               <p className="mt-1 text-xs text-gray-500">
@@ -333,20 +333,20 @@ export default function DocumentVariableManager({
             </div>
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Description
               </label>
               <input
                 type="text"
                 value={editingVariable.description}
                 onChange={(e) => setEditingVariable({ ...editingVariable, description: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                 placeholder="Brief description of this variable"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Variable Type
               </label>
               <select
@@ -358,7 +358,7 @@ export default function DocumentVariableManager({
                   options: e.target.value === 'select' ? editingVariable.options : [],
                   formula: e.target.value === 'calculated' ? editingVariable.formula : ''
                 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
               >
                 <option value="text">Text</option>
                 <option value="number">Number</option>
@@ -371,14 +371,14 @@ export default function DocumentVariableManager({
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Default Value
               </label>
               {editingVariable.type === 'boolean' ? (
                 <select
                   value={editingVariable.defaultValue}
                   onChange={(e) => setEditingVariable({ ...editingVariable, defaultValue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                 >
                   <option value="">No default</option>
                   <option value="true">True</option>
@@ -389,7 +389,7 @@ export default function DocumentVariableManager({
                   type={editingVariable.type === 'number' ? 'number' : editingVariable.type === 'date' ? 'date' : 'text'}
                   value={editingVariable.defaultValue || ''}
                   onChange={(e) => setEditingVariable({ ...editingVariable, defaultValue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Default value (optional)"
                 />
               )}
@@ -399,7 +399,7 @@ export default function DocumentVariableManager({
           {/* Type-specific fields */}
           {editingVariable.type === 'select' && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Options
               </label>
               <div className="space-y-2">
@@ -413,7 +413,7 @@ export default function DocumentVariableManager({
                         newOptions[index] = e.target.value;
                         setEditingVariable({ ...editingVariable, options: newOptions });
                       }}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                      className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                       placeholder={`Option ${index + 1}`}
                     />
                     <button
@@ -433,7 +433,7 @@ export default function DocumentVariableManager({
                     const newOptions = [...(editingVariable.options || []), ''];
                     setEditingVariable({ ...editingVariable, options: newOptions });
                   }}
-                  className="text-sm text-purple-600 hover:text-purple-800"
+                  className="text-sm text-secondary hover:text-primary"
                 >
                   + Add Option
                 </button>
@@ -443,14 +443,14 @@ export default function DocumentVariableManager({
           
           {editingVariable.type === 'calculated' && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text mb-1">
                 Formula
               </label>
               <input
                 type="text"
                 value={editingVariable.formula || ''}
                 onChange={(e) => setEditingVariable({ ...editingVariable, formula: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                 placeholder="e.g., {{variable1}} + {{variable2}}"
               />
               <p className="mt-1 text-xs text-gray-500">
@@ -462,13 +462,13 @@ export default function DocumentVariableManager({
           <div className="flex justify-end">
             <button
               onClick={handleCancelEdit}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 mr-2"
+              className="px-4 py-2 border border-border text-text rounded-md hover:bg-gray-50 mr-2"
             >
               Cancel
             </button>
             <button
               onClick={handleSaveVariable}
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+              className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary"
             >
               {isAdding ? 'Add Variable' : 'Save Changes'}
             </button>
@@ -484,7 +484,7 @@ export default function DocumentVariableManager({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No variables found</h3>
+          <h3 className="text-lg font-medium text-text mb-1">No variables found</h3>
           <p className="text-gray-500 mb-4">
             {searchQuery || selectedType
               ? 'Try adjusting your search or filters'
@@ -493,7 +493,7 @@ export default function DocumentVariableManager({
           {!readOnly && (
             <button
               onClick={handleAddVariable}
-              className="inline-flex items-center px-3 py-1.5 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+              className="inline-flex items-center px-3 py-1.5 bg-secondary text-white text-sm rounded-md hover:bg-primary"
             >
               <Plus className="h-4 w-4 mr-1.5" />
               Add Variable
@@ -505,7 +505,7 @@ export default function DocumentVariableManager({
           {filteredVariables.map(variable => (
             <div 
               key={variable.id} 
-              className="border border-gray-200 rounded-lg overflow-hidden"
+              className="border border-border rounded-lg overflow-hidden"
             >
               <div 
                 className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer"
@@ -517,12 +517,12 @@ export default function DocumentVariableManager({
                     variable.type === 'number' ? 'bg-green-500' :
                     variable.type === 'date' ? 'bg-yellow-500' :
                     variable.type === 'boolean' ? 'bg-red-500' :
-                    variable.type === 'select' ? 'bg-purple-500' :
+                    variable.type === 'select' ? 'bg-secondary' :
                     variable.type === 'user' ? 'bg-indigo-500' :
                     'bg-orange-500' // calculated
                   }`}></span>
                   <div>
-                    <div className="font-medium text-gray-900">{variable.name}</div>
+                    <div className="font-medium text-text">{variable.name}</div>
                     <div className="text-xs text-gray-500">
                       <code className="bg-gray-100 px-1 py-0.5 rounded">{{`{{${variable.key}}}`}}</code>
                       <span className="mx-1">•</span>
@@ -537,7 +537,7 @@ export default function DocumentVariableManager({
                         e.stopPropagation();
                         handleInsertVariable(variable.key);
                       }}
-                      className="p-1.5 text-gray-500 hover:text-gray-700 mr-1"
+                      className="p-1.5 text-gray-500 hover:text-text mr-1"
                       title="Insert variable"
                     >
                       <ExternalLink className="h-4 w-4" />
@@ -548,7 +548,7 @@ export default function DocumentVariableManager({
                       e.stopPropagation();
                       handleCopyVariableKey(variable.key);
                     }}
-                    className="p-1.5 text-gray-500 hover:text-gray-700 mr-1"
+                    className="p-1.5 text-gray-500 hover:text-text mr-1"
                     title="Copy variable key"
                   >
                     <Copy className="h-4 w-4" />
@@ -588,17 +588,17 @@ export default function DocumentVariableManager({
               </div>
               
               {expandedVariables[variable.id] && (
-                <div className="p-4 bg-white">
+                <div className="p-4 bg-background">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <h4 className="text-xs font-medium text-gray-500 mb-1">Description</h4>
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-text">
                         {variable.description || 'No description provided'}
                       </p>
                     </div>
                     <div>
                       <h4 className="text-xs font-medium text-gray-500 mb-1">Default Value</h4>
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-text">
                         {variable.defaultValue || 'No default value'}
                       </p>
                     </div>
@@ -609,7 +609,7 @@ export default function DocumentVariableManager({
                       <h4 className="text-xs font-medium text-gray-500 mb-1">Options</h4>
                       <div className="flex flex-wrap gap-1">
                         {variable.options.map((option, index) => (
-                          <span key={index} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                          <span key={index} className="px-2 py-0.5 bg-gray-100 text-text text-xs rounded">
                             {option}
                           </span>
                         ))}
@@ -633,7 +633,7 @@ export default function DocumentVariableManager({
                         {variable.linkedVariables.map(linkedId => {
                           const linkedVar = variables.find(v => v.id === linkedId);
                           return linkedVar ? (
-                            <span key={linkedId} className="inline-flex items-center px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
+                            <span key={linkedId} className="inline-flex items-center px-2 py-0.5 bg-accent text-primary text-xs rounded">
                               <LinkIcon className="h-3 w-3 mr-1" />
                               {linkedVar.name}
                             </span>

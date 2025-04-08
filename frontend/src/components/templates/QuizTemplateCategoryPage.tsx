@@ -170,13 +170,13 @@ export default function QuizTemplateCategoryPage() {
   if (!categoryId || !categories[categoryId as keyof typeof categories]) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Category Not Found</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Category Not Found</h3>
           <p className="text-gray-500 mb-6">The category you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate('/templates')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Templates
@@ -247,7 +247,7 @@ export default function QuizTemplateCategoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -255,13 +255,13 @@ export default function QuizTemplateCategoryPage() {
   if (error) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error</h3>
           <p className="text-gray-500 mb-6">{error}</p>
           <button
             onClick={() => navigate('/templates')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Templates
@@ -277,21 +277,21 @@ export default function QuizTemplateCategoryPage() {
       <div className="flex items-center mb-8">
         <button
           onClick={() => navigate('/templates')}
-          className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+          className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
           <div className="flex items-center">
-            {React.cloneElement(category.icon, { className: 'h-6 w-6 text-purple-600 mr-3' })}
-            <h1 className="text-2xl font-bold text-gray-900">{category.name} Templates</h1>
+            {React.cloneElement(category.icon, { className: 'h-6 w-6 text-secondary mr-3' })}
+            <h1 className="text-2xl font-bold text-text">{category.name} Templates</h1>
           </div>
           <p className="mt-1 text-gray-600">{category.description}</p>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -302,7 +302,7 @@ export default function QuizTemplateCategoryPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -311,7 +311,7 @@ export default function QuizTemplateCategoryPage() {
               <select
                 value={selectedAudienceLevel || ''}
                 onChange={(e) => handleAudienceLevelFilter(e.target.value || null)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="">All Audience Levels</option>
                 {audienceLevels.map(level => (
@@ -327,7 +327,7 @@ export default function QuizTemplateCategoryPage() {
               <select
                 value={selectedDuration?.toString() || ''}
                 onChange={(e) => handleDurationFilter(e.target.value ? parseInt(e.target.value) : null)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 <option value="">Any Duration</option>
                 <option value="30">Under 30 minutes</option>
@@ -346,7 +346,7 @@ export default function QuizTemplateCategoryPage() {
                 setSelectedAudienceLevel(null);
                 setSelectedDuration(null);
               }}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters
@@ -360,8 +360,8 @@ export default function QuizTemplateCategoryPage() {
             onClick={() => handleSubcategoryFilter(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium ${
               selectedSubcategory === null
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
             }`}
           >
             All {category.name} Templates
@@ -372,8 +372,8 @@ export default function QuizTemplateCategoryPage() {
               onClick={() => handleSubcategoryFilter(subcategory.id)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium ${
                 selectedSubcategory === subcategory.id
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-accent text-primary'
+                  : 'bg-gray-100 text-text hover:bg-gray-200'
               }`}
             >
               {subcategory.name}
@@ -383,11 +383,11 @@ export default function QuizTemplateCategoryPage() {
       </div>
 
       {/* Templates Grid */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-background rounded-lg shadow-md p-6">
         {filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
             <FileQuestion className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <h3 className="text-lg font-medium text-text mb-2">No templates found</h3>
             <p className="text-gray-500 mb-6">
               Try adjusting your search or filters to find what you're looking for.
             </p>
@@ -398,7 +398,7 @@ export default function QuizTemplateCategoryPage() {
                 setSelectedAudienceLevel(null);
                 setSelectedDuration(null);
               }}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               Reset Filters
             </button>

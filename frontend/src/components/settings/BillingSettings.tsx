@@ -152,7 +152,7 @@ export default function BillingSettings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -162,7 +162,7 @@ export default function BillingSettings() {
       <Card>
         <div className="text-center py-8">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Billing Data</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error Loading Billing Data</h3>
           <p className="text-gray-500 mb-4">{error}</p>
           <Button
             variant="primary"
@@ -180,7 +180,7 @@ export default function BillingSettings() {
       <Card>
         <div className="text-center py-8">
           <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Billing Data Available</h3>
+          <h3 className="text-lg font-medium text-text mb-2">No Billing Data Available</h3>
           <p className="text-gray-500 mb-4">We couldn't find any billing information for your account.</p>
           <Button
             variant="primary"
@@ -198,12 +198,12 @@ export default function BillingSettings() {
       {/* Current Plan */}
       <Card>
         <h3 className="text-lg font-semibold mb-4">Current Plan</h3>
-        <div className="bg-purple-50 p-6 rounded-lg mb-6">
+        <div className="bg-accent p-6 rounded-lg mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <div className="flex items-center">
-                <DollarSign className="h-6 w-6 text-purple-600 mr-2" />
-                <h4 className="text-xl font-bold text-gray-900">{billingData.currentPlan.name} Plan</h4>
+                <DollarSign className="h-6 w-6 text-secondary mr-2" />
+                <h4 className="text-xl font-bold text-text">{billingData.currentPlan.name} Plan</h4>
               </div>
               <p className="text-gray-600 mt-1">
                 {billingData.currentPlan.price === 0 
@@ -222,7 +222,7 @@ export default function BillingSettings() {
           </div>
         </div>
         
-        <h4 className="font-medium text-gray-900 mb-3">Plan Features</h4>
+        <h4 className="font-medium text-text mb-3">Plan Features</h4>
         <ul className="space-y-2 mb-6">
           {billingData.currentPlan.features.map((feature, index) => (
             <li key={index} className="flex items-start">
@@ -232,12 +232,12 @@ export default function BillingSettings() {
           ))}
         </ul>
         
-        <h4 className="font-medium text-gray-900 mb-3">Usage</h4>
+        <h4 className="font-medium text-text mb-3">Usage</h4>
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
-                <Database className="h-4 w-4 text-purple-600 mr-2" />
+                <Database className="h-4 w-4 text-secondary mr-2" />
                 <span className="text-sm font-medium">Quiz Submissions</span>
               </div>
               <span className="text-sm text-gray-500">
@@ -254,7 +254,7 @@ export default function BillingSettings() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
-                <Database className="h-4 w-4 text-purple-600 mr-2" />
+                <Database className="h-4 w-4 text-secondary mr-2" />
                 <span className="text-sm font-medium">Storage</span>
               </div>
               <span className="text-sm text-gray-500">
@@ -271,7 +271,7 @@ export default function BillingSettings() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center">
-                <Server className="h-4 w-4 text-purple-600 mr-2" />
+                <Server className="h-4 w-4 text-secondary mr-2" />
                 <span className="text-sm font-medium">API Calls</span>
               </div>
               <span className="text-sm text-gray-500">
@@ -355,7 +355,7 @@ export default function BillingSettings() {
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium">Add Payment Method</h4>
               <button
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-text"
                 onClick={() => setShowAddPaymentMethod(false)}
               >
                 &times;
@@ -365,14 +365,14 @@ export default function BillingSettings() {
             <form onSubmit={handleAddPaymentMethod}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text mb-1">
                     Card Number
                   </label>
                   <input
                     type="text"
                     value={newPaymentMethod.cardNumber}
                     onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, cardNumber: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
                   />
@@ -380,28 +380,28 @@ export default function BillingSettings() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text mb-1">
                       Expiry Date
                     </label>
                     <input
                       type="text"
                       value={newPaymentMethod.expiryDate}
                       onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, expiryDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                       placeholder="MM/YY"
                       maxLength={5}
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text mb-1">
                       CVC
                     </label>
                     <input
                       type="text"
                       value={newPaymentMethod.cvc}
                       onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, cvc: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                       placeholder="123"
                       maxLength={4}
                     />
@@ -409,14 +409,14 @@ export default function BillingSettings() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text mb-1">
                     Cardholder Name
                   </label>
                   <input
                     type="text"
                     value={newPaymentMethod.name}
                     onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                     placeholder="John Doe"
                   />
                 </div>
@@ -427,9 +427,9 @@ export default function BillingSettings() {
                     id="default-payment"
                     checked={newPaymentMethod.isDefault}
                     onChange={(e) => setNewPaymentMethod({ ...newPaymentMethod, isDefault: e.target.checked })}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                   />
-                  <label htmlFor="default-payment" className="ml-2 block text-sm text-gray-700">
+                  <label htmlFor="default-payment" className="ml-2 block text-sm text-text">
                     Set as default payment method
                   </label>
                 </div>
@@ -486,16 +486,16 @@ export default function BillingSettings() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-gray-200">
                 {billingData.billingHistory.map((invoice) => (
                   <tr key={invoice.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                       {formatDate(invoice.date)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                       {invoice.description}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                       ${invoice.amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -512,7 +512,7 @@ export default function BillingSettings() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleDownloadInvoice(invoice.id, 'pdf')}
-                        className="text-purple-600 hover:text-purple-900 mr-3"
+                        className="text-secondary hover:text-primary mr-3"
                       >
                         <Download className="h-5 w-5" />
                       </button>
@@ -535,8 +535,8 @@ export default function BillingSettings() {
               key={plan.id}
               className={`border rounded-lg p-4 ${
                 selectedPlan === plan.id 
-                  ? 'border-purple-500 bg-purple-50' 
-                  : 'border-gray-200 hover:border-purple-300'
+                  ? 'border-secondary bg-accent' 
+                  : 'border-gray-200 hover:border-accent'
               } cursor-pointer transition-colors`}
               onClick={() => setSelectedPlan(plan.id)}
             >
@@ -549,8 +549,8 @@ export default function BillingSettings() {
                   </p>
                 </div>
                 {selectedPlan === plan.id && (
-                  <div className="bg-purple-100 rounded-full p-1">
-                    <CheckCircle className="h-5 w-5 text-purple-600" />
+                  <div className="bg-accent rounded-full p-1">
+                    <CheckCircle className="h-5 w-5 text-secondary" />
                   </div>
                 )}
               </div>
@@ -565,7 +565,7 @@ export default function BillingSettings() {
               </ul>
               
               {billingData.currentPlan.id === plan.id ? (
-                <div className="text-center py-2 bg-purple-100 text-purple-800 rounded-md text-sm font-medium">
+                <div className="text-center py-2 bg-accent text-primary rounded-md text-sm font-medium">
                   Current Plan
                 </div>
               ) : (
@@ -611,7 +611,7 @@ export default function BillingSettings() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
-              <Clock className="h-5 w-5 text-purple-600 mr-2" />
+              <Clock className="h-5 w-5 text-secondary mr-2" />
               <h4 className="font-medium">Recent Activity</h4>
             </div>
             <p className="text-sm text-gray-600">
@@ -621,7 +621,7 @@ export default function BillingSettings() {
           
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
-              <Database className="h-5 w-5 text-purple-600 mr-2" />
+              <Database className="h-5 w-5 text-secondary mr-2" />
               <h4 className="font-medium">Storage Usage</h4>
             </div>
             <p className="text-sm text-gray-600">
@@ -631,7 +631,7 @@ export default function BillingSettings() {
           
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
-              <Server className="h-5 w-5 text-purple-600 mr-2" />
+              <Server className="h-5 w-5 text-secondary mr-2" />
               <h4 className="font-medium">API Usage</h4>
             </div>
             <p className="text-sm text-gray-600">

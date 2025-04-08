@@ -123,10 +123,10 @@ function MetricCard({ title, value, change, icon, format = 'number' }: MetricCar
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-background rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
         {React.cloneElement(icon as React.ReactElement, {
-          className: "h-8 w-8 text-purple-600"
+          className: "h-8 w-8 text-secondary"
         })}
         {change !== undefined && (
           <div className={`flex items-center ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -136,7 +136,7 @@ function MetricCard({ title, value, change, icon, format = 'number' }: MetricCar
         )}
       </div>
       <h3 className="text-sm font-medium text-gray-500 mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900">{formatValue(value)}</p>
+      <p className="text-2xl font-bold text-text">{formatValue(value)}</p>
     </div>
   );
 }
@@ -234,7 +234,7 @@ export default function AnalyticsDashboard() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader2 className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -244,12 +244,12 @@ export default function AnalyticsDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <Lock className="h-16 w-16 text-purple-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h2>
+          <Lock className="h-16 w-16 text-secondary mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-text mb-2">Authentication Required</h2>
           <p className="text-gray-600 mb-4">You need to be logged in to view analytics.</p>
           <button
             onClick={() => navigate('/auth')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             Sign In
           </button>
@@ -261,19 +261,19 @@ export default function AnalyticsDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader2 className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 text-center">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load analytics</h3>
+      <div className="bg-background rounded-lg shadow-md p-6 text-center">
+        <h3 className="text-lg font-medium text-text mb-2">Failed to load analytics</h3>
         <p className="text-gray-500 mb-4">{error}</p>
         <button
           onClick={() => loadAnalytics()}
-          className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
         >
           Try Again
         </button>
@@ -294,19 +294,19 @@ export default function AnalyticsDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
+          <h1 className="text-2xl font-bold text-text">Analytics Dashboard</h1>
           <p className="text-gray-600">Comprehensive insights into platform performance</p>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-white rounded-lg shadow-sm p-1">
+          <div className="flex items-center space-x-2 bg-background rounded-lg shadow-sm p-1">
             {(['7d', '30d', '90d'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setDateRange(range)}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                   dateRange === range
-                    ? 'bg-purple-100 text-purple-900'
-                    : 'text-gray-500 hover:text-gray-900'
+                    ? 'bg-accent text-primary'
+                    : 'text-gray-500 hover:text-text'
                 }`}
               >
                 {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
@@ -315,7 +315,7 @@ export default function AnalyticsDashboard() {
           </div>
           <button
             onClick={() => handleExport('csv')}
-            className="flex items-center px-3 py-2 text-sm text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-3 py-2 text-sm text-secondary border border-secondary rounded-lg hover:bg-accent"
           >
             <FileSpreadsheet className="h-4 w-4 mr-2" />
             Export CSV
@@ -354,38 +354,38 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Quiz Analytics Overview */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">GoForm Analytics Overview</h2>
+      <div className="bg-background rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold text-text mb-6">GoForm Analytics Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-purple-50 rounded-lg p-4">
+          <div className="bg-accent rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <Brain className="h-6 w-6 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">Total GoForms</span>
+              <Brain className="h-6 w-6 text-secondary" />
+              <span className="text-sm font-medium text-secondary">Total GoForms</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{data.quizInsights.totalQuizzes}</p>
+            <p className="text-2xl font-bold text-text">{data.quizInsights.totalQuizzes}</p>
           </div>
-          <div className="bg-purple-50 rounded-lg p-4">
+          <div className="bg-accent rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <Target className="h-6 w-6 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">Total Attempts</span>
+              <Target className="h-6 w-6 text-secondary" />
+              <span className="text-sm font-medium text-secondary">Total Attempts</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{data.quizInsights.totalAttempts}</p>
+            <p className="text-2xl font-bold text-text">{data.quizInsights.totalAttempts}</p>
           </div>
-          <div className="bg-purple-50 rounded-lg p-4">
+          <div className="bg-accent rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <Award className="h-6 w-6 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">Avg Score</span>
+              <Award className="h-6 w-6 text-secondary" />
+              <span className="text-sm font-medium text-secondary">Avg Score</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-text">
               {Math.round(data.quizInsights.overallAverageScore)}%
             </p>
           </div>
-          <div className="bg-purple-50 rounded-lg p-4">
+          <div className="bg-accent rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <BookOpen className="h-6 w-6 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">Completion Rate</span>
+              <BookOpen className="h-6 w-6 text-secondary" />
+              <span className="text-sm font-medium text-secondary">Completion Rate</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-text">
               {Math.round(data.quizInsights.overallCompletionRate)}%
             </p>
           </div>
@@ -393,7 +393,7 @@ export default function AnalyticsDashboard() {
 
         {/* Quiz Performance Trends */}
         <div className="mt-8">
-          <h3 className="text-md font-semibold text-gray-900 mb-4">GoForm Performance Trends</h3>
+          <h3 className="text-md font-semibold text-text mb-4">GoForm Performance Trends</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData}>
@@ -438,7 +438,7 @@ export default function AnalyticsDashboard() {
 
         {/* Top Performing Quizzes */}
         <div className="mt-8">
-          <h3 className="text-md font-semibold text-gray-900 mb-4">Top Performing GoForms</h3>
+          <h3 className="text-md font-semibold text-text mb-4">Top Performing GoForms</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
@@ -457,10 +457,10 @@ export default function AnalyticsDashboard() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-gray-200">
                 {(data.quizInsights.topQuizzes || []).map((quiz) => (
                   <tr key={quiz.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text">
                       {quiz.title}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -482,8 +482,8 @@ export default function AnalyticsDashboard() {
 
       {/* Traffic Sources */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Traffic Sources</h2>
+        <div className="bg-background rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold text-text mb-6">Traffic Sources</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -523,8 +523,8 @@ export default function AnalyticsDashboard() {
         </div>
 
         {/* Page Views */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Most Visited Pages</h2>
+        <div className="bg-background rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold text-text mb-6">Most Visited Pages</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.pageViews || []}>
@@ -541,10 +541,10 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Campaign Performance */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-background rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Campaign Performance</h2>
-          <button className="flex items-center text-sm text-purple-600 hover:text-purple-800">
+          <h2 className="text-lg font-semibold text-text">Campaign Performance</h2>
+          <button className="flex items-center text-sm text-secondary hover:text-primary">
             <Filter className="h-4 w-4 mr-1" />
             Filter
           </button>
@@ -570,10 +570,10 @@ export default function AnalyticsDashboard() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-background divide-y divide-gray-200">
               {(data.campaigns || []).map((campaign) => (
                 <tr key={campaign.name}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text">
                     {campaign.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

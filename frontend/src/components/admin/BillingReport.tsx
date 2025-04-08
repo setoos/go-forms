@@ -379,7 +379,7 @@ export default function BillingReport() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -387,13 +387,13 @@ export default function BillingReport() {
   if (error) {
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+        <div className="bg-background rounded-lg shadow-xl p-8 text-center">
           <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
+          <h2 className="text-2xl font-bold text-text mb-4">Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
             Try Again
           </button>
@@ -408,33 +408,33 @@ export default function BillingReport() {
         <div className="flex items-center">
           <button
             onClick={() => navigate(-1)}
-            className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+            className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Billing Report</h1>
+            <h1 className="text-2xl font-bold text-text">Billing Report</h1>
             <p className="text-gray-600">Detailed report of quiz submissions and associated costs</p>
           </div>
         </div>
         <div className="flex space-x-2">
           <button
             onClick={() => handleDownloadReport('pdf')}
-            className="flex items-center px-3 py-1.5 text-sm text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-3 py-1.5 text-sm text-secondary border border-secondary rounded-lg hover:bg-accent"
           >
             <Download className="h-4 w-4 mr-1.5" />
             PDF
           </button>
           <button
             onClick={() => handleDownloadReport('csv')}
-            className="flex items-center px-3 py-1.5 text-sm text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-3 py-1.5 text-sm text-secondary border border-secondary rounded-lg hover:bg-accent"
           >
             <ArrowDownToLine className="h-4 w-4 mr-1.5" />
             CSV
           </button>
           <button
             onClick={handlePrintReport}
-            className="flex items-center px-3 py-1.5 text-sm text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50"
+            className="flex items-center px-3 py-1.5 text-sm text-secondary border border-secondary rounded-lg hover:bg-accent"
           >
             <Printer className="h-4 w-4 mr-1.5" />
             Print
@@ -443,15 +443,15 @@ export default function BillingReport() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow-md mb-6">
-        <div className="border-b border-gray-200">
+      <div className="bg-background rounded-lg shadow-md mb-6">
+        <div className="border-b border-border">
           <nav className="flex -mb-px">
             <button
               onClick={() => setActiveTab('submissions')}
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'submissions'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-accent0 text-secondary'
+                  : 'border-transparent text-gray-500 hover:text-text hover:border-border'
               }`}
             >
               Submissions
@@ -460,8 +460,8 @@ export default function BillingReport() {
               onClick={() => setActiveTab('access')}
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'access'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-accent0 text-secondary'
+                  : 'border-transparent text-gray-500 hover:text-text hover:border-border'
               }`}
             >
               Access Control
@@ -470,8 +470,8 @@ export default function BillingReport() {
               onClick={() => setActiveTab('financial')}
               className={`py-4 px-6 text-sm font-medium border-b-2 ${
                 activeTab === 'financial'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-accent0 text-secondary'
+                  : 'border-transparent text-gray-500 hover:text-text hover:border-border'
               }`}
             >
               Financial Summary
@@ -481,7 +481,7 @@ export default function BillingReport() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -492,7 +492,7 @@ export default function BillingReport() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by quiz name, user, or email..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
             />
           </div>
 
@@ -501,7 +501,7 @@ export default function BillingReport() {
               <select
                 value={dateRange}
                 onChange={(e) => handleDateRangeChange(e.target.value as any)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
@@ -517,7 +517,7 @@ export default function BillingReport() {
               <select
                 value={quizFilter}
                 onChange={(e) => handleQuizFilterChange(e.target.value)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               >
                 <option value="all">All Quizzes</option>
                 {uniqueQuizzes.map(quiz => (
@@ -534,7 +534,7 @@ export default function BillingReport() {
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilterChange(e.target.value as any)}
-                  className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                  className="appearance-none pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
                 >
                   <option value="all">All Statuses</option>
                   <option value="completed">Completed</option>
@@ -552,7 +552,7 @@ export default function BillingReport() {
         {dateRange === 'custom' && (
           <div className="flex flex-wrap gap-3">
             <div>
-              <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="start-date" className="block text-sm font-medium text-text mb-1">
                 Start Date
               </label>
               <input
@@ -560,11 +560,11 @@ export default function BillingReport() {
                 id="start-date"
                 value={customDateRange.start}
                 onChange={(e) => setCustomDateRange({ ...customDateRange, start: e.target.value })}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               />
             </div>
             <div>
-              <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="end-date" className="block text-sm font-medium text-text mb-1">
                 End Date
               </label>
               <input
@@ -572,7 +572,7 @@ export default function BillingReport() {
                 id="end-date"
                 value={customDateRange.end}
                 onChange={(e) => setCustomDateRange({ ...customDateRange, end: e.target.value })}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-accent0 focus:border-accent0 sm:text-sm"
               />
             </div>
           </div>
@@ -580,7 +580,7 @@ export default function BillingReport() {
       </div>
 
       {/* Summary */}
-      <div className="bg-purple-50 rounded-lg p-4 mb-6">
+      <div className="bg-accent rounded-lg p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <div className="text-sm text-gray-500 mb-1">Total Submissions</div>
@@ -607,7 +607,7 @@ export default function BillingReport() {
 
       {/* Submissions Tab */}
       {activeTab === 'submissions' && (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-background rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -665,24 +665,24 @@ export default function BillingReport() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-gray-200">
                 {filteredSubmissions.map((submission) => (
                   <React.Fragment key={submission.id}>
                     <tr className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{formatDate(submission.submissionDate)}</div>
+                        <div className="text-sm text-text">{formatDate(submission.submissionDate)}</div>
                         <div className="text-xs text-gray-500">{formatTime(submission.submissionDate)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{submission.quizName}</div>
+                        <div className="text-sm font-medium text-text">{submission.quizName}</div>
                         <div className="text-xs text-gray-500 truncate max-w-xs">{submission.quizId}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{submission.user.name}</div>
+                        <div className="text-sm text-text">{submission.user.name}</div>
                         <div className="text-xs text-gray-500">{submission.user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{formatDuration(submission.sessionDuration)}</div>
+                        <div className="text-sm text-text">{formatDuration(submission.sessionDuration)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -693,13 +693,13 @@ export default function BillingReport() {
                           {submission.completionStatus.charAt(0).toUpperCase() + submission.completionStatus.slice(1)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                         {formatCurrency(submission.cost)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <button
                           onClick={() => toggleSubmissionExpand(submission.id)}
-                          className="text-purple-600 hover:text-purple-900"
+                          className="text-secondary hover:text-primary"
                         >
                           {expandedSubmission === submission.id ? 'Hide' : 'Show'}
                         </button>
@@ -738,7 +738,7 @@ export default function BillingReport() {
           {filteredSubmissions.length === 0 && (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No submissions found</h3>
+              <h3 className="text-lg font-medium text-text mb-1">No submissions found</h3>
               <p className="text-gray-500">
                 Try adjusting your filters to see more results
               </p>
@@ -749,7 +749,7 @@ export default function BillingReport() {
 
       {/* Access Control Tab */}
       {activeTab === 'access' && (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-background rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -777,23 +777,23 @@ export default function BillingReport() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-gray-200">
                 {filteredAccessLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatDate(log.timestamp)}</div>
+                      <div className="text-sm text-text">{formatDate(log.timestamp)}</div>
                       <div className="text-xs text-gray-500">{formatTime(log.timestamp)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{log.user.name}</div>
+                      <div className="text-sm text-text">{log.user.name}</div>
                       <div className="text-xs text-gray-500">{log.user.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{log.quizName}</div>
+                      <div className="text-sm font-medium text-text">{log.quizName}</div>
                       <div className="text-xs text-gray-500">{log.quizId}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 capitalize">{log.action}</div>
+                      <div className="text-sm text-text capitalize">{log.action}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -804,7 +804,7 @@ export default function BillingReport() {
                         {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                       {log.ipAddress}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -819,7 +819,7 @@ export default function BillingReport() {
           {filteredAccessLogs.length === 0 && (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No access logs found</h3>
+              <h3 className="text-lg font-medium text-text mb-1">No access logs found</h3>
               <p className="text-gray-500">
                 Try adjusting your filters to see more results
               </p>
@@ -831,13 +831,13 @@ export default function BillingReport() {
       {/* Financial Summary Tab */}
       {activeTab === 'financial' && financialSummary && (
         <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Financial Summary</h2>
+          <div className="bg-background rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-text mb-4">Financial Summary</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
               <div>
                 <div className="text-sm text-gray-500 mb-1">Total Billable Amount</div>
-                <div className="text-2xl font-bold text-gray-900">{formatCurrency(financialSummary.totalBillableAmount)}</div>
+                <div className="text-2xl font-bold text-text">{formatCurrency(financialSummary.totalBillableAmount)}</div>
               </div>
               <div>
                 <div className="text-sm text-gray-500 mb-1">Payment Status</div>
@@ -871,7 +871,7 @@ export default function BillingReport() {
             </div>
             
             <div>
-              <h3 className="text-md font-medium text-gray-900 mb-3">Line Items</h3>
+              <h3 className="text-md font-medium text-text mb-3">Line Items</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -890,28 +890,28 @@ export default function BillingReport() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-background divide-y divide-gray-200">
                     {financialSummary.lineItems.map((item, index) => (
                       <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text">
                           {item.description}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text text-right">
                           {item.quantity}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text text-right">
                           {formatCurrency(item.unitPrice)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text text-right">
                           {formatCurrency(item.amount)}
                         </td>
                       </tr>
                     ))}
                     <tr className="bg-gray-50">
-                      <td colSpan={3} className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                      <td colSpan={3} className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text text-right">
                         Total
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-text text-right">
                         {formatCurrency(financialSummary.totalBillableAmount)}
                       </td>
                     </tr>
@@ -921,12 +921,12 @@ export default function BillingReport() {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Options</h2>
+          <div className="bg-background rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-text mb-4">Payment Options</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-md font-medium text-gray-900 mb-3">Credit Card</h3>
+                <h3 className="text-md font-medium text-text mb-3">Credit Card</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-8 bg-gray-200 rounded flex items-center justify-center mr-3">
@@ -939,7 +939,7 @@ export default function BillingReport() {
                   </div>
                   <button 
                     onClick={() => showToast('Payment processed successfully', 'success')}
-                    className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="w-full px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
                   >
                     Pay Now
                   </button>
@@ -947,7 +947,7 @@ export default function BillingReport() {
               </div>
               
               <div>
-                <h3 className="text-md font-medium text-gray-900 mb-3">Bank Transfer</h3>
+                <h3 className="text-md font-medium text-text mb-3">Bank Transfer</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="space-y-2 mb-4">
                     <div>
@@ -968,7 +968,7 @@ export default function BillingReport() {
                       navigator.clipboard.writeText('GoForms Inc. - XXXX-XXXX-XXXX-1234 - XXX-XXX-XXX');
                       showToast('Bank details copied to clipboard', 'success');
                     }}
-                    className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="w-full px-4 py-2 bg-background border border-border text-text rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Copy Details
                   </button>

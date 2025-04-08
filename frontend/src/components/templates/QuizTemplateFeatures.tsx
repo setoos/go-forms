@@ -23,7 +23,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Performance Tracking',
       description: 'Comprehensive analytics to track participant performance and identify knowledge gaps',
-      icon: <BarChart className="h-6 w-6 text-purple-600" />,
+      icon: <BarChart className="h-6 w-6 text-secondary" />,
       details: [
         'Individual and group performance metrics',
         'Question-level difficulty analysis',
@@ -35,7 +35,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Automated Scoring',
       description: 'Instant scoring with customizable grading criteria and feedback options',
-      icon: <Zap className="h-6 w-6 text-purple-600" />,
+      icon: <Zap className="h-6 w-6 text-secondary" />,
       details: [
         'Multiple scoring methods (points, percentage, custom)',
         'Partial credit options for complex questions',
@@ -47,7 +47,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Progress Reporting',
       description: 'Detailed progress reports for individuals and groups with visual representations',
-      icon: <FileText className="h-6 w-6 text-purple-600" />,
+      icon: <FileText className="h-6 w-6 text-secondary" />,
       details: [
         'Individual progress tracking over time',
         'Comparative performance analysis',
@@ -59,7 +59,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Certificate Generation',
       description: 'Automatic certificate generation for successful GoForm completion',
-      icon: <Award className="h-6 w-6 text-purple-600" />,
+      icon: <Award className="h-6 w-6 text-secondary" />,
       details: [
         'Customizable certificate templates',
         'Digital certificate delivery',
@@ -71,7 +71,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Mobile Responsiveness',
       description: 'Fully responsive design that works seamlessly across all devices',
-      icon: <Smartphone className="h-6 w-6 text-purple-600" />,
+      icon: <Smartphone className="h-6 w-6 text-secondary" />,
       details: [
         'Optimized for smartphones and tablets',
         'Touch-friendly interface',
@@ -83,7 +83,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Export Options',
       description: 'Multiple export formats for GoForms, results, and analytics',
-      icon: <Download className="h-6 w-6 text-purple-600" />,
+      icon: <Download className="h-6 w-6 text-secondary" />,
       details: [
         'PDF export with customizable formatting',
         'CSV/Excel export for data analysis',
@@ -95,7 +95,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Customization',
       description: 'Extensive customization options for branding, appearance, and functionality',
-      icon: <Sliders className="h-6 w-6 text-purple-600" />,
+      icon: <Sliders className="h-6 w-6 text-secondary" />,
       details: [
         'Custom branding and white-labeling',
         'Theme and color scheme options',
@@ -107,7 +107,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'LMS Compatibility',
       description: 'Seamless integration with popular learning management systems',
-      icon: <Layers className="h-6 w-6 text-purple-600" />,
+      icon: <Layers className="h-6 w-6 text-secondary" />,
       details: [
         'SCORM 1.2 and 2004 compliance',
         'xAPI (Tin Can) support',
@@ -119,7 +119,7 @@ export default function QuizTemplateFeatures() {
     {
       title: 'Security Features',
       description: 'Advanced security options to maintain assessment integrity',
-      icon: <Lock className="h-6 w-6 text-purple-600" />,
+      icon: <Lock className="h-6 w-6 text-secondary" />,
       details: [
         'Password protection',
         'Time limits and scheduling',
@@ -133,7 +133,7 @@ export default function QuizTemplateFeatures() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">GoForm Template Features</h1>
+        <h1 className="text-3xl font-bold text-text mb-4">GoForm Template Features</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Our GoForm templates include powerful features for assessment, tracking, and reporting
         </p>
@@ -141,18 +141,18 @@ export default function QuizTemplateFeatures() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map((feature, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+          <div key={index} className="bg-background rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
             <div className="mb-4">
               {feature.icon}
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+            <h3 className="text-xl font-semibold text-text mb-2">{feature.title}</h3>
             <p className="text-gray-600 mb-4">{feature.description}</p>
             
             <ul className="space-y-2">
               {feature.details.map((detail, i) => (
                 <li key={i} className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                  <span className="text-sm text-gray-700">{detail}</span>
+                  <span className="text-sm text-text">{detail}</span>
                 </li>
               ))}
             </ul>
@@ -160,18 +160,18 @@ export default function QuizTemplateFeatures() {
         ))}
       </div>
 
-      <div className="mt-16 bg-purple-50 rounded-lg p-8">
+      <div className="mt-16 bg-accent rounded-lg p-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Template Customization</h2>
+          <h2 className="text-2xl font-bold text-text mb-2">Template Customization</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             All templates can be fully customized to meet your specific needs
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-5 rounded-lg shadow-sm">
+          <div className="bg-background p-5 rounded-lg shadow-sm">
             <div className="flex items-center mb-3">
-              <Tag className="h-5 w-5 text-purple-600 mr-2" />
+              <Tag className="h-5 w-5 text-secondary mr-2" />
               <h3 className="font-medium">Branding</h3>
             </div>
             <p className="text-sm text-gray-600">
@@ -179,9 +179,9 @@ export default function QuizTemplateFeatures() {
             </p>
           </div>
           
-          <div className="bg-white p-5 rounded-lg shadow-sm">
+          <div className="bg-background p-5 rounded-lg shadow-sm">
             <div className="flex items-center mb-3">
-              <Users className="h-5 w-5 text-purple-600 mr-2" />
+              <Users className="h-5 w-5 text-secondary mr-2" />
               <h3 className="font-medium">Audience</h3>
             </div>
             <p className="text-sm text-gray-600">
@@ -189,9 +189,9 @@ export default function QuizTemplateFeatures() {
             </p>
           </div>
           
-          <div className="bg-white p-5 rounded-lg shadow-sm">
+          <div className="bg-background p-5 rounded-lg shadow-sm">
             <div className="flex items-center mb-3">
-              <Clock className="h-5 w-5 text-purple-600 mr-2" />
+              <Clock className="h-5 w-5 text-secondary mr-2" />
               <h3 className="font-medium">Timing</h3>
             </div>
             <p className="text-sm text-gray-600">
@@ -199,9 +199,9 @@ export default function QuizTemplateFeatures() {
             </p>
           </div>
           
-          <div className="bg-white p-5 rounded-lg shadow-sm">
+          <div className="bg-background p-5 rounded-lg shadow-sm">
             <div className="flex items-center mb-3">
-              <MessageSquare className="h-5 w-5 text-purple-600 mr-2" />
+              <MessageSquare className="h-5 w-5 text-secondary mr-2" />
               <h3 className="font-medium">Feedback</h3>
             </div>
             <p className="text-sm text-gray-600">

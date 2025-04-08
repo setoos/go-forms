@@ -177,13 +177,13 @@ export default function FormCategoryPage() {
   if (!categoryId || !categories[categoryId as keyof typeof categories]) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Category Not Found</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Category Not Found</h3>
           <p className="text-gray-500 mb-6">The category you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate('/forms/templates')}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Templates
@@ -244,21 +244,21 @@ export default function FormCategoryPage() {
       <div className="flex items-center mb-8">
         <button
           onClick={() => navigate('/forms/templates')}
-          className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+          className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
           <div className="flex items-center">
-            {React.cloneElement(category.icon, { className: 'h-6 w-6 text-purple-600 mr-3' })}
-            <h1 className="text-2xl font-bold text-gray-900">{category.name}</h1>
+            {React.cloneElement(category.icon, { className: 'h-6 w-6 text-secondary mr-3' })}
+            <h1 className="text-2xl font-bold text-text">{category.name}</h1>
           </div>
           <p className="mt-1 text-gray-600">{category.description}</p>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -269,7 +269,7 @@ export default function FormCategoryPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-background placeholder-gray-500 focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
             />
           </div>
 
@@ -278,7 +278,7 @@ export default function FormCategoryPage() {
               <select
                 value={selectedIndustry}
                 onChange={(e) => handleIndustryFilter(e.target.value)}
-                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                className="appearance-none pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-background focus:outline-none focus:ring-secondary focus:border-secondary sm:text-sm"
               >
                 {industries.map(industry => (
                   <option key={industry} value={industry}>{industry}</option>
@@ -295,7 +295,7 @@ export default function FormCategoryPage() {
                 setSelectedSubcategory(null);
                 setSelectedIndustry('All Industries');
               }}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-text bg-background hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
             >
               <Filter className="h-4 w-4 mr-2" />
               Reset Filters
@@ -309,8 +309,8 @@ export default function FormCategoryPage() {
             onClick={() => handleSubcategoryFilter(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium ${
               selectedSubcategory === null
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
             }`}
           >
             All {category.name}
@@ -321,8 +321,8 @@ export default function FormCategoryPage() {
               onClick={() => handleSubcategoryFilter(subcategory.id)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium ${
                 selectedSubcategory === subcategory.id
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-accent text-primary'
+                  : 'bg-gray-100 text-text hover:bg-gray-200'
               }`}
             >
               {subcategory.name}
@@ -332,11 +332,11 @@ export default function FormCategoryPage() {
       </div>
 
       {/* Templates Grid */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-background rounded-lg shadow-md p-6">
         {filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <h3 className="text-lg font-medium text-text mb-2">No templates found</h3>
             <p className="text-gray-500 mb-6">
               Try adjusting your search or filters to find what you're looking for.
             </p>
@@ -346,7 +346,7 @@ export default function FormCategoryPage() {
                 setSelectedSubcategory(null);
                 setSelectedIndustry('All Industries');
               }}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               Reset Filters
             </button>
@@ -373,7 +373,7 @@ export default function FormCategoryPage() {
                 <div className="p-4">
                   <div className="flex flex-wrap gap-2 mb-3">
                     {template.tags.slice(0, 3).map(tag => (
-                      <span key={tag} className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">
+                      <span key={tag} className="px-2 py-1 bg-accent text-primary text-xs rounded-full">
                         {tag}
                       </span>
                     ))}
@@ -395,14 +395,14 @@ export default function FormCategoryPage() {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleDownload(template.id, 'pdf')}
-                        className="p-1.5 text-gray-500 hover:text-gray-700"
+                        className="p-1.5 text-gray-500 hover:text-text"
                         title="Download PDF"
                       >
                         <Download className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDownload(template.id, 'html')}
-                        className="p-1.5 text-gray-500 hover:text-gray-700"
+                        className="p-1.5 text-gray-500 hover:text-text"
                         title="Download HTML"
                       >
                         <FileText className="h-4 w-4" />
@@ -410,7 +410,7 @@ export default function FormCategoryPage() {
                     </div>
                     <button
                       onClick={() => handleUseTemplate(template.id)}
-                      className="px-3 py-1 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+                      className="px-3 py-1 bg-secondary text-white text-sm rounded-md hover:bg-primary"
                     >
                       Use Template
                     </button>

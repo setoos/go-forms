@@ -143,7 +143,7 @@ export default function Breadcrumbs() {
               ) : (
                 <Link 
                   to={crumb.path}
-                  className="text-sm font-medium text-purple-600 hover:text-purple-800 inline-flex items-center"
+                  className="text-sm font-medium text-secondary hover:text-primary inline-flex items-center"
                 >
                   {crumb.icon && (
                     <span className="mr-1.5">{crumb.icon}</span>

@@ -243,7 +243,7 @@ export default function QuizTemplateCustomizer() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -251,13 +251,13 @@ export default function QuizTemplateCustomizer() {
   if (error || !template) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error</h3>
           <p className="text-gray-500 mb-6">{error || 'Template not found'}</p>
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Go Back
@@ -274,19 +274,19 @@ export default function QuizTemplateCustomizer() {
         <div className="flex items-center">
           <button
             onClick={() => navigate(-1)}
-            className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+            className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Customize Template</h1>
+            <h1 className="text-2xl font-bold text-text">Customize Template</h1>
             <p className="text-gray-600">Adapt this template to fit your specific needs</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
           <button
             onClick={handlePreview}
-            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
           >
             <Eye className="h-5 w-5 mr-2" />
             Preview
@@ -297,7 +297,7 @@ export default function QuizTemplateCustomizer() {
             className={`flex items-center px-4 py-2 rounded-lg ${
               saving
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-purple-600 hover:bg-purple-700'
+                : 'bg-secondary hover:bg-primary'
             } text-white`}
           >
             {saving ? (
@@ -319,20 +319,20 @@ export default function QuizTemplateCustomizer() {
         {/* Sidebar - Template Info */}
         <div className="lg:col-span-1 space-y-6">
           {/* Template Image */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-background rounded-lg shadow-md overflow-hidden">
             <img 
               src={template.previewImage} 
               alt={template.title}
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
-              <h2 className="font-semibold text-lg text-gray-900">Based on: {template.title}</h2>
+              <h2 className="font-semibold text-lg text-text">Based on: {template.title}</h2>
               <p className="text-sm text-gray-600 mt-1">{template.description}</p>
             </div>
           </div>
           
           {/* Template Details */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Original Template Details</h2>
             
             <div className="space-y-4">
@@ -378,10 +378,10 @@ export default function QuizTemplateCustomizer() {
             </div>
             
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Question Types</h3>
+              <h3 className="text-sm font-medium text-text mb-2">Question Types</h3>
               <div className="flex flex-wrap gap-2">
                 {template.questionTypes.map(type => (
-                  <span key={type} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                  <span key={type} className="px-2 py-1 bg-accent text-primary text-xs rounded-full">
                     {questionTypes.find(t => t.id === type)?.name || type}
                   </span>
                 ))}
@@ -415,12 +415,12 @@ export default function QuizTemplateCustomizer() {
         {/* Main Content - Customization Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
             
             <div className="space-y-4">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="title" className="block text-sm font-medium text-text mb-1">
                   Quiz Title
                 </label>
                 <input
@@ -428,13 +428,13 @@ export default function QuizTemplateCustomizer() {
                   id="title"
                   value={customizedTemplate.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter quiz title"
                 />
               </div>
               
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="description" className="block text-sm font-medium text-text mb-1">
                   Description
                 </label>
                 <textarea
@@ -442,21 +442,21 @@ export default function QuizTemplateCustomizer() {
                   value={customizedTemplate.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="Enter quiz description"
                 />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="audienceLevel" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="audienceLevel" className="block text-sm font-medium text-text mb-1">
                     Audience Level
                   </label>
                   <select
                     id="audienceLevel"
                     value={customizedTemplate.audienceLevel}
                     onChange={(e) => handleInputChange('audienceLevel', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   >
                     {audienceLevels.map(level => (
                       <option key={level.id} value={level.id}>{level.name}</option>
@@ -465,7 +465,7 @@ export default function QuizTemplateCustomizer() {
                 </div>
                 
                 <div>
-                  <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="duration" className="block text-sm font-medium text-text mb-1">
                     Duration (minutes)
                   </label>
                   <input
@@ -475,7 +475,7 @@ export default function QuizTemplateCustomizer() {
                     onChange={(e) => handleInputChange('duration', parseInt(e.target.value))}
                     min={5}
                     max={180}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   />
                 </div>
               </div>
@@ -483,7 +483,7 @@ export default function QuizTemplateCustomizer() {
           </div>
           
           {/* Question Types */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Question Types</h2>
             <p className="text-sm text-gray-600 mb-4">
               Select the question types you want to include in your quiz:
@@ -497,9 +497,9 @@ export default function QuizTemplateCustomizer() {
                     id={`question-type-${type.id}`}
                     checked={customizedTemplate.selectedQuestionTypes.includes(type.id)}
                     onChange={() => toggleQuestionType(type.id)}
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                   />
-                  <label htmlFor={`question-type-${type.id}`} className="ml-2 block text-sm text-gray-700">
+                  <label htmlFor={`question-type-${type.id}`} className="ml-2 block text-sm text-text">
                     {type.name}
                   </label>
                 </div>
@@ -514,12 +514,12 @@ export default function QuizTemplateCustomizer() {
           </div>
           
           {/* Scoring and Feedback */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Scoring and Feedback</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label htmlFor="passingScore" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="passingScore" className="block text-sm font-medium text-text mb-1">
                   Passing Score (%)
                 </label>
                 <input
@@ -529,19 +529,19 @@ export default function QuizTemplateCustomizer() {
                   onChange={(e) => handleInputChange('passingScore', parseInt(e.target.value))}
                   min={0}
                   max={100}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                 />
               </div>
               
               <div>
-                <label htmlFor="feedbackType" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="feedbackType" className="block text-sm font-medium text-text mb-1">
                   Feedback Type
                 </label>
                 <select
                   id="feedbackType"
                   value={customizedTemplate.feedbackType}
                   onChange={(e) => handleInputChange('feedbackType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                 >
                   {feedbackTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.name}</option>
@@ -557,9 +557,9 @@ export default function QuizTemplateCustomizer() {
                   id="certificateEnabled"
                   checked={customizedTemplate.certificateEnabled}
                   onChange={(e) => handleInputChange('certificateEnabled', e.target.checked)}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
-                <label htmlFor="certificateEnabled" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="certificateEnabled" className="ml-2 block text-sm text-text">
                   Enable completion certificates
                 </label>
               </div>
@@ -570,9 +570,9 @@ export default function QuizTemplateCustomizer() {
                   id="analyticsEnabled"
                   checked={customizedTemplate.analyticsEnabled}
                   onChange={(e) => handleInputChange('analyticsEnabled', e.target.checked)}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
-                <label htmlFor="analyticsEnabled" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="analyticsEnabled" className="ml-2 block text-sm text-text">
                   Enable detailed analytics and reporting
                 </label>
               </div>
@@ -580,12 +580,12 @@ export default function QuizTemplateCustomizer() {
           </div>
           
           {/* Branding */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Branding</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label htmlFor="logo" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="logo" className="block text-sm font-medium text-text mb-1">
                   Logo URL (optional)
                 </label>
                 <input
@@ -593,13 +593,13 @@ export default function QuizTemplateCustomizer() {
                   id="logo"
                   value={customizedTemplate.brandingOptions.logo}
                   onChange={(e) => handleBrandingChange('logo', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-secondary focus:border-secondary"
                   placeholder="https://example.com/logo.png"
                 />
               </div>
               
               <div>
-                <label htmlFor="primaryColor" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="primaryColor" className="block text-sm font-medium text-text mb-1">
                   Primary Color
                 </label>
                 <div className="flex">
@@ -614,7 +614,7 @@ export default function QuizTemplateCustomizer() {
                     type="text"
                     value={customizedTemplate.brandingOptions.primaryColor}
                     onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-purple-500 focus:border-purple-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-secondary focus:border-secondary"
                   />
                 </div>
               </div>
@@ -627,9 +627,9 @@ export default function QuizTemplateCustomizer() {
                   id="showHeader"
                   checked={customizedTemplate.brandingOptions.showHeader}
                   onChange={(e) => handleBrandingChange('showHeader', e.target.checked)}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
-                <label htmlFor="showHeader" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="showHeader" className="ml-2 block text-sm text-text">
                   Show header with logo and title
                 </label>
               </div>
@@ -640,9 +640,9 @@ export default function QuizTemplateCustomizer() {
                   id="showFooter"
                   checked={customizedTemplate.brandingOptions.showFooter}
                   onChange={(e) => handleBrandingChange('showFooter', e.target.checked)}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
                 />
-                <label htmlFor="showFooter" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="showFooter" className="ml-2 block text-sm text-text">
                   Show footer with branding
                 </label>
               </div>
@@ -650,12 +650,12 @@ export default function QuizTemplateCustomizer() {
           </div>
           
           {/* Sample Questions Preview */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Sample Questions</h2>
               <button
                 onClick={() => navigate(`/admin/quizzes/new?template=${template.id}&edit=questions`)}
-                className="text-sm text-purple-600 hover:text-purple-800 flex items-center"
+                className="text-sm text-secondary hover:text-primary flex items-center"
               >
                 <Edit className="h-4 w-4 mr-1" />
                 Edit Questions
@@ -666,8 +666,8 @@ export default function QuizTemplateCustomizer() {
               {template.sampleQuestions.slice(0, 2).map((question, index) => (
                 <div key={question.id} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center mr-2">
-                      <span className="text-purple-600 font-medium">{index + 1}</span>
+                    <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center mr-2">
+                      <span className="text-secondary font-medium">{index + 1}</span>
                     </div>
                     <span className="font-medium">{question.text}</span>
                   </div>
@@ -681,7 +681,7 @@ export default function QuizTemplateCustomizer() {
                 <div className="text-center py-2">
                   <button
                     onClick={() => navigate(`/admin/quizzes/new?template=${template.id}&edit=questions`)}
-                    className="text-sm text-purple-600 hover:text-purple-800"
+                    className="text-sm text-secondary hover:text-primary"
                   >
                     + {template.sampleQuestions.length - 2} more questions
                   </button>
@@ -694,7 +694,7 @@ export default function QuizTemplateCustomizer() {
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => navigate(-1)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
             >
               Cancel
             </button>
@@ -704,7 +704,7 @@ export default function QuizTemplateCustomizer() {
               className={`flex items-center px-4 py-2 rounded-lg ${
                 saving
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-purple-600 hover:bg-purple-700'
+                  : 'bg-secondary hover:bg-primary'
               } text-white`}
             >
               {saving ? (

@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { HexColorPicker } from 'react-colorful';
-import { useTheme, type ThemeConfig } from '../../lib/theme';
-import { Card } from '../ui/Card';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { Progress } from '../ui/Progress';
+import React, { useState, useEffect, useRef } from "react";
+import { HexColorPicker } from "react-colorful";
+import { useTheme, type ThemeConfig } from "../../lib/theme";
+import { Card } from "../ui/Card";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
+import { Progress } from "../ui/Progress";
 import {
   Palette,
   Sun,
@@ -19,17 +19,18 @@ import {
   Plus,
   Trash2,
   Copy,
-  Image
-} from 'lucide-react';
-import { supabase } from '../../lib/supabase';
-import { showToast } from '../../lib/toast';
+  Image,
+} from "lucide-react";
+import { supabase } from "../../lib/supabase";
+import { showToast } from "../../lib/toast";
+import Cookies from "js-cookie";
 
 interface ThemePreset {
   id: string;
   name: string;
   description?: string;
-  colors: ThemeConfig['colors'];
-  fonts: ThemeConfig['fonts'];
+  colors: ThemeConfig["colors"];
+  fonts: ThemeConfig["fonts"];
   is_default: boolean;
   created_by: string | null;
   created_at: string;
@@ -45,7 +46,11 @@ interface ColorPickerPopoverProps {
   onClose: () => void;
 }
 
-function ColorPickerPopover({ color, onChange, onClose }: ColorPickerPopoverProps) {
+function ColorPickerPopover({
+  color,
+  onChange,
+  onClose,
+}: ColorPickerPopoverProps) {
   return (
     <div className="absolute z-10 mt-2 p-4 bg-white rounded-lg shadow-xl border border-border">
       <HexColorPicker color={color} onChange={onChange} />
@@ -62,17 +67,28 @@ function ColorPickerPopover({ color, onChange, onClose }: ColorPickerPopoverProp
 }
 
 export default function ThemeSettings() {
-  const { theme: currentTheme, updateTheme, resetTheme, isDarkMode, toggleDarkMode } = useTheme();
-  const [theme, setTheme] = useState<ThemeConfig>(currentTheme);
+  const {
+    theme: currentTheme,
+    updateTheme,
+    resetTheme,
+    isDarkMode,
+    toggleDarkMode,
+    setTheme,
+    theme,
+  } = useTheme();
   const [presets, setPresets] = useState<ThemePreset[]>([]);
   const [activePreset, setActivePreset] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
-  const [newPresetName, setNewPresetName] = useState('');
+  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(
+    null
+  );
+  const [newPresetName, setNewPresetName] = useState("");
   const [showNewPresetForm, setShowNewPresetForm] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string>(theme.branding?.logo || '');
-  const [logoHeight, setLogoHeight] = useState<number>(theme.branding?.logoHeight || 40);
+  const [logoUrl, setLogoUrl] = useState<string>(theme.branding?.logo || "");
+  const [logoHeight, setLogoHeight] = useState<number>(
+    theme.branding?.logoHeight || 40
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -81,27 +97,30 @@ export default function ThemeSettings() {
 
   useEffect(() => {
     // Update logo state when theme changes
-    setLogoUrl(theme.branding?.logo || '');
+    setLogoUrl(theme.branding?.logo || "");
     setLogoHeight(theme.branding?.logoHeight || 40);
   }, [theme]);
 
   const loadPresets = async () => {
     try {
       const { data, error } = await supabase
-        .from('theme_presets')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("theme_presets")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setPresets(data || []);
     } catch (error) {
-      console.error('Error loading presets:', error);
-      showToast('Failed to load theme presets', 'error');
+      console.error("Error loading presets:", error);
+      showToast("Failed to load theme presets", "error");
     }
   };
 
-  const handleColorChange = (key: keyof ThemeConfig['colors'], value: string) => {
-    setTheme(prev => ({
+  const handleColorChange = (
+    key: keyof ThemeConfig["colors"],
+    value: string
+  ) => {
+    setTheme((prev) => ({
       ...prev,
       colors: {
         ...prev.colors,
@@ -110,8 +129,8 @@ export default function ThemeSettings() {
     }));
   };
 
-  const handleFontChange = (key: keyof ThemeConfig['fonts'], value: string) => {
-    setTheme(prev => ({
+  const handleFontChange = (key: keyof ThemeConfig["fonts"], value: string) => {
+    setTheme((prev) => ({
       ...prev,
       fonts: {
         ...prev.fonts,
@@ -122,7 +141,7 @@ export default function ThemeSettings() {
 
   const handleLogoChange = (url: string) => {
     setLogoUrl(url);
-    setTheme(prev => ({
+    setTheme((prev) => ({
       ...prev,
       branding: {
         ...prev.branding,
@@ -133,7 +152,7 @@ export default function ThemeSettings() {
 
   const handleLogoHeightChange = (height: number) => {
     setLogoHeight(height);
-    setTheme(prev => ({
+    setTheme((prev) => ({
       ...prev,
       branding: {
         ...prev.branding,
@@ -148,72 +167,73 @@ export default function ThemeSettings() {
 
     try {
       const file = files[0];
-      
+
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        showToast('Please upload an image file', 'error');
+      if (!file.type.startsWith("image/")) {
+        showToast("Please upload an image file", "error");
         return;
       }
-      
+
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
-        showToast('Image size should be less than 2MB', 'error');
+        showToast("Image size should be less than 2MB", "error");
         return;
       }
 
       // Show loading toast
-      showToast('Uploading logo...', 'info');
-      
+      showToast("Uploading logo...", "info");
+
       // Create a unique filename
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `logos/${fileName}`;
-      
+
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
-        .from('theme-assets')
+        .from("theme-assets")
         .upload(filePath, file);
-        
+
       if (error) throw error;
-      
+
       // Get public URL
       const { data: publicUrlData } = supabase.storage
-        .from('theme-assets')
+        .from("theme-assets")
         .getPublicUrl(filePath);
-        
+
       if (publicUrlData) {
         handleLogoChange(publicUrlData.publicUrl);
-        showToast('Logo uploaded successfully', 'success');
+        showToast("Logo uploaded successfully", "success");
       }
     } catch (error) {
-      console.error('Error uploading logo:', error);
-      showToast('Failed to upload logo', 'error');
+      console.error("Error uploading logo:", error);
+      showToast("Failed to upload logo", "error");
     }
-    
+
     // Reset file input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const saveTheme = async () => {
     try {
       setSaving(true);
-      
+      Cookies.set("theme", JSON.stringify(theme), { expires: 365 });
+
       // Ensure branding is included in the theme update
       const updatedTheme = {
         ...theme,
         branding: {
           logo: logoUrl,
-          logoHeight: logoHeight
-        }
+          logoHeight: logoHeight,
+        },
       };
-      
+
       await updateTheme(updatedTheme);
-      showToast('Theme saved successfully', 'success');
+      showToast("Theme saved successfully", "success");
     } catch (error) {
-      console.error('Error saving theme:', error);
-      showToast('Failed to save theme', 'error');
+      console.error("Error saving theme:", error);
+      showToast("Failed to save theme", "error");
     } finally {
       setSaving(false);
     }
@@ -221,23 +241,23 @@ export default function ThemeSettings() {
 
   const saveAsPreset = async () => {
     if (!newPresetName) {
-      showToast('Please enter a preset name', 'error');
+      showToast("Please enter a preset name", "error");
       return;
     }
 
     try {
       setSaving(true);
       const { data, error } = await supabase
-        .from('theme_presets')
+        .from("theme_presets")
         .insert({
           name: newPresetName,
           colors: theme.colors,
           fonts: theme.fonts,
           branding: {
             logo: logoUrl,
-            logoHeight: logoHeight
+            logoHeight: logoHeight,
           },
-          created_by: (await supabase.auth.getUser()).data.user?.id
+          created_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .select()
         .single();
@@ -245,12 +265,12 @@ export default function ThemeSettings() {
       if (error) throw error;
 
       setPresets([...presets, data]);
-      setNewPresetName('');
+      setNewPresetName("");
       setShowNewPresetForm(false);
-      showToast('Theme preset saved successfully', 'success');
+      showToast("Theme preset saved successfully", "success");
     } catch (error) {
-      console.error('Error saving preset:', error);
-      showToast('Failed to save theme preset', 'error');
+      console.error("Error saving preset:", error);
+      showToast("Failed to save theme preset", "error");
     } finally {
       setSaving(false);
     }
@@ -259,62 +279,59 @@ export default function ThemeSettings() {
   const applyPreset = async (preset: ThemePreset) => {
     try {
       setActivePreset(preset.id);
+
       const presetTheme: ThemeConfig = {
         colors: preset.colors,
         fonts: preset.fonts,
-        branding: preset.branding || {
+        branding: {
           logo: logoUrl,
-          logoHeight: logoHeight
-        }
+          logoHeight: logoHeight,
+        },
       };
-      
-      // Update logo state
-      if (preset.branding?.logo) {
-        setLogoUrl(preset.branding.logo);
-      }
-      if (preset.branding?.logoHeight) {
-        setLogoHeight(preset.branding.logoHeight);
-      }
-      
+
       await updateTheme(presetTheme);
       setTheme(presetTheme);
-      showToast('Theme preset applied successfully', 'success');
+      showToast("Theme preset applied successfully", "success");
     } catch (error) {
-      console.error('Error applying preset:', error);
-      showToast('Failed to apply theme preset', 'error');
+      console.error("Error applying preset:", error);
+      showToast("Failed to apply theme preset", "error");
     }
   };
 
   const deletePreset = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this preset?')) return;
+    if (!confirm("Are you sure you want to delete this preset?")) return;
 
     try {
       const { error } = await supabase
-        .from('theme_presets')
+        .from("theme_presets")
         .delete()
-        .eq('id', id);
+        .eq("id", id);
 
       if (error) throw error;
 
-      setPresets(presets.filter(p => p.id !== id));
-      showToast('Theme preset deleted successfully', 'success');
+      setPresets(presets.filter((p) => p.id !== id));
+      showToast("Theme preset deleted successfully", "success");
     } catch (error) {
-      console.error('Error deleting preset:', error);
-      showToast('Failed to delete theme preset', 'error');
+      console.error("Error deleting preset:", error);
+      showToast("Failed to delete theme preset", "error");
     }
   };
 
   const exportTheme = () => {
-    const themeData = JSON.stringify({
-      ...theme,
-      branding: {
-        logo: logoUrl,
-        logoHeight: logoHeight
-      }
-    }, null, 2);
-    const blob = new Blob([themeData], { type: 'application/json' });
+    const themeData = JSON.stringify(
+      {
+        ...theme,
+        branding: {
+          logo: logoUrl,
+          logoHeight: logoHeight,
+        },
+      },
+      null,
+      2
+    );
+    const blob = new Blob([themeData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `theme-${new Date().toISOString()}.json`;
     document.body.appendChild(a);
@@ -332,7 +349,7 @@ export default function ThemeSettings() {
       try {
         const importedTheme = JSON.parse(e.target?.result as string);
         setTheme(importedTheme);
-        
+
         // Update logo state if present in imported theme
         if (importedTheme.branding?.logo) {
           setLogoUrl(importedTheme.branding.logo);
@@ -340,12 +357,12 @@ export default function ThemeSettings() {
         if (importedTheme.branding?.logoHeight) {
           setLogoHeight(importedTheme.branding.logoHeight);
         }
-        
+
         await updateTheme(importedTheme);
-        showToast('Theme imported successfully', 'success');
+        showToast("Theme imported successfully", "success");
       } catch (error) {
-        console.error('Error importing theme:', error);
-        showToast('Failed to import theme', 'error');
+        console.error("Error importing theme:", error);
+        showToast("Failed to import theme", "error");
       }
     };
     reader.readAsText(file);
@@ -355,12 +372,12 @@ export default function ThemeSettings() {
     try {
       await resetTheme();
       setTheme(currentTheme);
-      setLogoUrl(currentTheme.branding?.logo || '');
+      setLogoUrl(currentTheme.branding?.logo || "");
       setLogoHeight(currentTheme.branding?.logoHeight || 40);
-      showToast('Theme reset to default', 'success');
+      showToast("Theme reset to default", "success");
     } catch (error) {
-      console.error('Error resetting theme:', error);
-      showToast('Failed to reset theme', 'error');
+      console.error("Error resetting theme:", error);
+      showToast("Failed to reset theme", "error");
     }
   };
 
@@ -370,7 +387,9 @@ export default function ThemeSettings() {
       <div className="">
         <div>
           <h2 className="text-2xl font-bold">Theme Settings</h2>
-          <p className="text-gray-600">Customize the appearance of your quizzes</p>
+          <p className="text-gray-600">
+            Customize the appearance of your quizzes
+          </p>
         </div>
         <div className="flex items-center space-x-4 mt-5">
           <Button
@@ -379,7 +398,7 @@ export default function ThemeSettings() {
             icon={isDarkMode ? <Sun /> : <Moon />}
             onClick={toggleDarkMode}
           >
-            {isDarkMode ? 'Light' : 'Dark'}
+            {isDarkMode ? "Light" : "Dark"}
           </Button>
           <Button
             variant="outline"
@@ -387,7 +406,7 @@ export default function ThemeSettings() {
             icon={<Eye />}
             onClick={() => setPreviewMode(!previewMode)}
           >
-            {previewMode ? 'Exit Preview' : 'Preview'}
+            {previewMode ? "Exit Preview" : "Preview"}
           </Button>
           <Button
             variant="outline"
@@ -440,19 +459,33 @@ export default function ThemeSettings() {
                 </label>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => setActiveColorPicker(activeColorPicker === key ? null : key)}
+                    onClick={() =>
+                      setActiveColorPicker(
+                        activeColorPicker === key ? null : key
+                      )
+                    }
                     className="w-10 h-10 rounded-lg border border-border"
                     style={{ backgroundColor: value }}
                   />
                   <Input
                     value={value}
-                    onChange={(e) => handleColorChange(key as keyof ThemeConfig['colors'], e.target.value)}
+                    onChange={(e) =>
+                      handleColorChange(
+                        key as keyof ThemeConfig["colors"],
+                        e.target.value
+                      )
+                    }
                   />
                 </div>
                 {activeColorPicker === key && (
                   <ColorPickerPopover
                     color={value}
-                    onChange={(color) => handleColorChange(key as keyof ThemeConfig['colors'], color)}
+                    onChange={(color) =>
+                      handleColorChange(
+                        key as keyof ThemeConfig["colors"],
+                        color
+                      )
+                    }
                     onClose={() => setActiveColorPicker(null)}
                   />
                 )}
@@ -472,13 +505,22 @@ export default function ThemeSettings() {
                 </label>
                 <select
                   value={value}
-                  onChange={(e) => handleFontChange(key as keyof ThemeConfig['fonts'], e.target.value)}
+                  onChange={(e) =>
+                    handleFontChange(
+                      key as keyof ThemeConfig["fonts"],
+                      e.target.value
+                    )
+                  }
                   className="w-full px-4 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
                   <option value="Inter, system-ui, sans-serif">Inter</option>
                   <option value="Roboto, system-ui, sans-serif">Roboto</option>
-                  <option value="Poppins, system-ui, sans-serif">Poppins</option>
-                  <option value="Open Sans, system-ui, sans-serif">Open Sans</option>
+                  <option value="Poppins, system-ui, sans-serif">
+                    Poppins
+                  </option>
+                  <option value="Open Sans, system-ui, sans-serif">
+                    Open Sans
+                  </option>
                   <option value="Monaco, monospace">Monaco</option>
                 </select>
               </div>
@@ -487,12 +529,16 @@ export default function ThemeSettings() {
             <div className="mt-8">
               <h4 className="text-sm font-medium mb-2">Typography Preview</h4>
               <div className="p-4 rounded-lg border border-border">
-                <h1 style={{ fontFamily: theme.fonts.heading }} className="text-2xl font-bold mb-2">
+                <h1
+                  style={{ fontFamily: theme.fonts.heading }}
+                  className="text-2xl font-bold mb-2"
+                >
                   Sample Heading
                 </h1>
                 <p style={{ fontFamily: theme.fonts.body }}>
-                  This is a sample paragraph showing how your content will look with the selected fonts.
-                  The quick brown fox jumps over the lazy dog.
+                  This is a sample paragraph showing how your content will look
+                  with the selected fonts. The quick brown fox jumps over the
+                  lazy dog.
                 </p>
               </div>
             </div>
@@ -504,19 +550,17 @@ export default function ThemeSettings() {
           <h3 className="text-lg font-semibold mb-4">Branding</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Logo URL
-              </label>
+              <label className="block text-sm font-medium mb-2">Logo URL</label>
               <div className="space-y-5">
                 <Input
                   value={logoUrl}
-                  className='w-full h-8'
+                  className="w-full h-8"
                   onChange={(e) => handleLogoChange(e.target.value)}
                   placeholder="https://example.com/logo.png"
                 />
                 <Button
                   variant="outline"
-                  className='w-full'
+                  className="w-full"
                   size="sm"
                   icon={<Image />}
                   onClick={() => fileInputRef.current?.click()}
@@ -543,7 +587,9 @@ export default function ThemeSettings() {
               <Input
                 type="number"
                 value={logoHeight}
-                onChange={(e) => handleLogoHeightChange(parseInt(e.target.value))}
+                onChange={(e) =>
+                  handleLogoHeightChange(parseInt(e.target.value))
+                }
                 min={20}
                 max={200}
               />
@@ -553,13 +599,13 @@ export default function ThemeSettings() {
               <div className="mt-4">
                 <h4 className="text-sm font-medium mb-2">Logo Preview</h4>
                 <div className="p-4 rounded-lg border border-border flex items-center justify-center bg-gray-50">
-                  <img 
-                    src={logoUrl} 
-                    alt="Logo Preview" 
-                    style={{ height: `${logoHeight}px`, maxWidth: '100%' }}
+                  <img
+                    src={logoUrl}
+                    alt="Logo Preview"
+                    style={{ height: `${logoHeight}px`, maxWidth: "100%" }}
                     onError={() => {
-                      showToast('Failed to load logo image', 'error');
-                      setLogoUrl('');
+                      showToast("Failed to load logo image", "error");
+                      setLogoUrl("");
                     }}
                   />
                 </div>
@@ -597,7 +643,7 @@ export default function ThemeSettings() {
                   icon={<X />}
                   onClick={() => {
                     setShowNewPresetForm(false);
-                    setNewPresetName('');
+                    setNewPresetName("");
                   }}
                 >
                   Cancel
@@ -621,8 +667,8 @@ export default function ThemeSettings() {
                 key={preset.id}
                 className={`p-4 rounded-lg border transition-colors ${
                   activePreset === preset.id
-                    ? 'border-primary'
-                    : 'border-border hover:border-primary/50'
+                    ? "border-primary"
+                    : "border-border hover:border-primary/50"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -638,10 +684,10 @@ export default function ThemeSettings() {
                     <button
                       onClick={() => {
                         setNewPresetName(`${preset.name} (Copy)`);
-                        setTheme({ 
-                          colors: preset.colors, 
+                        setTheme({
+                          colors: preset.colors,
                           fonts: preset.fonts,
-                          branding: preset.branding
+                          branding: preset.branding,
                         });
                         if (preset.branding?.logo) {
                           setLogoUrl(preset.branding.logo);
@@ -701,17 +747,23 @@ export default function ThemeSettings() {
                 style={{ backgroundColor: theme.colors.primary }}
               >
                 {logoUrl && (
-                  <img 
-                    src={logoUrl} 
-                    alt="Logo" 
-                    style={{ height: `${logoHeight}px`, maxWidth: '100%' }}
+                  <img
+                    src={logoUrl}
+                    alt="Logo"
+                    style={{ height: `${logoHeight}px`, maxWidth: "100%" }}
                     className="mb-4"
                   />
                 )}
-                <h2 className="text-white text-2xl font-bold" style={{ fontFamily: theme.fonts.heading }}>
+                <h2
+                  className="text-white text-2xl font-bold"
+                  style={{ fontFamily: theme.fonts.heading }}
+                >
                   Sample Quiz Title
                 </h2>
-                <p className="text-white/80" style={{ fontFamily: theme.fonts.body }}>
+                <p
+                  className="text-white/80"
+                  style={{ fontFamily: theme.fonts.body }}
+                >
                   This is how your quiz headers will appear
                 </p>
               </div>
@@ -720,19 +772,31 @@ export default function ThemeSettings() {
             {/* Question Preview */}
             <div className="space-y-4">
               <div className="p-6 rounded-lg border border-border">
-                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: theme.fonts.heading }}>
+                <h3
+                  className="text-xl font-semibold mb-4"
+                  style={{ fontFamily: theme.fonts.heading }}
+                >
                   Sample Question
                 </h3>
                 <p className="mb-6" style={{ fontFamily: theme.fonts.body }}>
-                  What is the primary benefit of using a consistent brand identity across marketing materials?
+                  What is the primary benefit of using a consistent brand
+                  identity across marketing materials?
                 </p>
                 <div className="space-y-3">
-                  {['Brand recognition', 'Customer trust', 'Market differentiation', 'All of the above'].map((option, i) => (
+                  {[
+                    "Brand recognition",
+                    "Customer trust",
+                    "Market differentiation",
+                    "All of the above",
+                  ].map((option, i) => (
                     <button
                       key={i}
                       className="w-full text-left p-4 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition-colors"
                     >
-                      <span className="flex items-center" style={{ fontFamily: theme.fonts.body }}>
+                      <span
+                        className="flex items-center"
+                        style={{ fontFamily: theme.fonts.body }}
+                      >
                         <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 mr-3">
                           {String.fromCharCode(65 + i)}
                         </span>
@@ -747,10 +811,16 @@ export default function ThemeSettings() {
             {/* Progress and Navigation Preview */}
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium" style={{ fontFamily: theme.fonts.body }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ fontFamily: theme.fonts.body }}
+                >
                   Question 3 of 10
                 </span>
-                <span className="text-sm" style={{ fontFamily: theme.fonts.body }}>
+                <span
+                  className="text-sm"
+                  style={{ fontFamily: theme.fonts.body }}
+                >
                   Time remaining: 5:00
                 </span>
               </div>
@@ -766,9 +836,15 @@ export default function ThemeSettings() {
               <div>
                 <h4 className="text-sm font-medium mb-4">Button Variations</h4>
                 <div className="space-y-4">
-                  <Button variant="primary" className="w-full">Primary Button</Button>
-                  <Button variant="secondary" className="w-full">Secondary Button</Button>
-                  <Button variant="outline" className="w-full">Outline Button</Button>
+                  <Button variant="primary" className="w-full">
+                    Primary Button
+                  </Button>
+                  <Button variant="secondary" className="w-full">
+                    Secondary Button
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    Outline Button
+                  </Button>
                 </div>
               </div>
               <div>

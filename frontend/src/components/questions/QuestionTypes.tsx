@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Question, Option } from '../../types/quiz';
-import { processTemplateVariables } from '../../lib/htmlSanitizer';
+import React, { useState } from "react";
+import { Question, Option } from "../../types/quiz";
+import { processTemplateVariables } from "../../lib/htmlSanitizer";
 
 // Base props for all question types
 interface BaseQuestionProps {
@@ -10,14 +10,18 @@ interface BaseQuestionProps {
 }
 
 // Multiple Choice Question
-export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: BaseQuestionProps) {
+export function MultipleChoiceQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
   const [selectedOption, setSelectedOption] = useState<Option | null>(null);
   const [showOptionFeedback, setShowOptionFeedback] = useState(false);
 
   const handleOptionSelect = (option: Option) => {
     setSelectedOption(option);
     setShowOptionFeedback(true);
-    onAnswer(option.score, { optionId: option.id, correct: option.is_correct });
+    onAnswer(option.score, { optionId: option.id, feedback: option.feedback });
   };
 
   return (
@@ -31,37 +35,40 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
               className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${
                 selectedOption?.id === option.id
                   ? option.is_correct
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-red-500 bg-red-50'
-                  : 'border-gray-200 hover:border-purple-500 hover:bg-purple-50'
+                    ? "border-green-500 bg-green-50"
+                    : "border-red-500 bg-red-50"
+                  : "border-gray-200 hover:border-secondary hover:bg-accent"
               }`}
             >
               <div className="flex items-center">
                 <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 mr-3">
                   {String.fromCharCode(65 + index)}
                 </span>
-                <p className="text-lg font-medium text-gray-900">{option.text}</p>
+                <p className="text-lg font-medium text-text">{option.text}</p>
               </div>
             </button>
-            
-            {showFeedback && showOptionFeedback && selectedOption?.id === option.id && option.feedback && (
-              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div 
-                  className="prose max-w-none"
-                  dangerouslySetInnerHTML={{ 
-                    __html: processTemplateVariables(option.feedback, {
-                      name: 'User',
-                      email: 'user@example.com',
-                      score: option.score.toString(),
-                      date: new Date().toLocaleDateString(),
-                      time: '0:00',
-                      quiz_title: 'Quiz',
-                      performance_category: 'N/A'
-                    })
-                  }}
-                />
-              </div>
-            )}
+
+            {showFeedback &&
+              showOptionFeedback &&
+              selectedOption?.id === option.id &&
+              option.feedback && (
+                <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: processTemplateVariables(option.feedback, {
+                        name: "User",
+                        email: "user@example.com",
+                        score: option.score.toString(),
+                        date: new Date().toLocaleDateString(),
+                        time: "0:00",
+                        quiz_title: "Quiz",
+                        performance_category: "N/A",
+                      }),
+                    }}
+                  />
+                </div>
+              )}
           </div>
         ))}
       </div>
@@ -70,39 +77,115 @@ export function MultipleChoiceQuestion({ question, onAnswer, showFeedback }: Bas
 }
 
 // True/False Question
-export function TrueFalseQuestion({ question, onAnswer }: BaseQuestionProps) {
+export function TrueFalseQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [showOptionFeedback, setShowOptionFeedback] = useState(false);
+
+  const handleSelect = (value: string) => {
+    const isTrue = value.toLowerCase() === "true";
+    const isCorrect = isTrue === (question.answer_key?.correct_answer === true);
+
+    setSelected(value);
+    setShowOptionFeedback(true);
+
+    onAnswer(isCorrect ? question.points : 0, {
+      answer: value.toLowerCase(),
+      correct: isCorrect,
+      question_id: question.id,
+      feedback: question.answer_key?.explanation,
+    });
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="grid grid-cols-2 gap-4">
-        {['True', 'False'].map((value) => (
-          <button
-            key={value}
-            onClick={() => {
-              const isCorrect = (value.toLowerCase() === 'true') === 
-                (question.answer_key?.correct_answer === true);
-              onAnswer(isCorrect ? question.points : 0, { answer: value.toLowerCase(), correct: isCorrect });
-            }}
-            className="p-6 text-center rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all duration-200"
-          >
-            <span className="text-xl font-semibold text-gray-900">{value}</span>
-          </button>
-        ))}
+        {["True", "False"].map((value) => {
+          const isSelected = selected === value;
+          const isTrue = value.toLowerCase() === "true";
+          const isCorrect =
+            isTrue === (question.answer_key?.correct_answer === true);
+
+          return (
+            <button
+              key={value}
+              onClick={() => handleSelect(value)}
+              className={`p-6 text-center rounded-lg border-2 transition-all duration-200 ${
+                isSelected
+                  ? isCorrect
+                    ? "border-green-500 bg-green-50"
+                    : "border-red-500 bg-red-50"
+                  : "border-gray-200 hover:border-secondary hover:bg-accent"
+              }`}
+            >
+              <span className="text-xl font-semibold text-text">{value}</span>
+            </button>
+          );
+        })}
       </div>
+
+      {showFeedback && showOptionFeedback && question.answer_key?.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.answer_key.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: selected
+                  ? selected.toLowerCase() === "true"
+                    ? "True"
+                    : "False"
+                  : "",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "N/A",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 // Fill in the Blank Question
-export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+export function FillBlankQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const [answer, setAnswer] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const answerKey = question.answer_key as { correct_answer: string; alternative_answers?: string[] };
-    const isCorrect = answer.toLowerCase() === answerKey.correct_answer.toLowerCase() ||
-      answerKey.alternative_answers?.some(alt => alt.toLowerCase() === answer.toLowerCase());
-    onAnswer(isCorrect ? question.points : 0, { answer, correct: isCorrect });
+    const answerKey = question.answer_key as {
+      correct_answer: string;
+      alternative_answers?: string[];
+    };
+
+    const normalizedAnswer = answer.trim().toLowerCase();
+    const correct =
+      normalizedAnswer === answerKey.correct_answer.toLowerCase() ||
+      answerKey.alternative_answers?.some(
+        (alt) => alt.trim().toLowerCase() === normalizedAnswer
+      );
+
+    setIsCorrect(correct);
+    setSubmitted(true);
+    onAnswer(correct ? question.points : 0, {
+      answer,
+      correct,
+      question_id: question.id,
+      feedback: question.feedback,
+    });
   };
 
   return (
@@ -113,28 +196,62 @@ export function FillBlankQuestion({ question, onAnswer }: BaseQuestionProps) {
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           placeholder="Type your answer here"
+          disabled={submitted}
         />
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Submit Answer
-        </button>
+        {!submitted && (
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          >
+            Submit Answer
+          </button>
+        )}
       </form>
+
+      {submitted && showFeedback && question.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: isCorrect ? question.points.toString() : "0",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "N/A",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 // Short Answer Question
-export function ShortAnswerQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+export function ShortAnswerQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const [answer, setAnswer] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // For short answer, we'll need manual grading
-    onAnswer(0, { answer, needsGrading: true });
+    setSubmitted(true);
+
+    // For short answer, grading is manual, so score is 0, and we flag it
+    onAnswer(0, {
+      answer,
+      needsGrading: true,
+      question_id: question.id,
+      feedback: question.feedback,
+    });
   };
 
   return (
@@ -144,54 +261,97 @@ export function ShortAnswerQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={4}
           placeholder="Type your answer here"
+          disabled={submitted}
         />
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Submit Answer
-        </button>
+        {!submitted && (
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          >
+            Submit Answer
+          </button>
+        )}
       </form>
+
+      {submitted && showFeedback && question.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: "Pending",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "Manual Review",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 // Matching Question
-export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
+export function MatchingQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
   const [matches, setMatches] = useState<Record<string, string>>({});
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleMatch = (rightItem: string) => {
     if (selectedLeft) {
-      setMatches(prev => ({ ...prev, [selectedLeft]: rightItem }));
+      setMatches((prev) => ({ ...prev, [selectedLeft]: rightItem }));
       setSelectedLeft(null);
     }
   };
 
   const handleSubmit = () => {
-    const score = Object.entries(matches).reduce((acc, [left, right]) => {
-      const isCorrect = question.matching_pairs?.some(
-        pair => pair.left_item === left && pair.right_item === right
-      );
-      return acc + (isCorrect ? question.points / Object.keys(matches).length : 0);
-    }, 0);
-    onAnswer(score, { matches });
+    let totalScore = 0;
+    const totalPairs = question.matching_pairs?.length || 1;
+
+    const matchResults =
+      question.matching_pairs?.map((pair) => {
+        const userMatch = matches[pair.left_item];
+        const isCorrect = userMatch === pair.right_item;
+        if (isCorrect) {
+          totalScore += question.points / totalPairs;
+        }
+        return {
+          left_item: pair.left_item,
+          right_item: pair.right_item,
+          userMatch,
+          isCorrect,
+          id: pair.id,
+          feedback: pair.feedback,
+        };
+      }) || [];
+
+    setSubmitted(true);
+    onAnswer(totalScore, { matches, matchResults });
   };
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="grid grid-cols-2 gap-8">
+        {/* Left Side */}
         <div className="space-y-3">
-          {question.matching_pairs?.map(pair => {
+          {question.matching_pairs?.map((pair) => {
             const buttonClasses = [
               "w-full p-4 rounded-lg border-2 transition-colors",
               selectedLeft === pair.left_item
-                ? "border-purple-500 bg-purple-50"
-                : "border-gray-200 hover:border-purple-500 hover:bg-purple-50"
+                ? "border-secondary bg-accent"
+                : "border-gray-200 hover:border-secondary hover:bg-accent",
             ].join(" ");
 
             return (
@@ -199,39 +359,100 @@ export function MatchingQuestion({ question, onAnswer }: BaseQuestionProps) {
                 key={pair.left_item}
                 onClick={() => setSelectedLeft(pair.left_item)}
                 className={buttonClasses}
+                disabled={submitted}
               >
                 {pair.left_item}
               </button>
             );
           })}
         </div>
+
+        {/* Right Side */}
         <div className="space-y-3">
-          {question.matching_pairs?.map(pair => (
+          {question.matching_pairs?.map((pair) => (
             <button
               key={pair.right_item}
               onClick={() => handleMatch(pair.right_item)}
-              className="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors"
+              className="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:bg-accent transition-colors"
+              disabled={submitted}
             >
               {pair.right_item}
             </button>
           ))}
         </div>
       </div>
-      <button
-        onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-      >
-        Submit Matches
-      </button>
+
+      {!submitted && (
+        <button
+          onClick={handleSubmit}
+          className="w-full mt-6 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+        >
+          Submit Matches
+        </button>
+      )}
+
+      {/* Feedback section */}
+      {submitted && showFeedback && (
+        <div className="mt-6 space-y-4">
+          {question.matching_pairs?.map((pair) => {
+            const userMatch = matches[pair.left_item];
+            const isCorrect = userMatch === pair.right_item;
+
+            return (
+              <div
+                key={pair.left_item}
+                className={`p-4 border rounded-lg ${
+                  isCorrect
+                    ? "border-green-500 bg-green-50"
+                    : "border-red-500 bg-red-50"
+                }`}
+              >
+                <p className="font-medium">
+                  <strong>{pair.left_item}</strong> →{" "}
+                  <strong>{userMatch || "No match"}</strong>
+                </p>
+                {pair.feedback && (
+                  <div
+                    className="prose max-w-none mt-2 text-sm"
+                    dangerouslySetInnerHTML={{
+                      __html: processTemplateVariables(pair.feedback, {
+                        name: "User",
+                        email: "user@example.com",
+                        score: isCorrect
+                          ? `${
+                              question.points /
+                              (question.matching_pairs?.length || 1)
+                            }`
+                          : "0",
+                        date: new Date().toLocaleDateString(),
+                        time: new Date().toLocaleTimeString(),
+                        quiz_title: "Quiz",
+                        performance_category: isCorrect
+                          ? "Correct"
+                          : "Incorrect",
+                      }),
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
 // Ordering Question
-export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
+export function OrderingQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
   const [items, setItems] = useState(
     question.ordering_items?.sort(() => Math.random() - 0.5) || []
   );
+  const [submitted, setSubmitted] = useState(false);
 
   const moveItem = (fromIndex: number, toIndex: number) => {
     const newItems = [...items];
@@ -242,63 +463,122 @@ export function OrderingQuestion({ question, onAnswer }: BaseQuestionProps) {
 
   const handleSubmit = () => {
     const score = items.reduce((acc, item, index) => {
-      return acc + (item.correct_position === index + 1 ? question.points / items.length : 0);
+      return (
+        acc +
+        (item.correct_position === index + 1
+          ? question.points / items.length
+          : 0)
+      );
     }, 0);
-    onAnswer(score, { order: items.map(item => item.item) });
+    setSubmitted(true);
+    onAnswer(score, {
+      order: items.map((item) => item.item),
+      result: items.map((item, index) => ({
+        id: item.id,
+        correct: item.correct_position === index + 1,
+        position: index + 1,
+        feedback: item.feedback,
+      })),
+    });
   };
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
-      <div className="space-y-2">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-2"
-          >
-            <button
-              onClick={() => index > 0 && moveItem(index, index - 1)}
-              className="p-2 text-gray-500 hover:text-gray-700"
-              disabled={index === 0}
-            >
-              ↑
-            </button>
-            <button
-              onClick={() => index < items.length - 1 && moveItem(index, index + 1)}
-              className="p-2 text-gray-500 hover:text-gray-700"
-              disabled={index === items.length - 1}
-            >
-              ↓
-            </button>
-            <div className="flex-1 p-4 bg-white rounded-lg border-2 border-gray-200">
-              {item.item}
+      <div className="space-y-4">
+        {items.map((item, index) => {
+          const isCorrect = item.correct_position === index + 1;
+
+          return (
+            <div key={item.id} className="space-y-2">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => index > 0 && moveItem(index, index - 1)}
+                  className="p-2 text-gray-500 hover:text-text"
+                  disabled={index === 0 || submitted}
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() =>
+                    index < items.length - 1 && moveItem(index, index + 1)
+                  }
+                  className="p-2 text-gray-500 hover:text-text"
+                  disabled={index === items.length - 1 || submitted}
+                >
+                  ↓
+                </button>
+                <div
+                  className={`flex-1 p-4 rounded-lg border-2 transition-colors ${
+                    submitted
+                      ? isCorrect
+                        ? "border-green-500 bg-green-50"
+                        : "border-red-500 bg-red-50"
+                      : "border-gray-200 bg-background"
+                  }`}
+                >
+                  {item.item}
+                </div>
+              </div>
+
+              {submitted && showFeedback && item.feedback && (
+                <div
+                  className="prose max-w-none p-4 bg-gray-50 rounded-lg border border-gray-200 text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: processTemplateVariables(item.feedback, {
+                      name: "User",
+                      email: "user@example.com",
+                      score: isCorrect
+                        ? `${question.points / items.length}`
+                        : "0",
+                      date: new Date().toLocaleDateString(),
+                      time: new Date().toLocaleTimeString(),
+                      quiz_title: "Quiz",
+                      performance_category: isCorrect ? "Correct" : "Incorrect",
+                    }),
+                  }}
+                />
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <button
-        onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-      >
-        Submit Order
-      </button>
+
+      {!submitted && (
+        <button
+          onClick={handleSubmit}
+          className="w-full mt-6 px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+        >
+          Submit Order
+        </button>
+      )}
     </div>
   );
 }
-
 // Essay Question
-export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [essay, setEssay] = useState('');
+export function EssayQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const [essay, setEssay] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const minWords = 250;
 
   const countWords = (text: string) => {
-    return text.trim().split(/\s+/).length;
+    return text.trim().split(/\s+/).filter(Boolean).length;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (countWords(essay) >= minWords) {
-      onAnswer(0, { essay, needsGrading: true });
+      setSubmitted(true);
+      onAnswer(0, {
+        essay,
+        needsGrading: true,
+        question_id: question.id,
+        feedback: question.feedback,
+      });
     }
   };
 
@@ -309,32 +589,64 @@ export function EssayQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={essay}
           onChange={(e) => setEssay(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={10}
           placeholder="Write your essay here (minimum 250 words)"
+          disabled={submitted}
         />
         <div className="text-sm text-gray-600">
           Words: {countWords(essay)} / {minWords} minimum
         </div>
-        <button
-          type="submit"
-          disabled={countWords(essay) < minWords}
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400"
-        >
-          Submit Essay
-        </button>
+        {!submitted && (
+          <button
+            type="submit"
+            disabled={countWords(essay) < minWords}
+            className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors disabled:bg-gray-400"
+          >
+            Submit Essay
+          </button>
+        )}
       </form>
+
+      {submitted && showFeedback && question.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: "Pending",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "Manual Review",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
-
 // Picture Based Question
-export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+export function PictureBasedQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const [answer, setAnswer] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAnswer(0, { answer, needsGrading: true });
+    setSubmitted(true);
+    onAnswer(0, {
+      answer,
+      needsGrading: true,
+      question_id: question.id,
+      feedback: question.feedback,
+    });
   };
 
   return (
@@ -351,34 +663,75 @@ export function PictureBasedQuestion({ question, onAnswer }: BaseQuestionProps) 
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={6}
           placeholder="Analyze the image and provide your answer"
+          disabled={submitted}
         />
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Submit Analysis
-        </button>
+        {!submitted && (
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          >
+            Submit Analysis
+          </button>
+        )}
       </form>
+
+      {submitted && showFeedback && question.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: "Pending",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "Manual Review",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 // Complete Statement Question
-export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionProps) {
+
+export function CompleteStatementQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
   const [answers, setAnswers] = useState<string[]>([]);
-  const answerKey = question.answer_key as { answers: string[]; scoring: { per_correct: number; partial_credit: boolean } };
-  const blanks = question.text.split('\n').filter(line => line.includes('____'));
+  const [submitted, setSubmitted] = useState(false);
+
+  const answerKey = question.answer_key as {
+    answers: string[];
+    scoring: { per_correct: number; partial_credit: boolean };
+  };
+
+  const blanks = question.text
+    .split("\n")
+    .filter((line) => line.includes("____"));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
     const score = answers.reduce((acc, answer, index) => {
-      const isCorrect = answer.toLowerCase() === answerKey.answers[index].toLowerCase();
+      const isCorrect =
+        answer.toLowerCase() === answerKey.answers[index].toLowerCase();
       return acc + (isCorrect ? answerKey.scoring.per_correct : 0);
     }, 0);
-    onAnswer(score, { answers });
+    onAnswer(score, {
+      answers,
+      question_id: question.id,
+      feedback: question.feedback,
+    });
   };
 
   return (
@@ -387,38 +740,72 @@ export function CompleteStatementQuestion({ question, onAnswer }: BaseQuestionPr
       <form onSubmit={handleSubmit} className="space-y-4">
         {blanks.map((blank, index) => (
           <div key={index} className="flex items-center gap-4">
-            <span>{blank.replace('____', '')}</span>
+            <span>{blank.replace("____", "")}</span>
             <input
               type="text"
-              value={answers[index] || ''}
+              value={answers[index] || ""}
               onChange={(e) => {
                 const newAnswers = [...answers];
                 newAnswers[index] = e.target.value;
                 setAnswers(newAnswers);
               }}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
               placeholder="Fill in the blank"
+              disabled={submitted}
             />
           </div>
         ))}
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Submit Answers
-        </button>
+        {!submitted && (
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          >
+            Submit Answers
+          </button>
+        )}
       </form>
+
+      {submitted && showFeedback && question.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: "Pending",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "Manual Review",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 // Definition Question
-export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
-  const [answer, setAnswer] = useState('');
+
+export function DefinitionQuestion({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
+  const [answer, setAnswer] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAnswer(0, { answer, needsGrading: true });
+    setSubmitted(true);
+    onAnswer(0, {
+      answer,
+      needsGrading: true,
+      question_id: question.id,
+      feedback: question.feedback,
+    });
   };
 
   return (
@@ -428,43 +815,77 @@ export function DefinitionQuestion({ question, onAnswer }: BaseQuestionProps) {
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
           rows={6}
           placeholder="Write your definition and explanation"
+          disabled={submitted}
         />
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Submit Definition
-        </button>
+        {!submitted && (
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
+          >
+            Submit Definition
+          </button>
+        )}
       </form>
+
+      {submitted && showFeedback && question.feedback && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: processTemplateVariables(question.feedback, {
+                name: "User",
+                email: "user@example.com",
+                score: "Pending",
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                quiz_title: "Quiz",
+                performance_category: "Manual Review",
+              }),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 // Question Factory Component
-export function QuestionComponent({ question, onAnswer, showFeedback }: BaseQuestionProps) {
+export function QuestionComponent({
+  question,
+  onAnswer,
+  showFeedback,
+}: BaseQuestionProps) {
   switch (question.type) {
-    case 'multiple_choice':
-      return <MultipleChoiceQuestion question={question} onAnswer={onAnswer} showFeedback={showFeedback} />;
-    case 'true_false':
+    case "multiple_choice":
+      return (
+        <MultipleChoiceQuestion
+          question={question}
+          onAnswer={onAnswer}
+          showFeedback={showFeedback}
+        />
+      );
+    case "true_false":
       return <TrueFalseQuestion question={question} onAnswer={onAnswer} />;
-    case 'fill_blank':
+    case "fill_blank":
       return <FillBlankQuestion question={question} onAnswer={onAnswer} />;
-    case 'short_answer':
+    case "short_answer":
       return <ShortAnswerQuestion question={question} onAnswer={onAnswer} />;
-    case 'matching':
+    case "matching":
       return <MatchingQuestion question={question} onAnswer={onAnswer} />;
-    case 'ordering':
+    case "ordering":
       return <OrderingQuestion question={question} onAnswer={onAnswer} />;
-    case 'essay':
+    case "essay":
       return <EssayQuestion question={question} onAnswer={onAnswer} />;
-    case 'picture_based':
+    case "picture_based":
       return <PictureBasedQuestion question={question} onAnswer={onAnswer} />;
-    case 'complete_statement':
-      return <CompleteStatementQuestion question={question} onAnswer={onAnswer} />;
-    case 'definition':
+    case "complete_statement":
+      return (
+        <CompleteStatementQuestion question={question} onAnswer={onAnswer} />
+      );
+    case "definition":
       return <DefinitionQuestion question={question} onAnswer={onAnswer} />;
     default:
       return <div>Unsupported question type</div>;

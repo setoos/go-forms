@@ -219,7 +219,7 @@ export default function RichTextEditor({
         <div className="flex items-center space-x-2">
           <button
             onClick={handleHtmlModeToggle}
-            className={`p-1.5 rounded ${htmlMode ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-200'}`}
+            className={`p-1.5 rounded ${htmlMode ? 'bg-accent text-primary' : 'hover:bg-gray-200'}`}
             title="Toggle HTML Mode"
             type="button"
           >
@@ -276,7 +276,7 @@ export default function RichTextEditor({
               className={`p-1.5 rounded flex items-center ${
                 isSaving 
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                  : 'bg-accent text-primary hover:bg-accent'
               }`}
               title="Save"
               type="button"

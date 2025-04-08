@@ -112,20 +112,20 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-accent via-white to-accent py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+        <div className="bg-background rounded-lg shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-purple-600 px-6 py-8 text-white text-center">
+          <div className="bg-secondary px-6 py-8 text-white text-center">
             <div className="flex justify-center mb-4">
-              <div className="bg-white rounded-full p-2 animate-[pulse_2s_ease-in-out_1]">
-                <CheckCircle className="h-12 w-12 text-purple-600" />
+              <div className="bg-background rounded-full p-2 animate-[pulse_2s_ease-in-out_1]">
+                <CheckCircle className="h-12 w-12 text-secondary" />
               </div>
             </div>
             <h1 className="text-3xl font-bold">
               {actionType === 'email' ? 'Email Sent Successfully!' : 'Results Saved Successfully!'}
             </h1>
-            <p className="mt-2 text-purple-100">
+            <p className="mt-2 text-accent">
               {actionType === 'email' 
                 ? 'Your GoForm results have been emailed to you.' 
                 : 'Your GoForm results have been saved.'}
@@ -135,7 +135,7 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
           {/* Content */}
           <div className="px-6 py-8">
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Summary</h2>
+              <h2 className="text-xl font-semibold text-text mb-4">Summary</h2>
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {quizTitle && (
@@ -144,13 +144,13 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                         <FileText className="h-4 w-4 mr-1" />
                         GoForm
                       </p>
-                      <p className="font-medium text-gray-900">{quizTitle}</p>
+                      <p className="font-medium text-text">{quizTitle}</p>
                     </div>
                   )}
                   {score !== undefined && (
                     <div>
                       <p className="text-sm text-gray-500">Score</p>
-                      <p className="font-medium text-gray-900">{score}%</p>
+                      <p className="font-medium text-text">{score}%</p>
                     </div>
                   )}
                   {email && (
@@ -159,7 +159,7 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                         <Mail className="h-4 w-4 mr-1" />
                         Email
                       </p>
-                      <p className="font-medium text-gray-900">{email}</p>
+                      <p className="font-medium text-text">{email}</p>
                     </div>
                   )}
                   <div>
@@ -167,25 +167,25 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                       <Calendar className="h-4 w-4 mr-1" />
                       Timestamp
                     </p>
-                    <p className="font-medium text-gray-900">{formattedDate}</p>
+                    <p className="font-medium text-text">{formattedDate}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">What's Next?</h2>
+              <h2 className="text-xl font-semibold text-text mb-4">What's Next?</h2>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-purple-100 rounded-full p-1">
-                    <Download className="h-5 w-5 text-purple-600" />
+                  <div className="flex-shrink-0 bg-accent rounded-full p-1">
+                    <Download className="h-5 w-5 text-secondary" />
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Download Your Results</h3>
+                    <h3 className="text-lg font-medium text-text">Download Your Results</h3>
                     <p className="text-gray-600">Get a PDF copy of your detailed results for future reference.</p>
                     <button 
                       onClick={handleDownloadPDF}
-                      className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-colors"
+                      className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-secondary rounded-md hover:bg-primary transition-colors"
                     >
                       <Download className="h-4 w-4 mr-1.5" />
                       Download PDF
@@ -195,15 +195,15 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
 
                 {actionType === 'save' && (
                   <div className="flex items-start">
-                    <div className="flex-shrink-0 bg-purple-100 rounded-full p-1">
-                      <Mail className="h-5 w-5 text-purple-600" />
+                    <div className="flex-shrink-0 bg-accent rounded-full p-1">
+                      <Mail className="h-5 w-5 text-secondary" />
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-lg font-medium text-gray-900">Email Your Results</h3>
+                      <h3 className="text-lg font-medium text-text">Email Your Results</h3>
                       <p className="text-gray-600">Send a copy of your results to your email for easy access.</p>
                       <button 
                         onClick={() => navigate(-1)}
-                        className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-600 border border-purple-600 rounded-md hover:bg-purple-50 transition-colors"
+                        className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-secondary border border-secondary rounded-md hover:bg-accent transition-colors"
                       >
                         <Mail className="h-4 w-4 mr-1.5" />
                         Go Back to Send Email
@@ -213,16 +213,16 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                 )}
 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-purple-100 rounded-full p-1">
-                    <Share2 className="h-5 w-5 text-purple-600" />
+                  <div className="flex-shrink-0 bg-accent rounded-full p-1">
+                    <Share2 className="h-5 w-5 text-secondary" />
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Share Your Results</h3>
+                    <h3 className="text-lg font-medium text-text">Share Your Results</h3>
                     <p className="text-gray-600">Share your results with friends or colleagues.</p>
                     <div className="mt-2 flex space-x-2">
                       <button 
                         onClick={handleShareResults}
-                        className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-600 border border-purple-600 rounded-md hover:bg-purple-50 transition-colors"
+                        className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-secondary border border-secondary rounded-md hover:bg-accent transition-colors"
                       >
                         <Share2 className="h-4 w-4 mr-1.5" />
                         Share Results
@@ -239,15 +239,15 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
                 </div>
 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-purple-100 rounded-full p-1">
-                    <RefreshCw className="h-5 w-5 text-purple-600" />
+                  <div className="flex-shrink-0 bg-accent rounded-full p-1">
+                    <RefreshCw className="h-5 w-5 text-secondary" />
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">Take Another GoForm</h3>
+                    <h3 className="text-lg font-medium text-text">Take Another GoForm</h3>
                     <p className="text-gray-600">Explore more GoForms to test your knowledge in different areas.</p>
                     <Link 
                       to="/"
-                      className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-600 border border-purple-600 rounded-md hover:bg-purple-50 transition-colors"
+                      className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-secondary border border-secondary rounded-md hover:bg-accent transition-colors"
                     >
                       <RefreshCw className="h-4 w-4 mr-1.5" />
                       Browse GoForms
@@ -260,14 +260,14 @@ export default function ResultsSuccess({ action = 'save' }: ResultsSuccessProps)
             <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
               <button
                 onClick={() => navigate(-1)}
-                className="flex items-center justify-center px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                className="flex items-center justify-center px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-accent transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Return to Results
               </button>
               <Link
                 to="/"
-                className="flex items-center justify-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center justify-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary transition-colors"
               >
                 <Home className="w-5 h-5 mr-2" />
                 Go to Home

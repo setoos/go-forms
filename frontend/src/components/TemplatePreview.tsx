@@ -181,20 +181,20 @@ export default function TemplatePreview() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
   
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 text-center">
+      <div className="bg-background rounded-lg shadow-md p-6 text-center">
         <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+        <h3 className="text-lg font-medium text-text mb-2">Error</h3>
         <p className="text-gray-500 mb-6">{error}</p>
         <button
           onClick={() => navigate('/admin/templates')}
-          className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
           Go Back
@@ -211,11 +211,11 @@ export default function TemplatePreview() {
         <div className="flex items-center">
           <button
             onClick={() => navigate('/admin/templates')}
-            className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+            className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-text">
             {template?.name || 'Template Preview'}
           </h1>
         </div>
@@ -237,7 +237,7 @@ export default function TemplatePreview() {
           </button>
           <button
             onClick={handleGeneratePDF}
-            className="flex items-center px-3 py-1.5 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700"
+            className="flex items-center px-3 py-1.5 text-sm bg-secondary text-white rounded-md hover:bg-primary"
           >
             <Download className="w-4 h-4 mr-1.5" />
             Generate PDF
@@ -247,12 +247,12 @@ export default function TemplatePreview() {
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Preview Variables</h2>
             <div className="space-y-4">
               {Object.entries(previewVariables).map(([key, value]) => (
                 <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+                  <label className="block text-sm font-medium text-text mb-1 capitalize">
                     {key.replace(/_/g, ' ')}
                   </label>
                   <input
@@ -268,7 +268,7 @@ export default function TemplatePreview() {
         </div>
         
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <div className="prose max-w-none">
               <div dangerouslySetInnerHTML={{ __html: processedContent }} />
             </div>
@@ -277,7 +277,7 @@ export default function TemplatePreview() {
           <div className="mt-6 flex justify-end">
             <button
               onClick={() => navigate(`/admin/templates/${id}`)}
-              className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               <FileText className="w-5 h-5 mr-2" />
               Edit Template

@@ -172,7 +172,7 @@ export default function QuizTemplatePreview() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader className="h-12 w-12 text-purple-600 animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -180,13 +180,13 @@ export default function QuizTemplatePreview() {
   if (error || !template) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <div className="bg-background rounded-lg shadow-md p-6 text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-text mb-2">Error</h3>
           <p className="text-gray-500 mb-6">{error || 'Template not found'}</p>
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Go Back
@@ -202,12 +202,12 @@ export default function QuizTemplatePreview() {
       <div className="flex items-center mb-8">
         <button
           onClick={() => navigate(-1)}
-          className="mr-4 p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100"
+          className="mr-4 p-2 text-gray-600 hover:text-text rounded-full hover:bg-gray-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{template.title}</h1>
+          <h1 className="text-2xl font-bold text-text">{template.title}</h1>
           <p className="text-gray-600">{template.description}</p>
         </div>
       </div>
@@ -216,7 +216,7 @@ export default function QuizTemplatePreview() {
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           {/* Template Image */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-background rounded-lg shadow-md overflow-hidden">
             <img 
               src={template.previewImage} 
               alt={template.title}
@@ -225,7 +225,7 @@ export default function QuizTemplatePreview() {
           </div>
 
           {/* Template Details */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Template Details</h2>
             
             <div className="space-y-4">
@@ -291,10 +291,10 @@ export default function QuizTemplatePreview() {
             </div>
             
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Tags</h3>
+              <h3 className="text-sm font-medium text-text mb-2">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {template.tags.map(tag => (
-                  <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                  <span key={tag} className="px-2 py-1 bg-gray-100 text-text text-xs rounded-full">
                     {tag}
                   </span>
                 ))}
@@ -303,10 +303,10 @@ export default function QuizTemplatePreview() {
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-background rounded-lg shadow-md p-6">
             <button
               onClick={handleUseTemplate}
-              className="w-full mb-3 flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="w-full mb-3 flex items-center justify-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               <CheckCircle className="h-5 w-5 mr-2" />
               Use This Template
@@ -315,7 +315,7 @@ export default function QuizTemplatePreview() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleDownload}
-                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
               >
                 <Download className="h-5 w-5 mr-2" />
                 Download
@@ -323,7 +323,7 @@ export default function QuizTemplatePreview() {
               
               <button
                 onClick={handleCopyTemplateId}
-                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-text hover:bg-gray-50"
               >
                 <Copy className="h-5 w-5 mr-2" />
                 Copy ID
@@ -335,15 +335,15 @@ export default function QuizTemplatePreview() {
         {/* Main Content */}
         <div className="lg:col-span-2">
           {/* Tabs */}
-          <div className="bg-white rounded-lg shadow-md mb-6">
+          <div className="bg-background rounded-lg shadow-md mb-6">
             <div className="border-b border-gray-200">
               <nav className="flex -mb-px">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'overview'
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-secondary text-secondary'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Overview
@@ -352,8 +352,8 @@ export default function QuizTemplatePreview() {
                   onClick={() => setActiveTab('questions')}
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'questions'
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-secondary text-secondary'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Sample Questions
@@ -362,8 +362,8 @@ export default function QuizTemplatePreview() {
                   onClick={() => setActiveTab('features')}
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'features'
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-secondary text-secondary'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Features
@@ -372,8 +372,8 @@ export default function QuizTemplatePreview() {
                   onClick={() => setActiveTab('reporting')}
                   className={`py-4 px-6 text-sm font-medium border-b-2 ${
                     activeTab === 'reporting'
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-secondary text-secondary'
+                      : 'border-transparent text-gray-500 hover:text-text hover:border-gray-300'
                   }`}
                 >
                   Reporting
@@ -397,8 +397,8 @@ export default function QuizTemplatePreview() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {template.questionTypes.map(type => (
                         <div key={type} className="bg-gray-50 p-3 rounded-lg flex items-center">
-                          <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                            <span className="text-purple-600 font-medium">{type.charAt(0).toUpperCase()}</span>
+                          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                            <span className="text-secondary font-medium">{type.charAt(0).toUpperCase()}</span>
                           </div>
                           <span className="text-sm font-medium">{questionTypeLabels[type]}</span>
                         </div>
@@ -483,11 +483,11 @@ export default function QuizTemplatePreview() {
                           onClick={() => toggleQuestionExpand(question.id)}
                         >
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                              <span className="text-purple-600 font-medium">{index + 1}</span>
+                            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                              <span className="text-secondary font-medium">{index + 1}</span>
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{question.text}</p>
+                              <p className="font-medium text-text">{question.text}</p>
                               <p className="text-xs text-gray-500">
                                 {questionTypeLabels[question.type]}
                               </p>
@@ -503,7 +503,7 @@ export default function QuizTemplatePreview() {
                         </div>
                         
                         {expandedQuestions[question.id] && (
-                          <div className="p-4 bg-white">
+                          <div className="p-4 bg-background">
                             {question.type === 'multiple_choice' && (
                               <div className="space-y-2">
                                 {question.options.map(option => (
@@ -516,7 +516,7 @@ export default function QuizTemplatePreview() {
                                     }`}
                                   >
                                     <div className="flex items-center">
-                                      <div className="w-6 h-6 rounded-full bg-white border border-gray-300 flex items-center justify-center mr-3">
+                                      <div className="w-6 h-6 rounded-full bg-background border border-gray-300 flex items-center justify-center mr-3">
                                         {option.id}
                                       </div>
                                       <span>{option.text}</span>
@@ -542,7 +542,7 @@ export default function QuizTemplatePreview() {
                               <div className="space-y-2">
                                 {question.pairs.map((pair, i) => (
                                   <div key={i} className="grid grid-cols-2 gap-4">
-                                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                    <div className="p-3 bg-accent border border-accent rounded-lg">
                                       {pair.left}
                                     </div>
                                     <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center">
@@ -581,7 +581,7 @@ export default function QuizTemplatePreview() {
                   {template.features.length > 5 && (
                     <button
                       onClick={() => setShowAllFeatures(!showAllFeatures)}
-                      className="mt-4 text-purple-600 hover:text-purple-800 font-medium"
+                      className="mt-4 text-secondary hover:text-primary font-medium"
                     >
                       {showAllFeatures ? 'Show Less' : `Show All (${template.features.length})`}
                     </button>
@@ -589,33 +589,33 @@ export default function QuizTemplatePreview() {
                   
                   <div className="mt-8">
                     <h3 className="text-lg font-medium mb-3">Customization Options</h3>
-                    <div className="bg-purple-50 p-4 rounded-lg">
+                    <div className="bg-accent p-4 rounded-lg">
                       <p className="mb-4">
                         When you use this template, you'll be able to customize:
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="flex items-center">
-                          <Sliders className="h-5 w-5 text-purple-600 mr-2" />
+                          <Sliders className="h-5 w-5 text-secondary mr-2" />
                           <span>GoForm duration and time limits</span>
                         </div>
                         <div className="flex items-center">
-                          <FileQuestion className="h-5 w-5 text-purple-600 mr-2" />
+                          <FileQuestion className="h-5 w-5 text-secondary mr-2" />
                           <span>Question content and order</span>
                         </div>
                         <div className="flex items-center">
-                          <Tag className="h-5 w-5 text-purple-600 mr-2" />
+                          <Tag className="h-5 w-5 text-secondary mr-2" />
                           <span>Branding and appearance</span>
                         </div>
                         <div className="flex items-center">
-                          <Award className="h-5 w-5 text-purple-600 mr-2" />
+                          <Award className="h-5 w-5 text-secondary mr-2" />
                           <span>Passing score requirements</span>
                         </div>
                         <div className="flex items-center">
-                          <MessageSquare className="h-5 w-5 text-purple-600 mr-2" />
+                          <MessageSquare className="h-5 w-5 text-secondary mr-2" />
                           <span>Feedback and explanations</span>
                         </div>
                         <div className="flex items-center">
-                          <Layers className="h-5 w-5 text-purple-600 mr-2" />
+                          <Layers className="h-5 w-5 text-secondary mr-2" />
                           <span>Certificate design</span>
                         </div>
                       </div>
@@ -635,7 +635,7 @@ export default function QuizTemplatePreview() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex items-center mb-3">
-                        <BarChart className="h-6 w-6 text-purple-600 mr-2" />
+                        <BarChart className="h-6 w-6 text-secondary mr-2" />
                         <h3 className="font-medium">Performance Metrics</h3>
                       </div>
                       <ul className="space-y-2 text-sm">
@@ -650,7 +650,7 @@ export default function QuizTemplatePreview() {
                     
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex items-center mb-3">
-                        <Users className="h-6 w-6 text-purple-600 mr-2" />
+                        <Users className="h-6 w-6 text-secondary mr-2" />
                         <h3 className="font-medium">Participant Analysis</h3>
                       </div>
                       <ul className="space-y-2 text-sm">
@@ -664,9 +664,9 @@ export default function QuizTemplatePreview() {
                     </div>
                   </div>
                   
-                  <div className="bg-purple-50 p-4 rounded-lg">
+                  <div className="bg-accent p-4 rounded-lg">
                     <h3 className="font-medium mb-3">Analytics Dashboard Preview</h3>
-                    <div className="aspect-video bg-white rounded-lg border border-gray-200 flex items-center justify-center">
+                    <div className="aspect-video bg-background rounded-lg border border-gray-200 flex items-center justify-center">
                       <div className="text-center p-4">
                         <BarChart className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                         <p className="text-gray-500">Analytics dashboard preview</p>
@@ -690,16 +690,16 @@ export default function QuizTemplatePreview() {
           </div>
 
           {/* Call to Action */}
-          <div className="bg-purple-50 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
+          <div className="bg-accent rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to use this template?</h3>
+              <h3 className="text-lg font-semibold text-text mb-2">Ready to use this template?</h3>
               <p className="text-gray-600 max-w-xl">
                 Get started with this template and customize it to fit your specific needs.
               </p>
             </div>
             <button
               onClick={handleUseTemplate}
-              className="mt-4 md:mt-0 flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="mt-4 md:mt-0 flex items-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               <CheckCircle className="h-5 w-5 mr-2" />
               Use This Template
