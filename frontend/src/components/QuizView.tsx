@@ -9,6 +9,7 @@ import {
   Lock,
   Globe,
   Users,
+  Loader,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { showToast } from "../lib/toast";
@@ -107,8 +108,7 @@ export default function QuizView() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading quiz...</p>
+          <Loader className="h-12 w-12 text-secondary animate-spin" />
         </div>
       </div>
     );

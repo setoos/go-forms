@@ -173,7 +173,7 @@ export function FillBlankQuestion({
 
     const normalizedAnswer = answer.trim().toLowerCase();
     const correct =
-      normalizedAnswer === answerKey.correct_answer.toLowerCase() ||
+      normalizedAnswer === answerKey?.correct_answer?.toLowerCase() ||
       answerKey.alternative_answers?.some(
         (alt) => alt.trim().toLowerCase() === normalizedAnswer
       );
@@ -184,7 +184,7 @@ export function FillBlankQuestion({
       answer,
       correct,
       question_id: question.id,
-      feedback: question.feedback,
+      feedback: question.answer_key?.explanation,
     });
   };
 
@@ -323,16 +323,18 @@ export function MatchingQuestion({
       question.matching_pairs?.map((pair) => {
         const userMatch = matches[pair.left_item];
         const isCorrect = userMatch === pair.right_item;
+
         if (isCorrect) {
           totalScore += question.points / totalPairs;
         }
+
         return {
           left_item: pair.left_item,
           right_item: pair.right_item,
           userMatch,
           isCorrect,
           id: pair.id,
-          feedback: pair.feedback,
+          feedback: pair.feedback || "",
         };
       }) || [];
 
@@ -343,22 +345,21 @@ export function MatchingQuestion({
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
+
       <div className="grid grid-cols-2 gap-8">
         {/* Left Side */}
         <div className="space-y-3">
           {question.matching_pairs?.map((pair) => {
-            const buttonClasses = [
-              "w-full p-4 rounded-lg border-2 transition-colors",
-              selectedLeft === pair.left_item
-                ? "border-secondary bg-accent"
-                : "border-gray-200 hover:border-secondary hover:bg-accent",
-            ].join(" ");
-
+            const isSelected = selectedLeft === pair.left_item;
             return (
               <button
-                key={pair.left_item}
+                key={`left-${pair.left_item}`}
                 onClick={() => setSelectedLeft(pair.left_item)}
-                className={buttonClasses}
+                className={`w-full p-4 rounded-lg border-2 transition-colors ${
+                  isSelected
+                    ? "border-secondary bg-accent"
+                    : "border-gray-200 hover:border-secondary hover:bg-accent"
+                }`}
                 disabled={submitted}
               >
                 {pair.left_item}
@@ -371,7 +372,7 @@ export function MatchingQuestion({
         <div className="space-y-3">
           {question.matching_pairs?.map((pair) => (
             <button
-              key={pair.right_item}
+              key={`right-${pair.right_item}`}
               onClick={() => handleMatch(pair.right_item)}
               className="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:bg-accent transition-colors"
               disabled={submitted}
@@ -391,16 +392,16 @@ export function MatchingQuestion({
         </button>
       )}
 
-      {/* Feedback section */}
+      {/* Feedback */}
       {submitted && showFeedback && (
         <div className="mt-6 space-y-4">
           {question.matching_pairs?.map((pair) => {
-            const userMatch = matches[pair.left_item];
+            const userMatch = matches[pair.left_item] || "No match";
             const isCorrect = userMatch === pair.right_item;
 
             return (
               <div
-                key={pair.left_item}
+                key={`feedback-${pair.left_item}`}
                 className={`p-4 border rounded-lg ${
                   isCorrect
                     ? "border-green-500 bg-green-50"
@@ -409,9 +410,10 @@ export function MatchingQuestion({
               >
                 <p className="font-medium">
                   <strong>{pair.left_item}</strong> →{" "}
-                  <strong>{userMatch || "No match"}</strong>
+                  <strong>{userMatch}</strong>
                 </p>
-                {pair.feedback && (
+
+                {pair.feedback?.trim() && (
                   <div
                     className="prose max-w-none mt-2 text-sm"
                     dangerouslySetInnerHTML={{

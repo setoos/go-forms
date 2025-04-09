@@ -9,7 +9,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
     // Get template if quiz_id is provided
     let templateContent = '';
     let templateSections = null;
-    
+
     if (response.quiz_id && response.quiz_id !== 'preview' && response.quiz_id !== 'sample') {
       // First try to get a quiz-specific template
       const { data: quizTemplate } = await supabase
@@ -18,7 +18,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         .eq('quiz_id', response.quiz_id)
         .eq('is_default', true)
         .maybeSingle();
-      
+
       // If no quiz-specific template, try to get a global default
       if (!quizTemplate) {
         const { data: globalTemplate } = await supabase
@@ -27,14 +27,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
           .is('quiz_id', null)
           .eq('is_default', true)
           .maybeSingle();
-          
+
         if (globalTemplate) {
           templateContent = globalTemplate.content;
         }
       } else {
         templateContent = quizTemplate.content;
       }
-      
+
       // If we have template content, try to parse it
       if (templateContent) {
         try {
@@ -45,12 +45,12 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         }
       }
     }
-    
+
     // Use custom feedback if provided
     if (response.custom_feedback) {
       templateContent = response.custom_feedback;
     }
-    
+
     // Get question details and option feedback
     let questionDetails = [];
     if (response.quiz_id && response.quiz_id !== 'preview' && response.quiz_id !== 'sample') {
@@ -66,16 +66,17 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
             is_correct,
             feedback,
             score
-          )
+          ),
+          points
         `)
         .eq('quiz_id', response.quiz_id)
         .order('order');
-        
+
       if (questions) {
         questionDetails = questions;
       }
     }
-    
+
     return new Promise(async (resolve) => {
       // Create new PDF document with better quality settings
       const doc = new jsPDF({
@@ -86,7 +87,8 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         putOnlyUsedFonts: true,
         floatPrecision: 16 // For better rendering quality
       });
-      
+      const totalPoints = questionDetails.reduce((acc: number, q: any) => acc + (q.points || 0), 0);
+
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
@@ -118,7 +120,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
       doc.setFont('helvetica', 'bold');
       doc.text('Participant Information', margin, yPos);
       yPos += 10;
-      
+
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
       doc.text(`Name: ${response.name}`, margin, yPos);
@@ -135,14 +137,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
       // Score Summary with improved styling
       doc.setFillColor(245, 243, 255); // Light purple background
       doc.rect(margin, yPos, pageWidth - (margin * 2), 40, 'F');
-      
+
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.text('Score Summary', margin + 5, yPos + 15);
-      
+
       doc.setFontSize(24);
       doc.setTextColor(147, 51, 234); // Purple color
-      doc.text(`${response.score}%`, pageWidth - margin - 30, yPos + 25);
+      doc.text(`${(response.score / totalPoints) * 100}%`, pageWidth - margin - 30, yPos + 25);
       yPos += 50;
 
       // Get performance category based on score
@@ -164,14 +166,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
             yPos = 20;
             addPageNumber(doc.getNumberOfPages(), 1);
           }
-          
+
           // Add section title
           doc.setTextColor(0, 0, 0);
           doc.setFontSize(16);
           doc.setFont('helvetica', 'bold');
           doc.text(section.title, margin, yPos);
           yPos += 10;
-          
+
           // Process section content - replace variables
           let processedContent = processTemplateVariables(section.content, {
             name: response.name,
@@ -182,16 +184,16 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
             quiz_title: 'Quiz',
             performance_category: getPerformanceCategory(response.score)
           });
-          
+
           // Create a temporary div to parse HTML
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = processedContent;
-          
+
           // Extract images
           const images = tempDiv.querySelectorAll('img');
           const imagePromises: Promise<void>[] = [];
           const imageData: Record<string, { url: string, x: number, y: number, width: number, height: number }> = {};
-          
+
           // Process each image
           images.forEach((img, index) => {
             const src = img.getAttribute('src');
@@ -205,66 +207,66 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                 width: 0, // Will be calculated based on aspect ratio
                 height: 0 // Will be calculated based on aspect ratio
               };
-              
+
               // Replace the image with a placeholder
               img.outerHTML = imgPlaceholder;
-              
+
               // Load the image to get dimensions
               const promise = new Promise<void>((resolve) => {
                 const imgObj = new Image();
-                imgObj.onload = function() {
+                imgObj.onload = function () {
                   // Calculate dimensions to fit within page width
                   const maxWidth = pageWidth - (margin * 2);
                   const aspectRatio = imgObj.height / imgObj.width;
-                  
+
                   const width = Math.min(maxWidth, imgObj.width);
                   const height = width * aspectRatio;
-                  
+
                   imageData[imgPlaceholder].width = width;
                   imageData[imgPlaceholder].height = height;
-                  
+
                   resolve();
                 };
-                imgObj.onerror = function() {
+                imgObj.onerror = function () {
                   console.error('Error loading image:', src);
                   resolve();
                 };
                 imgObj.src = src;
               });
-              
+
               imagePromises.push(promise);
             }
           });
-          
+
           // Wait for all images to load
           await Promise.all(imagePromises);
-          
+
           // Get text content
           const textContent = tempDiv.textContent || '';
-          
+
           // Split text into lines that fit the page width
           const textLines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
-          
+
           // Process text and images
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(12);
-          
+
           for (let i = 0; i < textLines.length; i++) {
             const line = textLines[i];
-            
+
             // Check if we need a new page
             if (yPos > pageHeight - 20) {
               doc.addPage();
               yPos = 20;
               addPageNumber(doc.getNumberOfPages(), 1);
             }
-            
+
             // Check if line contains an image placeholder
             const imgPlaceholderMatch = line.match(/\[IMAGE_(\d+)\]/);
             if (imgPlaceholderMatch) {
               const imgPlaceholder = imgPlaceholderMatch[0];
               const imgData = imageData[imgPlaceholder];
-              
+
               if (imgData) {
                 // Add text before the image
                 const textBeforeImg = line.split(imgPlaceholder)[0];
@@ -272,14 +274,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                   doc.text(textBeforeImg, margin, yPos);
                   yPos += 8;
                 }
-                
+
                 // Check if image fits on current page
                 if (yPos + imgData.height > pageHeight - 20) {
                   doc.addPage();
                   yPos = 20;
                   addPageNumber(doc.getNumberOfPages(), 1);
                 }
-                
+
                 // Add the image
                 try {
                   imgData.y = yPos;
@@ -291,12 +293,12 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                     imgData.width,
                     imgData.height
                   );
-                  
+
                   yPos += imgData.height + 10;
                 } catch (e) {
                   console.error('Error adding image to PDF:', e);
                 }
-                
+
                 // Add text after the image
                 const textAfterImg = line.split(imgPlaceholder)[1];
                 if (textAfterImg && textAfterImg.trim()) {
@@ -314,7 +316,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
               yPos += 8;
             }
           }
-          
+
           yPos += 10; // Add space after section
         }
       } else if (templateContent) {
@@ -325,14 +327,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
           yPos = 20;
           addPageNumber(doc.getNumberOfPages(), 1);
         }
-        
+
         // Add title
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.text('Feedback & Recommendations', margin, yPos);
         yPos += 10;
-        
+
         // Process content - replace variables
         let processedContent = processTemplateVariables(templateContent, {
           name: response.name,
@@ -343,16 +345,16 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
           quiz_title: 'Quiz',
           performance_category: getPerformanceCategory(response.score)
         });
-        
+
         // Create a temporary div to parse HTML
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = processedContent;
-        
+
         // Extract images
         const images = tempDiv.querySelectorAll('img');
         const imagePromises: Promise<void>[] = [];
         const imageData: Record<string, { url: string, x: number, y: number, width: number, height: number }> = {};
-        
+
         // Process each image
         images.forEach((img, index) => {
           const src = img.getAttribute('src');
@@ -366,66 +368,66 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
               width: 0, // Will be calculated based on aspect ratio
               height: 0 // Will be calculated based on aspect ratio
             };
-            
+
             // Replace the image with a placeholder
             img.outerHTML = imgPlaceholder;
-            
+
             // Load the image to get dimensions
             const promise = new Promise<void>((resolve) => {
               const imgObj = new Image();
-              imgObj.onload = function() {
+              imgObj.onload = function () {
                 // Calculate dimensions to fit within page width
                 const maxWidth = pageWidth - (margin * 2);
                 const aspectRatio = imgObj.height / imgObj.width;
-                
+
                 const width = Math.min(maxWidth, imgObj.width);
                 const height = width * aspectRatio;
-                
+
                 imageData[imgPlaceholder].width = width;
                 imageData[imgPlaceholder].height = height;
-                
+
                 resolve();
               };
-              imgObj.onerror = function() {
+              imgObj.onerror = function () {
                 console.error('Error loading image:', src);
                 resolve();
               };
               imgObj.src = src;
             });
-            
+
             imagePromises.push(promise);
           }
         });
-        
+
         // Wait for all images to load
         await Promise.all(imagePromises);
-        
+
         // Get text content
         const textContent = tempDiv.textContent || '';
-        
+
         // Split text into lines that fit the page width
         const textLines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
-        
+
         // Process text and images
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
-        
+
         for (let i = 0; i < textLines.length; i++) {
           const line = textLines[i];
-          
+
           // Check if we need a new page
           if (yPos > pageHeight - 20) {
             doc.addPage();
             yPos = 20;
             addPageNumber(doc.getNumberOfPages(), 1);
           }
-          
+
           // Check if line contains an image placeholder
           const imgPlaceholderMatch = line.match(/\[IMAGE_(\d+)\]/);
           if (imgPlaceholderMatch) {
             const imgPlaceholder = imgPlaceholderMatch[0];
             const imgData = imageData[imgPlaceholder];
-            
+
             if (imgData) {
               // Add text before the image
               const textBeforeImg = line.split(imgPlaceholder)[0];
@@ -433,14 +435,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                 doc.text(textBeforeImg, margin, yPos);
                 yPos += 8;
               }
-              
+
               // Check if image fits on current page
               if (yPos + imgData.height > pageHeight - 20) {
                 doc.addPage();
                 yPos = 20;
                 addPageNumber(doc.getNumberOfPages(), 1);
               }
-              
+
               // Add the image
               try {
                 imgData.y = yPos;
@@ -452,12 +454,12 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                   imgData.width,
                   imgData.height
                 );
-                
+
                 yPos += imgData.height + 10;
               } catch (e) {
                 console.error('Error adding image to PDF:', e);
               }
-              
+
               // Add text after the image
               const textAfterImg = line.split(imgPlaceholder)[1];
               if (textAfterImg && textAfterImg.trim()) {
@@ -487,7 +489,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         const analysis = getScoreAnalysis(response.score);
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        
+
         const splitAnalysis = doc.splitTextToSize(analysis, pageWidth - (margin * 2));
         doc.text(splitAnalysis, margin, yPos);
         yPos += splitAnalysis.length * 8 + 15;
@@ -499,103 +501,226 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         yPos = 20;
         addPageNumber(doc.getNumberOfPages(), 1); // Will update total pages at the end
       }
-      
+
       // Question Breakdown with better styling
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text('Question Breakdown', margin, yPos);
       yPos += 10;
 
+      // -----------------*************------------------*******************-----------------************* 
+      // -----------------*************------------------*******************-----------------*************  
+      // -----------------*************------------------*******************-----------------*************   
+      function stripHtml(html: string): string {
+        return html.replace(/<[^>]*>?/gm, '').trim();
+      }
+
       // Create table data
-      const tableData = Object.entries(response.answers || {}).map(([questionId, answerData], index) => {
-        // Find the question
+      // const tableData = Object.entries(response.answers || {}).map(([questionId, answerData], index) => {
+      //   // Find the question
+      //   const question = questionDetails.find(q => q.id === questionId);
+      //   const questionText = question ? question.text : `${index + 1}`;
+
+      //   // Get the score - either directly from the answer or from the option
+      //   // let score = 0;
+      //   // if (typeof answerData === 'number') {
+      //   //   score = answerData;
+      //   // } else if (typeof answerData === 'object' && answerData.optionId) {
+      //   //   const option = question?.options?.find(o => o.id === answerData.optionId);
+      //   //   if (option) {
+      //   //     score = option.score;
+      //   //   }
+      //   // }
+      //   let score = 0;
+
+      //   if (typeof answerData === 'object' && typeof answerData.value === 'number') {
+      //     score = answerData.value;
+      //   }
+
+      //   const impactAnalysisHtml = answerData?.impact_analysis || '';
+      //   const impactAnalysis = stripHtml(impactAnalysisHtml);
+
+
+      //   return [
+      //     `${index + 1}`,
+      //     questionText,
+      //     `${score}/10`,
+      //     getScoreCategory(score),
+      //     impactAnalysis
+      //   ];
+      // });
+
+
+
+      yPos = 250; // Starting Y position
+
+      Object.entries(response.answers || {}).forEach(([questionId, answerData], index) => {
         const question = questionDetails.find(q => q.id === questionId);
-        const questionText = question ? question.text : `Question ${index + 1}`;
-        
-        // Get the score - either directly from the answer or from the option
-        let score = 0;
-        if (typeof answerData === 'number') {
-          score = answerData;
-        } else if (typeof answerData === 'object' && answerData.optionId) {
-          const option = question?.options?.find(o => o.id === answerData.optionId);
-          if (option) {
-            score = option.score;
-          }
+        const questionText = question?.text || `Question ${index + 1}`;
+        const optionText = question?.options?.find(o => o.score === answerData?.value)?.text || '';
+        const points = questionDetails.find(q => q.id === questionId)?.points || 10;
+
+        const score = typeof answerData === 'object' && typeof answerData.value === 'number'
+          ? answerData.value
+          : 0;
+
+        const impactAnalysis = stripHtml(answerData?.impact_analysis || '');
+
+        const sectionHeight = 80; // increase height for two-column layout
+        if (yPos + sectionHeight > 280) {
+          doc.addPage();
+          yPos = 20;
         }
-        
-        return [
-          `Question ${index + 1}`,
-          questionText,
-          `${score}/10`,
-          getScoreCategory(score)
-        ];
+
+        // Section background
+        doc.setFillColor(250, 250, 255);
+        doc.roundedRect(15, yPos - 5, 180, sectionHeight, 3, 3, 'F');
+
+        // Question Title
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(80, 50, 20);
+        doc.text(`Question ${index + 1}`, 20, yPos + 5);
+
+        // Question Text
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(33, 33, 33);
+        const questionLines = doc.splitTextToSize(questionText, 170);
+        doc.text(questionLines, 20, yPos + 12);
+        yPos += 12 + questionLines.length * 5;
+
+        // User Answer
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(147, 51, 234);
+        doc.text('Your Answer - option A', 20, yPos);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const answerLines = doc.splitTextToSize(optionText, 160);
+        doc.text(answerLines, 20, yPos + 6);
+        yPos += 10 + answerLines.length * 5;
+
+        // Draw vertical line to split left (Impact) and right (Score)
+        const splitY = yPos + 5;
+        const colTop = splitY;
+        const colHeight = 35; // fixed or dynamic if needed
+        const colMid = 105; // X midpoint (vertical line)
+        doc.setDrawColor(160, 120, 40);
+        doc.line(colMid, colTop, colMid, colTop + colHeight);
+
+        // Impact Analysis (left side)
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(184, 134, 11);
+        doc.text('Impact Analysis', 20, splitY);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        const impactLines = doc.splitTextToSize(impactAnalysis, 80);
+        doc.text(impactLines, 20, splitY + 7);
+
+        // Score & Performance (right side)
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(184, 134, 11);
+        doc.text('Score & Performance', colMid + 5, splitY);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Score: ${score}/${points}`, colMid + 5, splitY + 7);
+        doc.text(`Performance: ${getScoreCategory(score)}`, colMid + 5, splitY + 14);
+
+        yPos += colHeight + 10; // space before next question
+
+        // Horizontal line divider after each question
+        doc.setDrawColor(160, 120, 40); // optional: match with theme
+        doc.setLineWidth(0.5);
+        doc.line(20, yPos, 190, yPos);
+        yPos += 10; // spacing before next question
+
       });
 
-      // Add table with improved styling
-      autoTable(doc, {
-        startY: yPos,
-        head: [['#', 'Question', 'Score', 'Performance']],
-        body: tableData,
-        theme: 'striped',
-        headStyles: {
-          fillColor: [147, 51, 234],
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          halign: 'center'
-        },
-        columnStyles: {
-          0: { cellWidth: 20, halign: 'center' },
-          1: { cellWidth: 100 },
-          2: { cellWidth: 20, halign: 'center' },
-          3: { cellWidth: 30, halign: 'center' }
-        },
-        alternateRowStyles: {
-          fillColor: [245, 243, 255]
-        },
-        margin: { top: 10, right: margin, bottom: 10, left: margin },
-        styles: {
-          font: 'helvetica',
-          overflow: 'linebreak',
-          cellPadding: 5
-        }
-      });
-      
+
+
+
+
+      // -----------------*************------------------*******************-----------------************* 
+      // -----------------*************------------------*******************-----------------*************  
+      // -----------------*************------------------*******************-----------------*************   
+
+
+
+
+
+      // // Add table with improved styling
+      // autoTable(doc, {
+      //   startY: yPos,
+      //   head: [['#', 'Question', 'Score', 'Performance', 'Analysis']],
+      //   body: tableData,
+      //   theme: 'striped',
+      //   headStyles: {
+      //     fillColor: [147, 51, 234],
+      //     textColor: [255, 255, 255],
+      //     fontStyle: 'bold',
+      //     halign: 'center'
+      //   },
+      //   columnStyles: {
+      //     0: { cellWidth: 15, halign: 'center' },
+      //     1: { cellWidth: 70 },
+      //     2: { cellWidth: 20, halign: 'center' },
+      //     3: { cellWidth: 30, halign: 'center' },
+      //     4: { cellWidth: 50 }
+      //   },
+      //   alternateRowStyles: {
+      //     fillColor: [245, 243, 255]
+      //   },
+      //   margin: { top: 10, right: margin, bottom: 10, left: margin },
+      //   styles: {
+      //     font: 'helvetica',
+      //     overflow: 'linebreak',
+      //     cellPadding: 5
+      //   }
+      // });
+
       // Get the Y position after the table
-      yPos = (doc as any).lastAutoTable.finalY + 20;
-      
+      yPos = (doc as any).lastAutoTable?.finalY + 20;
+
       // Add option feedback for each question if available
       for (const [questionId, answer] of Object.entries(response.answers || {})) {
         // Find the question
         const question = questionDetails.find(q => q.id === questionId);
         if (!question || question.type !== 'multiple_choice') continue;
-        
+
         // Find the selected option
         const optionId = typeof answer === 'object' && answer.optionId ? answer.optionId : null;
         if (!optionId) continue;
-        
+
         const option = question.options?.find(o => o.id === optionId);
         if (!option || !option.feedback) continue;
-        
+
         // Check if we need a new page
         if (yPos > pageHeight - 60) {
           doc.addPage();
           yPos = 20;
           addPageNumber(doc.getNumberOfPages(), 1);
         }
-        
+
         // Add option feedback title
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         doc.text(`Feedback for Question ${questionDetails.indexOf(question) + 1}: ${question.text.substring(0, 50)}${question.text.length > 50 ? '...' : ''}`, margin, yPos);
         yPos += 8;
-        
+
         // Add score information
         doc.setFontSize(10);
         doc.setFont('helvetica', 'italic');
-        doc.text(`Score: ${option.score}/10`, margin, yPos);
+        doc.text(`Score: ${option.score}/${option.points}`, margin, yPos);
         yPos += 6;
-        
+
         // Process feedback content - replace variables
         let processedFeedback = processTemplateVariables(option.feedback, {
           name: response.name,
@@ -606,16 +731,16 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
           quiz_title: 'Quiz',
           performance_category: getPerformanceCategory(response.score)
         });
-        
+
         // Create a temporary div to parse HTML
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = processedFeedback;
-        
+
         // Extract images
         const images = tempDiv.querySelectorAll('img');
         const imagePromises: Promise<void>[] = [];
         const imageData: Record<string, { url: string, x: number, y: number, width: number, height: number }> = {};
-        
+
         // Process each image
         images.forEach((img, index) => {
           const src = img.getAttribute('src');
@@ -629,66 +754,66 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
               width: 0, // Will be calculated based on aspect ratio
               height: 0 // Will be calculated based on aspect ratio
             };
-            
+
             // Replace the image with a placeholder
             img.outerHTML = imgPlaceholder;
-            
+
             // Load the image to get dimensions
             const promise = new Promise<void>((resolve) => {
               const imgObj = new Image();
-              imgObj.onload = function() {
+              imgObj.onload = function () {
                 // Calculate dimensions to fit within page width
                 const maxWidth = pageWidth - (margin * 2);
                 const aspectRatio = imgObj.height / imgObj.width;
-                
+
                 const width = Math.min(maxWidth, imgObj.width);
                 const height = width * aspectRatio;
-                
+
                 imageData[imgPlaceholder].width = width;
                 imageData[imgPlaceholder].height = height;
-                
+
                 resolve();
               };
-              imgObj.onerror = function() {
+              imgObj.onerror = function () {
                 console.error('Error loading image:', src);
                 resolve();
               };
               imgObj.src = src;
             });
-            
+
             imagePromises.push(promise);
           }
         });
-        
+
         // Wait for all images to load
         await Promise.all(imagePromises);
-        
+
         // Get text content
         const textContent = tempDiv.textContent || '';
-        
+
         // Split text into lines that fit the page width
         const textLines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
-        
+
         // Process text and images
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        
+
         for (let i = 0; i < textLines.length; i++) {
           const line = textLines[i];
-          
+
           // Check if we need a new page
           if (yPos > pageHeight - 20) {
             doc.addPage();
             yPos = 20;
             addPageNumber(doc.getNumberOfPages(), 1);
           }
-          
+
           // Check if line contains an image placeholder
           const imgPlaceholderMatch = line.match(/\[IMAGE_FEEDBACK_(\d+)\]/);
           if (imgPlaceholderMatch) {
             const imgPlaceholder = imgPlaceholderMatch[0];
             const imgData = imageData[imgPlaceholder];
-            
+
             if (imgData) {
               // Add text before the image
               const textBeforeImg = line.split(imgPlaceholder)[0];
@@ -696,14 +821,14 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                 doc.text(textBeforeImg, margin, yPos);
                 yPos += 6;
               }
-              
+
               // Check if image fits on current page
               if (yPos + imgData.height > pageHeight - 20) {
                 doc.addPage();
                 yPos = 20;
                 addPageNumber(doc.getNumberOfPages(), 1);
               }
-              
+
               // Add the image
               try {
                 imgData.y = yPos;
@@ -715,12 +840,12 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
                   imgData.width,
                   imgData.height
                 );
-                
+
                 yPos += imgData.height + 8;
               } catch (e) {
                 console.error('Error adding image to PDF:', e);
               }
-              
+
               // Add text after the image
               const textAfterImg = line.split(imgPlaceholder)[1];
               if (textAfterImg && textAfterImg.trim()) {
@@ -738,10 +863,10 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
             yPos += 6;
           }
         }
-        
+
         yPos += 10; // Add space after feedback
       }
-      
+
       // Update page numbers for all pages
       const totalPages = doc.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {

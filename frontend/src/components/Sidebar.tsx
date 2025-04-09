@@ -210,7 +210,7 @@ export default function Sidebar() {
           )} */}
 
               {/* Settings */}
-              <SidebarLink to="/settings/account" icon={<Settings />}>
+              <SidebarLink to="/settings/theme" icon={<Settings />}>
                 Settings
               </SidebarLink>
             </div>

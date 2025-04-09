@@ -110,9 +110,8 @@ function UserMenu() {
           {user.email}
         </span>
         <ChevronDown
-          className={`h-4 w-4 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -194,7 +193,9 @@ export default function Navigation() {
   // const isFormsSection = location.pathname.startsWith('/forms');
 
   return (
-    <nav className={`sticky top-0 z-50 shadow-sm ${user ? "bg-background" : "bg-[#224B39]"}`}>
+    <nav
+      className={`sticky top-0 z-50 shadow-sm bg-background`}
+    >
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
@@ -217,11 +218,7 @@ export default function Navigation() {
                 to="/"
                 className="flex items-center text-text hover:text-secondary"
               >
-                <img
-                  src="../../public/goformlogo.jpg"
-                  alt="Logo"
-                  className="h-10 w-auto"
-                />
+                <img src="/goformlogo.svg" alt="Logo" className="h-20 w-auto" />
               </Link>
             )}
           </div>
@@ -322,7 +319,7 @@ export default function Navigation() {
             ) : (
               <Link
                 to="/auth"
-                className={`${user ? "text-secondary border-secondary" : "text-white border-white hover:text-black"} flex items-center px-4 py-2 text-sm font-medium border  rounded-lg hover:bg-accent transition-colors`}
+                className={`text-secondary border-secondary flex items-center px-4 py-2 text-sm font-medium border  rounded-lg hover:bg-accent transition-colors`}
               >
                 Sign In
               </Link>
@@ -334,11 +331,10 @@ export default function Navigation() {
       {/* Mobile Navigation */}
       {user && (
         <div
-          className={`md:hidden transition-all duration-300 ease-in-out ${
-            isMobileMenuOpen
-              ? "max-h-[500px] opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
-          }`}
+          className={`md:hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen
+            ? "max-h-[500px] opacity-100"
+            : "max-h-0 opacity-0 overflow-hidden"
+            }`}
         >
           <div className="px-2 pt-2 pb-3 space-y-1 border-t border-border">
             {/* {mainNavItems.map(item => (

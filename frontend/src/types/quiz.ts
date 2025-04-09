@@ -1,4 +1,4 @@
-export type QuestionType = 
+export type QuestionType =
   | 'multiple_choice'
   | 'true_false'
   | 'fill_blank'
@@ -75,7 +75,7 @@ export interface Option {
   score: number;
   feedback: string | null;
   order: number;
-  // is_correct: boolean;
+  is_correct: boolean;
 }
 
 export interface MatchingPair {
@@ -108,7 +108,6 @@ export interface EssayRubric {
   max_points: number;
   created_at: string;
   feedback: string | null;
-
 }
 
 export interface QuizResponse {
@@ -116,7 +115,10 @@ export interface QuizResponse {
   name: string;
   email: string;
   phone?: string;
-  answers: Record<string, number>;
+  answers: {
+    value: number;
+    impact_analysis: string;
+  }[];
   score: number;
   quiz_id: string;
   completion_time: number | null;

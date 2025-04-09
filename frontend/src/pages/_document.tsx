@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
         <meta name="description" content="GoForms - Forms & Quizzes" />
       </Head>
       <body className="bg-gray-50">

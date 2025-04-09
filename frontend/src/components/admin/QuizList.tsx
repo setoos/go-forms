@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PlusCircle, Edit, Trash2, Eye, AlertCircle, FileText, BarChart3, DollarSign } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Eye, AlertCircle, FileText, BarChart3, DollarSign, Loader } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
 import { showToast } from '../../lib/toast';
@@ -61,7 +61,7 @@ export default function QuizList() {
         .rpc('soft_delete_quiz', { quiz_id: id });
 
       if (error) throw error;
-      
+
       await loadQuizzes();
       showToast('Quiz deleted successfully', 'success');
     } catch (error) {
@@ -73,7 +73,7 @@ export default function QuizList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -170,11 +170,10 @@ export default function QuizList() {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      quiz.is_published
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${quiz.is_published
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                      }`}>
                       {quiz.is_published ? 'Published' : 'Draft'}
                     </span>
                   </td>

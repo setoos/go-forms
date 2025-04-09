@@ -20,7 +20,8 @@ import {
   Loader2,
   LayoutTemplate,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Loader
 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -670,7 +671,7 @@ export default function CollapsibleReportEditor() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 text-secondary animate-spin mx-auto mb-4" />
+          <Loader className="h-12 w-12 text-secondary animate-spin" />
             <p className="text-gray-600">Loading template editor...</p>
           </div>
         </div>
