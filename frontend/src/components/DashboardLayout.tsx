@@ -39,7 +39,7 @@ export default function DashboardLayout() {
       <div className="flex flex-1 relative">
         {/* Mobile sidebar backdrop */}
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          className={isSidebarOpen ? "fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden" : "" }
           onClick={() => setIsSidebarOpen(false)}
         />
 
