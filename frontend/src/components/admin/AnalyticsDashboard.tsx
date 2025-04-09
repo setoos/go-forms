@@ -34,7 +34,8 @@ import {
   BookOpen,
   Lightbulb,
   Loader2,
-  Lock
+  Lock,
+  Loader
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { showToast } from '../../lib/toast';
@@ -261,7 +262,7 @@ export default function AnalyticsDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-12 w-12 text-secondary animate-spin" />
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }

@@ -6,7 +6,7 @@ import QuizAnalyticsDashboard from './QuizAnalyticsDashboard';
 import { generatePDF } from '../../lib/pdf';
 import { showToast } from '../../lib/toast';
 import { useAuth } from '../../lib/auth';
-import { Loader2, Lock } from 'lucide-react';
+import { Loader, Loader2, Lock } from 'lucide-react';
 
 export default function QuizAnalytics() {
   const { id } = useParams();
@@ -124,7 +124,7 @@ export default function QuizAnalytics() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }

@@ -744,7 +744,7 @@ export default function ReportTemplatesPage() {
           </div>
           
           <div className="bg-background rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-4">Available Variables</h2>
+            <h2 className="text-lg font-semibold mb-4">Available Variablessssss</h2>
             <div className="space-y-2 text-sm">
               <div className="p-2 bg-gray-50 rounded">
                 <code>{'{{name}}'}</code> - Participant's name

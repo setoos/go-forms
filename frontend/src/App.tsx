@@ -32,14 +32,15 @@ import BillingReport from './components/admin/BillingReport';
 import QuizSubmissions from './components/admin/QuizSubmissions';
 import SubmissionDetail from './components/admin/SubmissionDetail';
 import 'react-quill/dist/quill.snow.css';
+import { Loader } from 'lucide-react';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }

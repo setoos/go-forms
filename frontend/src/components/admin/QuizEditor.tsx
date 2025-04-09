@@ -95,6 +95,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   const [copied, setCopied] = useState(false);
   const [expandedSettings, setExpandedSettings] = useState(false);
   const quillRefs = useRef<{ [key: string]: ReactQuill | null }>({});
+  const [points, setPoints] = useState(10);
 
   // Get template ID from URL query params
   const queryParams = new URLSearchParams(location.search);
@@ -215,7 +216,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       text: "",
       type: "multiple_choice",
       order: questions.length,
-      points: 10,
+      points: points || 10,
       cognitive_level: "understanding",
       difficulty_level: "medium",
       required: true,
@@ -259,35 +260,35 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       order: questions.length,
       options: questionToDuplicate.options
         ? [
-            ...questionToDuplicate.options.map((o) => ({
-              ...o,
-              id: `temp-${Date.now()}-${o.order}`,
-            })),
-          ]
+          ...questionToDuplicate.options.map((o) => ({
+            ...o,
+            id: `temp-${Date.now()}-${o.order}`,
+          })),
+        ]
         : [],
       matching_pairs: questionToDuplicate.matching_pairs
         ? [
-            ...questionToDuplicate.matching_pairs.map((p) => ({
-              ...p,
-              id: `temp-${Date.now()}-${p.order}`,
-            })),
-          ]
+          ...questionToDuplicate.matching_pairs.map((p) => ({
+            ...p,
+            id: `temp-${Date.now()}-${p.order}`,
+          })),
+        ]
         : [],
       ordering_items: questionToDuplicate.ordering_items
         ? [
-            ...questionToDuplicate.ordering_items.map((i) => ({
-              ...i,
-              id: `temp-${Date.now()}-${i.order}`,
-            })),
-          ]
+          ...questionToDuplicate.ordering_items.map((i) => ({
+            ...i,
+            id: `temp-${Date.now()}-${i.order}`,
+          })),
+        ]
         : [],
       essay_rubrics: questionToDuplicate.essay_rubrics
         ? [
-            ...questionToDuplicate.essay_rubrics.map((r) => ({
-              ...r,
-              id: `temp-${Date.now()}`,
-            })),
-          ]
+          ...questionToDuplicate.essay_rubrics.map((r) => ({
+            ...r,
+            id: `temp-${Date.now()}`,
+          })),
+        ]
         : [],
     };
 
@@ -331,7 +332,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       score: 0,
       feedback: "",
       order: options.length,
-      // is_correct: false
+      is_correct: false
     };
 
     newQuestions[questionIndex].options = [...options, newOption];
@@ -485,7 +486,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
         console.error("Error uploading image:", error);
         showToast(
           "Error uploading image: " +
-            (error instanceof Error ? error.message : "Unknown error"),
+          (error instanceof Error ? error.message : "Unknown error"),
           "error"
         );
       }
@@ -544,10 +545,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           return;
         }
 
-        // if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
-        //   showToast(`Question ${i + 1} needs at least one correct option`, 'error');
-        //   return;
-        // }
+        if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
+          showToast(`Question ${i + 1} needs at least one correct option`, 'error');
+          return;
+        }
       }
 
       setSaving(true);
@@ -648,20 +649,35 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
   function addMatchingPair(questionIndex: number) {
     const newQuestions = [...questions];
+    const currentPairs = newQuestions[questionIndex].matching_pairs || [];
+
     newQuestions[questionIndex].matching_pairs = [
-      ...(newQuestions[questionIndex].matching_pairs || []),
+      ...currentPairs,
       {
-        id: "",
-        question_id: "",
+        id: crypto.randomUUID(), // ensure a unique ID for local updates
+        question_id: newQuestions[questionIndex].id || "",
         left_item: "",
         right_item: "",
-        order: newQuestions[questionIndex].matching_pairs?.length || 0,
+        order: currentPairs.length,
         created_at: new Date().toISOString(),
         feedback: "",
       },
     ];
+
     setQuestions(newQuestions);
   }
+
+  function updateMatchingPairs(questionIndex: number, updatedPairs: any[]) {
+    const newQuestions = [...questions];
+    newQuestions[questionIndex] = {
+      ...newQuestions[questionIndex],
+      matching_pairs: updatedPairs,
+    };
+    setQuestions(newQuestions);
+  }
+
+
+
 
   function addOrderingItem(questionIndex: number) {
     const newQuestions = [...questions];
@@ -718,7 +734,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
       </div>
     );
   }
@@ -786,11 +802,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className={`flex items-center px-4 py-2 rounded-lg ${
-              saving
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-secondary hover:bg-primary"
-            } text-white`}
+            className={`flex items-center px-4 py-2 rounded-lg ${saving
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-secondary hover:bg-primary"
+              } text-white`}
           >
             {saving ? (
               <>
@@ -812,11 +827,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                activeStep === "questions"
-                  ? "bg-secondary text-white"
-                  : "bg-gray-200 text-gray-600"
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${activeStep === "questions"
+                ? "bg-secondary text-white"
+                : "bg-gray-200 text-gray-600"
+                }`}
             >
               1
             </div>
@@ -830,11 +844,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
           <div className="flex items-center">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                activeStep === "details"
-                  ? "bg-secondary text-white"
-                  : "bg-gray-200 text-gray-600"
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${activeStep === "details"
+                ? "bg-secondary text-white"
+                : "bg-gray-200 text-gray-600"
+                }`}
             >
               2
             </div>
@@ -1066,7 +1079,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                 className="border border-border rounded-lg p-4"
                               >
                                 <div className="flex items-center justify-between mb-2">
-                                  {/* <div className="flex items-center">
+                                  <div className="flex items-center">
                                     <input
                                       type="checkbox"
                                       checked={option.is_correct}
@@ -1076,7 +1089,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     <span className="text-sm font-medium">
                                       {option.is_correct ? 'Correct Answer' : 'Incorrect Answer'}
                                     </span>
-                                  </div> */}
+                                  </div>
                                   <div className="flex items-center">
                                     <button
                                       onClick={() =>
@@ -1187,13 +1200,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
                             {(!question.options ||
                               question.options.length === 0) && (
-                              <button
-                                onClick={() => handleAddOption(index)}
-                                className="w-full py-2 border-2 border-dashed border-border rounded-lg text-gray-500 hover:text-text hover:border-border"
-                              >
-                                + Add Option
-                              </button>
-                            )}
+                                <button
+                                  onClick={() => handleAddOption(index)}
+                                  className="w-full py-2 border-2 border-dashed border-border rounded-lg text-gray-500 hover:text-text hover:border-border"
+                                >
+                                  + Add Option
+                                </button>
+                              )}
                           </div>
                         </div>
                       )}
@@ -1212,7 +1225,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
                           {question.matching_pairs?.map((pair, pairIndex) => (
                             <div
-                              key={pairIndex}
+                              key={`matching-${index}-${pairIndex}`}
                               className="space-y-3 border p-4 rounded-md"
                             >
                               <div className="flex gap-4">
@@ -1220,11 +1233,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   type="text"
                                   value={pair.left_item}
                                   onChange={(e) => {
-                                    const newQuestions = [...questions];
-                                    newQuestions[index].matching_pairs![
-                                      pairIndex
-                                    ].left_item = e.target.value;
-                                    setQuestions(newQuestions);
+                                    const updatedPairs = [...(question.matching_pairs || [])];
+                                    updatedPairs[pairIndex] = {
+                                      ...updatedPairs[pairIndex],
+                                      left_item: e.target.value,
+                                    };
+                                    updateMatchingPairs(index, updatedPairs);
                                   }}
                                   className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                   placeholder="Left item"
@@ -1233,23 +1247,21 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   type="text"
                                   value={pair.right_item}
                                   onChange={(e) => {
-                                    const newQuestions = [...questions];
-                                    newQuestions[index].matching_pairs![
-                                      pairIndex
-                                    ].right_item = e.target.value;
-                                    setQuestions(newQuestions);
+                                    const updatedPairs = [...(question.matching_pairs || [])];
+                                    updatedPairs[pairIndex] = {
+                                      ...updatedPairs[pairIndex],
+                                      right_item: e.target.value,
+                                    };
+                                    updateMatchingPairs(index, updatedPairs);
                                   }}
                                   className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                   placeholder="Right item"
                                 />
                                 <button
                                   onClick={() => {
-                                    const newQuestions = [...questions];
-                                    newQuestions[index].matching_pairs!.splice(
-                                      pairIndex,
-                                      1
-                                    );
-                                    setQuestions(newQuestions);
+                                    const updatedPairs = [...(question.matching_pairs || [])];
+                                    updatedPairs.splice(pairIndex, 1);
+                                    updateMatchingPairs(index, updatedPairs);
                                   }}
                                   className="text-red-600 hover:text-red-800"
                                 >
@@ -1262,32 +1274,30 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   Feedback (Rich Content)
                                 </label>
                                 <ReactQuill
-                                  ref={(el) => {
-                                    quillRefs.current[
-                                      `matching-${index}-${pairIndex}`
-                                    ] = el;
-                                  }}
                                   value={pair.feedback || ""}
                                   onChange={(content) => {
-                                    const newQuestions = [...questions];
-                                    newQuestions[index].matching_pairs![
-                                      pairIndex
-                                    ].feedback = content;
-                                    setQuestions(newQuestions);
+                                    const updatedPairs = [...(question.matching_pairs || [])];
+                                    updatedPairs[pairIndex] = {
+                                      ...updatedPairs[pairIndex],
+                                      feedback: content,
+                                    };
+                                    updateMatchingPairs(index, updatedPairs);
                                   }}
                                   placeholder="Enter rich feedback content for this pair..."
                                   theme="snow"
                                   className="mb-2"
                                 />
+
                                 <p className="text-xs text-gray-500">
-                                  This rich content will be displayed in the PDF
-                                  report for this matching pair.
+                                  This rich content will be displayed in the PDF report for this matching pair.
                                 </p>
                               </div>
                             </div>
                           ))}
                         </div>
                       )}
+
+
 
                       {question.type === "ordering" && (
                         <div className="space-y-4">
@@ -1531,8 +1541,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         </div>
                       )}
 
-                      {(question.type === "true_false" ||
-                        question.type === "fill_blank") && (
+                      {(question.type === "true_false" || question.type === "fill_blank") && (
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-text mb-1">
@@ -1541,15 +1550,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                             {question.type === "true_false" ? (
                               <select
                                 value={
-                                  question.answer_key?.correct_answer?.toString() ||
-                                  "true"
+                                  question.answer_key?.correct_answer?.toString() || "true"
                                 }
                                 onChange={(e) =>
                                   updateQuestion(index, {
                                     answer_key: {
+                                      ...question.answer_key,
                                       correct_answer: e.target.value === "true",
-                                      explanation:
-                                        question.answer_key?.explanation || "",
                                     },
                                   })
                                 }
@@ -1561,18 +1568,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                             ) : (
                               <input
                                 type="text"
-                                value={
-                                  question.answer_key?.correct_answer || ""
-                                }
+                                value={question.answer_key?.correct_answer || ""}
                                 onChange={(e) =>
                                   updateQuestion(index, {
                                     answer_key: {
+                                      ...question.answer_key,
                                       correct_answer: e.target.value,
-                                      alternative_answers:
-                                        question.answer_key
-                                          ?.alternative_answers || [],
-                                      explanation:
-                                        question.answer_key?.explanation || "",
                                     },
                                   })
                                 }
@@ -1590,13 +1591,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               ref={(el) => {
                                 quillRefs.current[`answer-${index}`] = el;
                               }}
-                              value={question.answer_key?.explanation || ""}
+                              value={question.feedback || ""}
                               onChange={(content) =>
                                 updateQuestion(index, {
-                                  answer_key: {
-                                    ...question.answer_key,
-                                    explanation: content,
-                                  },
+                                  feedback: content,
                                 })
                               }
                               placeholder="Enter explanation or feedback..."
@@ -1604,12 +1602,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               className="mb-2"
                             />
                             <p className="text-xs text-gray-500">
-                              This explanation will appear in reports and after
-                              submission.
+                              This explanation will appear in reports and after submission.
                             </p>
                           </div>
                         </div>
                       )}
+
 
                       {question.type === "definition" && (
                         <div className="space-y-4">
@@ -1711,14 +1709,12 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                           </label>
                           <input
                             type="number"
-                            value={question.points || 10}
-                            onChange={(e) =>
-                              handleQuestionChange(
-                                index,
-                                "points",
-                                parseInt(e.target.value)
-                              )
-                            }
+                            value={question.points || points || 10}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              handleQuestionChange(index, "points", value);
+                              setPoints(value);
+                            }}
                             className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                             placeholder="Points"
                             min={0}
@@ -1915,11 +1911,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             <button
               onClick={handleSave}
               disabled={saving}
-              className={`flex items-center px-6 py-3 rounded-lg ${
-                saving
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-secondary hover:bg-primary"
-              } text-white`}
+              className={`flex items-center px-6 py-3 rounded-lg ${saving
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-secondary hover:bg-primary"
+                } text-white`}
             >
               {saving ? (
                 <>

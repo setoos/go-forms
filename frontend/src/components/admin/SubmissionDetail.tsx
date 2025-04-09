@@ -100,7 +100,8 @@ export default function SubmissionDetail() {
             id,
             text,
             is_correct
-          )
+          ),
+          points
         `
         )
         .eq("quiz_id", submissionData.quiz_id)
@@ -213,6 +214,8 @@ export default function SubmissionDetail() {
     const question = questions.find((q) => q.id === questionId);
     return question ? question.text : `Question ${questionId}`;
   };
+
+  const totalPoints = questions.reduce((acc, q) => acc + (q.points || 0), 0);
 
   if (!user) {
     return (
@@ -365,7 +368,7 @@ export default function SubmissionDetail() {
           </h2>
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-5xl font-bold text-secondary mb-2">
-              {submission.score}%
+              {submission.score / totalPoints * 100}%
             </div>
             <p className="text-text mb-4">
               {submission.score >= 90
@@ -381,7 +384,7 @@ export default function SubmissionDetail() {
             <div className="w-full flex space-x-2 mt-2">
               <button
                 onClick={handleDownloadPDF}
-                className="flex-1 flex items-center justify-center px-3 py-2 bg-secondary text-white rounded-md hover:bg-primary"
+                className="flex-1 flex items-center py-2 justify-center bg-secondary text-white rounded-md hover:bg-primary"
               >
                 <Download className="h-4 w-4 mr-1.5" />
                 Download PDF
@@ -389,7 +392,7 @@ export default function SubmissionDetail() {
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail}
-                className={`flex-1 flex items-center justify-center px-3 py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${
+                className={`flex-1 flex items-center justify-center py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${
                   sendingEmail ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
@@ -432,17 +435,17 @@ export default function SubmissionDetail() {
                       </h3>
                     </div>
                     <div className="flex items-center">
-                      {score >= 7 ? (
+                      {score >= (questions.find((q) => q.id === questionId)?.points || 0) / 2 ? (
                         <CheckCircle className="h-5 w-5 text-green-500 mr-1" />
                       ) : (
                         <XCircle className="h-5 w-5 text-red-500 mr-1" />
                       )}
                       <span
                         className={`text-sm font-medium ${
-                          score >= 7 ? "text-green-700" : "text-red-700"
+                          score >= questions.find((q) => q.id === questionId)?.points / 2 ? "text-green-700" : "text-red-700"
                         }`}
                       >
-                        {score}/10
+                        {score}/{questions.find((q) => q.id === questionId)?.points}
                       </span>
                     </div>
                   </div>
@@ -450,9 +453,9 @@ export default function SubmissionDetail() {
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                     <div
                       className={`h-2 rounded-full ${
-                        score >= 7 ? "bg-green-500" : "bg-red-500"
+                        score >= (questions.find((q) => q.id === questionId)?.points || 0) / 2 ? "bg-green-500" : "bg-red-500"
                       }`}
-                      style={{ width: `${score * 10}%` }}
+                      style={{ width: `${score / (questions.find((q) => q.id === questionId)?.points || 0) * 100}%` }}
                     ></div>
                   </div>
 
