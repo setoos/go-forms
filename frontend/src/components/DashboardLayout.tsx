@@ -34,7 +34,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navigation />
+      {(user?.id || isAuthPage) && <Navigation />}
 
       <div className="flex flex-1 relative">
         {/* Mobile sidebar backdrop */}

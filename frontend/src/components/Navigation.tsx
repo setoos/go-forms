@@ -89,6 +89,7 @@ function UserMenu() {
       applyTheme(defaultTheme, isDarkMode);
       await signOut();
       navigate("/");
+      window.location.reload();
       setIsOpen(false);
     }
   };
@@ -319,7 +320,7 @@ export default function Navigation() {
             ) : (
               <Link
                 to="/auth"
-                className={`text-secondary border-secondary flex items-center px-4 py-2 text-sm font-medium border  rounded-lg hover:bg-accent transition-colors`}
+                className={`items-center px-4 py-2 text-sm font-medium btn-primary`}
               >
                 Sign In
               </Link>

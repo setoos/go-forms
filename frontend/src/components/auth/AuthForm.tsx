@@ -145,8 +145,8 @@ export default function AuthForm() {
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
                 loading
-                  ? "bg-secondary cursor-not-allowed"
-                  : "bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary"
+                  ? "btn-primary cursor-not-allowed"
+                  : "btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2"
               }`}
             >
               {loading ? (

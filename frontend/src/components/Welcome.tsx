@@ -285,7 +285,7 @@ const FeatureCard = ({ icon: Icon, title, description, items, tagline }: {
 function Welcome() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('hero');
-
+  const { user } = useAuth();
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -306,6 +306,14 @@ function Welcome() {
 
     return () => observer.disconnect();
   }, []);
+
+  if(user?.id) {
+    return (
+      <div className="min-h-screen">
+        <ScrollNav activeSection={activeSection} />
+        </div>
+    )
+  }
 
   return (
     <>
