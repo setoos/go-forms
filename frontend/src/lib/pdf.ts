@@ -144,7 +144,13 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
 
       doc.setFontSize(24);
       doc.setTextColor(147, 51, 234); // Purple color
-      doc.text(`${(response.score / totalPoints) * 100}%`, pageWidth - margin - 30, yPos + 25);
+      const percentage = (response.score / totalPoints) * 100;
+      doc.text(
+        `${Number.isInteger(percentage) ? percentage : percentage.toFixed(2)}%`,
+        pageWidth - margin - 30,
+        yPos + 25
+      );
+
       yPos += 50;
 
       // Get performance category based on score

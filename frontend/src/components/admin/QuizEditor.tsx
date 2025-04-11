@@ -38,6 +38,7 @@ import {
 } from "../../lib/quiz";
 import type { Quiz, Question, Option } from "../../types/quiz";
 import { QUIZ_CATEGORIES } from "../../types/quiz";
+import { quillFormats, quillModules } from "../../lib/quillConfig";
 
 // Question type options
 const questionTypes = [
@@ -403,12 +404,13 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
   // Toggle option editor
   const toggleOptionEditor = (questionIndex: number, optionIndex: number) => {
-    const editorKey = `${questionIndex}-${optionIndex}`;
+    const key = `${questionIndex}-${optionIndex}`;
     setActiveOptionEditors((prev) => ({
       ...prev,
-      [editorKey]: !prev[editorKey],
+      [key]: !prev[key],
     }));
   };
+
 
   // Handle image upload for the rich text editor
   const handleImageUpload = async () => {
@@ -769,7 +771,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-text">
+            <h1 className="text-2xl font-bold text-text mt-5">
               {id === "new" || templateId ? "Create GoForm" : "Edit GoForm"}
             </h1>
             <p className="text-gray-600">
@@ -799,7 +801,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               </button>
             </>
           )}
-          <button
+          {/* <button
             onClick={handleSave}
             disabled={saving}
             className={`flex items-center px-4 py-2 rounded-lg ${saving
@@ -818,7 +820,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 Save GoForm
               </>
             )}
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -884,13 +886,20 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               <p className="text-gray-500 mb-4">
                 Add your first question to get started
               </p>
-              <button
-                onClick={handleAddQuestion}
-                className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Add Question
-              </button>
+              <div className="flex items-center space-x-2 justify-center">
+                <button
+                  onClick={handleAddQuestion}
+                  className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
+                >
+                  Add Question
+                </button>
+                <button
+                  onClick={() => navigate("/templates/library")}
+                  className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
+                >
+                  Use Template
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-6">
@@ -1072,141 +1081,132 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                             </button>
                           </div>
 
+
                           <div className="space-y-4">
-                            {question.options?.map((option, optionIndex) => (
-                              <div
-                                key={option.id}
-                                className="border border-border rounded-lg p-4"
-                              >
-                                <div className="flex items-center justify-between mb-2">
+                            {question.options?.map((option, optionIndex) => {
+                              const editorKey = `${index}-${optionIndex}`;
+                              const isExpanded = activeOptionEditors[editorKey];
+
+                              return (
+                                <div key={option.id} className="border border-border rounded-lg p-4 mb-4">
+                                  {/* Always visible summary line */}
                                   <div className="flex items-center">
-                                    <input
-                                      type="checkbox"
-                                      checked={option.is_correct}
-                                      onChange={(e) => handleOptionChange(index, optionIndex, 'is_correct', e.target.checked)}
-                                      className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded mr-2"
-                                    />
-                                    <span className="text-sm font-medium">
-                                      {option.is_correct ? 'Correct Answer' : 'Incorrect Answer'}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center">
-                                    <button
-                                      onClick={() =>
-                                        toggleOptionEditor(index, optionIndex)
-                                      }
-                                      className="p-1.5 text-gray-500 hover:text-text mr-1"
-                                      title={
-                                        activeOptionEditors[
-                                          `${index}-${optionIndex}`
-                                        ]
-                                          ? "Hide rich editor"
-                                          : "Show rich editor"
-                                      }
+                                    <div
+                                      onClick={() => toggleOptionEditor(index, optionIndex)}
+                                      className="cursor-pointer flex items-center justify-between w-full"
                                     >
-                                      {activeOptionEditors[
-                                        `${index}-${optionIndex}`
-                                      ] ? (
-                                        <ChevronUp className="h-4 w-4" />
-                                      ) : (
-                                        <ChevronDown className="h-4 w-4" />
-                                      )}
-                                    </button>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-sm font-medium">Option {optionIndex + 1}</span>
+                                      </div>
+                                      <div className="flex items-center">
+                                        <button
+                                          className="p-1.5 text-gray-500 hover:text-text mr-1"
+                                          title={isExpanded ? "Collapse option editor" : "Expand option editor"}
+                                        >
+                                          {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                        </button>
+                                      </div>
+                                    </div>
+
                                     <button
-                                      onClick={() =>
-                                        handleDeleteOption(index, optionIndex)
-                                      }
+                                      onClick={() => handleDeleteOption(index, optionIndex)}
                                       className="p-1.5 text-red-500 hover:text-red-700"
                                       title="Delete option"
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </button>
                                   </div>
-                                </div>
 
-                                <div className="mb-3">
-                                  <label className="block text-sm font-medium text-text mb-1">
-                                    Option Text
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={option.text}
-                                    onChange={(e) =>
-                                      handleOptionChange(
-                                        index,
-                                        optionIndex,
-                                        "text",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                    placeholder="Option text"
-                                  />
-                                </div>
+                                  {/* Conditionally render editor section */}
+                                  {isExpanded && (
+                                    <div className="mt-4">
+                                      <div className="mb-3 flex items-center gap-4">
+                                        <label className="block text-sm font-medium text-text mb-1">Is Correct</label>
+                                        <input
+                                          type="checkbox"
+                                          checked={option.is_correct}
+                                          onChange={(e) =>
+                                            handleOptionChange(index, optionIndex, "is_correct", e.target.checked)
+                                          }
+                                          className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                                        />
+                                      </div>
 
-                                <div className="mb-3">
-                                  <label className="block text-sm font-medium text-text mb-1">
-                                    Score
-                                  </label>
-                                  <input
-                                    type="number"
-                                    value={option.score}
-                                    onChange={(e) =>
-                                      handleOptionChange(
-                                        index,
-                                        optionIndex,
-                                        "score",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                    placeholder="Score"
-                                  />
-                                </div>
+                                      <div className="mb-3">
+                                        <label className="block text-sm font-medium text-text mb-1">Option Text</label>
+                                        <input
+                                          type="text"
+                                          value={option.text}
+                                          onChange={(e) =>
+                                            handleOptionChange(index, optionIndex, "text", e.target.value)
+                                          }
+                                          className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                          placeholder="Option text"
+                                        />
+                                      </div>
 
-                                {/* {activeOptionEditors[`${index}-${optionIndex}`] && ( */}
-                                <div>
-                                  <label className="block text-sm font-medium text-text mb-1">
-                                    Feedback (Rich Content)
-                                  </label>
-                                  <ReactQuill
-                                    ref={(el) => {
-                                      quillRefs.current[
-                                        `option-${index}-${optionIndex}`
-                                      ] = el;
-                                    }}
-                                    value={option.feedback || ""}
-                                    onChange={(content) =>
-                                      handleOptionChange(
-                                        index,
-                                        optionIndex,
-                                        "feedback",
-                                        content
-                                      )
-                                    }
-                                    // //modules={modules}
-                                    placeholder="Enter rich feedback content for this option..."
-                                    theme="snow"
-                                    className="mb-4"
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    This rich content will be displayed in the
-                                    PDF report when this option is selected.
-                                  </p>
-                                </div>
-                                {/* )} */}
-                              </div>
-                            ))}
+                                      <div className="mb-3">
+                                        <label className="block text-sm font-medium text-text mb-1">Score</label>
+                                        <input
+                                          type="number"
+                                          value={option.score}
+                                          onChange={(e) =>
+                                            handleOptionChange(
+                                              index,
+                                              optionIndex,
+                                              "score",
+                                              parseInt(e.target.value) || 0
+                                            )
+                                          }
+                                          className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                          placeholder="Score"
+                                        />
+                                      </div>
 
+                                      <div>
+                                        <label className="block text-sm font-medium text-text mb-1">
+                                          Feedback (Rich Content)
+                                        </label>
+                                        <ReactQuill
+                                          ref={(el) => {
+                                            quillRefs.current[`option-${index}-${optionIndex}`] = el;
+                                          }}
+                                          value={option.feedback || ""}
+                                          onChange={(content) =>
+                                            handleOptionChange(index, optionIndex, "feedback", content)
+                                          }
+                                          theme="snow"
+                                          className="mb-4"
+                                          modules={quillModules}
+                                          formats={quillFormats}
+                                          placeholder="Enter rich feedback content for this option..."
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                          This rich content will be displayed in the PDF report when this option is selected.
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
                             {(!question.options ||
-                              question.options.length === 0) && (
-                                <button
-                                  onClick={() => handleAddOption(index)}
-                                  className="w-full py-2 border-2 border-dashed border-border rounded-lg text-gray-500 hover:text-text hover:border-border"
-                                >
-                                  + Add Option
-                                </button>
-                              )}
+                              question.options.length === 0) ? (
+                              <button
+                                onClick={() => handleAddOption(index)}
+                                className="w-full py-2 border-2 border-dashed border-secondary rounded-lg text-gray-500 hover:text-text"
+                              >
+                                + Add Option
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleAddOption(index)}
+                                className="py-2 px-4 border-2 border border-secondary rounded-md text-secondary mx-auto flex items-center"
+                              >
+                                <Plus className="w-4 h-4" />
+                                <span className="ml-2">Add Option</span>
+                              </button>
+                            )}
                           </div>
                         </div>
                       )}
@@ -1217,9 +1217,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                             <h4 className="font-medium">Matching Pairs</h4>
                             <button
                               onClick={() => addMatchingPair(index)}
-                              className="text-secondary hover:text-primary"
+                              className="text-secondary hover:text-primary flex items-center gap-2"
                             >
                               <Plus className="w-5 h-5" />
+                              <span className="text-secondary">Add Pair</span>
                             </button>
                           </div>
 
@@ -1286,6 +1287,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   placeholder="Enter rich feedback content for this pair..."
                                   theme="snow"
                                   className="mb-2"
+                                  modules={quillModules}
+                                  formats={quillFormats}
                                 />
 
                                 <p className="text-xs text-gray-500">
@@ -1294,6 +1297,17 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               </div>
                             </div>
                           ))}
+                          {question.matching_pairs?.length !== 0 && (
+                            // <div className="flex items-center ">
+                            <button
+                              onClick={() => addMatchingPair(index)}
+                              className="text-secondary hover:text-primary mx-auto flex items-center gap-2 my-5 justify-center border border-secondary rounded-md px-4 py-2"
+                            >
+                              <Plus className="w-5 h-5" />
+                              <span className="text-secondary">Add Pair</span>
+                            </button>
+                            // </div>
+                          )}
                         </div>
                       )}
 
@@ -1305,9 +1319,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                             <h4 className="font-medium">Ordering Items</h4>
                             <button
                               onClick={() => addOrderingItem(index)}
-                              className="text-secondary hover:text-primary"
+                              className="text-secondary hover:text-primary flex items-center gap-2"
                             >
                               <Plus className="w-5 h-5" />
+                              <span className="text-secondary">Add Item</span>
                             </button>
                           </div>
 
@@ -1381,6 +1396,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                   placeholder="Enter feedback content for this item..."
                                   theme="snow"
                                   className="mb-2"
+                                  modules={quillModules}
+                                  formats={quillFormats}
                                 />
                                 <p className="text-xs text-gray-500">
                                   This feedback will appear in the PDF for this
@@ -1389,8 +1406,18 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               </div>
                             </div>
                           ))}
+                          {question.ordering_items?.length !== 0 && (
+                            <button
+                              onClick={() => addOrderingItem(index)}
+                              className="text-secondary hover:text-primary flex items-center gap-2 mx-auto border border-secondary rounded-md px-4 py-2"
+                            >
+                              <Plus className="w-5 h-5" />
+                              <span className="text-secondary">Add Item</span>
+                            </button>
+                          )}
                         </div>
                       )}
+
 
                       {question.type === "essay" && (
                         <div className="space-y-4">
@@ -1486,6 +1513,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     placeholder="Enter feedback for this rubric criterion..."
                                     theme="snow"
                                     className="mb-2"
+                                    modules={quillModules}
+                                    formats={quillFormats}
                                   />
                                   <p className="text-xs text-gray-500">
                                     This rich content will appear in the essay
@@ -1532,6 +1561,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               placeholder="Enter rich feedback content for this image-based question..."
                               theme="snow"
                               className="mb-2"
+                              modules={quillModules}
+                              formats={quillFormats}
                             />
                             <p className="text-xs text-gray-500">
                               This feedback will be shown in the PDF when this
@@ -1600,6 +1631,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               placeholder="Enter explanation or feedback..."
                               theme="snow"
                               className="mb-2"
+                              modules={quillModules}
+                              formats={quillFormats}
                             />
                             <p className="text-xs text-gray-500">
                               This explanation will appear in reports and after submission.
@@ -1629,6 +1662,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               placeholder="Enter rich feedback content for this question..."
                               theme="snow"
                               className="mb-2"
+                              modules={quillModules}
+                              formats={quillFormats}
                             />
 
                             <p className="text-xs text-gray-500">
@@ -1661,6 +1696,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               placeholder="Enter rich feedback content for this complete statement question..."
                               theme="snow"
                               className="mb-2"
+                              modules={quillModules}
+                              formats={quillFormats}
                             />
 
                             <p className="text-xs text-gray-500">
@@ -1692,6 +1729,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                               placeholder="Enter rich feedback content for this short answer question..."
                               theme="snow"
                               className="mb-2"
+                              modules={quillModules}
+                              formats={quillFormats}
                             />
 
                             <p className="text-xs text-gray-500">
@@ -1702,7 +1741,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8">
                         <div>
                           <label className="block text-sm font-medium text-text mb-1">
                             Points
@@ -1748,13 +1787,34 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             </div>
           )}
 
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex justify-end gap-5">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className={`flex items-center px-4 py-2 rounded-lg ${saving
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-secondary hover:bg-primary"
+                } text-white`}
+            >
+              {saving ? (
+                <>
+                  <Loader className="h-5 w-5 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5 mr-2" />
+                  Save GoForm
+                </>
+              )}
+            </button>
             <button
               onClick={handleContinueToDetails}
-              className="flex items-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary"
+              className="flex items-center px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
             >
               Continue to Details
             </button>
+
           </div>
         </div>
       )}

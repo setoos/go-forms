@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Save, 
-  ArrowLeft, 
-  Download, 
-  Eye, 
-  Trash2, 
-  Plus, 
+import {
+  Save,
+  ArrowLeft,
+  Download,
+  Eye,
+  Trash2,
+  Plus,
   Copy,
   FileText,
   Image,
@@ -28,6 +28,7 @@ import { showToast } from '../../lib/toast';
 import { generatePDF } from '../../lib/pdf';
 import { useAuth } from '../../lib/auth';
 import { sanitizeHtml, validateHtml } from '../../lib/htmlSanitizer';
+import { quillFormats, quillModules } from '../../lib/quillConfig';
 
 interface Section {
   id: string;
@@ -60,28 +61,28 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
   const [templates, setTemplates] = useState<any[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [editorKey, setEditorKey] = useState<number>(Date.now());
-  const quillRefs = useRef<{[key: string]: ReactQuill | null}>({});
+  const quillRefs = useRef<{ [key: string]: ReactQuill | null }>({});
 
   useEffect(() => {
     if (!user) {
       setError('You must be logged in to access this page');
       return;
     }
-    
+
     loadTemplates();
     if (!initialQuizzes || initialQuizzes.length === 0) {
       loadQuizzes();
     } else {
       setQuizzes(initialQuizzes);
     }
-    
+
     if (initialTemplate) {
       // Initialize with provided template data
       setSelectedTemplate(initialTemplate.id);
       setTemplateName(initialTemplate.name);
       setIsDefault(initialTemplate.is_default || false);
       setSelectedQuiz(initialTemplate.quiz_id || null);
-      
+
       try {
         const parsedContent = JSON.parse(initialTemplate.content);
         if (Array.isArray(parsedContent)) {
@@ -129,7 +130,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
   const loadQuizzes = async () => {
     try {
       if (!user) return;
-      
+
       const { data, error } = await supabase
         .from('quizzes')
         .select('id, title')
@@ -173,7 +174,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
       setTemplateName(data.name);
       setIsDefault(data.is_default || false);
       setSelectedQuiz(data.quiz_id || null);
-      
+
       try {
         const parsedContent = JSON.parse(data.content);
         if (Array.isArray(parsedContent)) {
@@ -199,21 +200,21 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
   const loadTemplates = async () => {
     try {
       if (!user) return;
-      
+
       const { data, error } = await supabase
         .from('report_templates')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       // Filter templates to only show those created by the current user or system templates
-      const filteredTemplates = (data || []).filter(template => 
+      const filteredTemplates = (data || []).filter(template =>
         !template.created_by || template.created_by === user.id
       );
-      
+
       setTemplates(filteredTemplates);
-      
+
       // Extract template names for validation
       setExistingTemplateNames(filteredTemplates.map(t => t.name));
     } catch (error) {
@@ -224,7 +225,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
 
   const handleTemplateChange = async (templateId: string) => {
     if (!templateId) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('report_templates')
@@ -233,13 +234,13 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
         .single();
 
       if (error) throw error;
-      
+
       if (data) {
         setSelectedTemplate(templateId);
         setTemplateName(data.name);
         setIsDefault(data.is_default || false);
         setSelectedQuiz(data.quiz_id || null);
-        
+
         try {
           const parsedContent = JSON.parse(data.content);
           if (Array.isArray(parsedContent)) {
@@ -249,23 +250,23 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
             })));
           } else {
             // If it's not in the expected format, create a single section
-            setSections([{ 
-              id: '1', 
-              title: 'Content', 
+            setSections([{
+              id: '1',
+              title: 'Content',
               content: data.content,
               isExpanded: true
             }]);
           }
         } catch (e) {
           // If parsing fails, it's probably just HTML content
-          setSections([{ 
-            id: '1', 
-            title: 'Content', 
+          setSections([{
+            id: '1',
+            title: 'Content',
             content: data.content,
             isExpanded: true
           }]);
         }
-        
+
         // Force re-render of the editor components
         setEditorKey(Date.now());
       }
@@ -288,7 +289,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
 
     try {
       setSaving(true);
-      
+
       // Validate HTML in all sections
       for (const section of sections) {
         const { isValid, errors } = validateHtml(section.content);
@@ -298,18 +299,18 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
           return;
         }
       }
-      
+
       // Sanitize HTML in all sections
       const sanitizedSections = sections.map(section => ({
         ...section,
         content: sanitizeHtml(section.content)
       }));
-      
+
       // Serialize sections to JSON
       const content = JSON.stringify(
         sanitizedSections.map(({ isExpanded, ...rest }) => rest)
       );
-      
+
       const templateData = {
         name: templateName.trim(),
         content,
@@ -334,7 +335,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
             .eq('is_default', true);
         }
       }
-      
+
       let data;
       if (selectedTemplate) {
         // Update existing template
@@ -342,13 +343,13 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
           .from('report_templates')
           .update({
             ...templateData,
-            version: templates.find(t => t.id === selectedTemplate)?.version ? 
+            version: templates.find(t => t.id === selectedTemplate)?.version ?
               (templates.find(t => t.id === selectedTemplate)?.version || 0) + 1 : 1
           })
           .eq('id', selectedTemplate)
           .select()
           .single();
-          
+
         if (error) throw error;
         data = updatedData;
       } else {
@@ -361,13 +362,13 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
           })
           .select()
           .single();
-          
+
         if (error) throw error;
         data = newData;
       }
-      
+
       showToast('Template saved successfully', 'success');
-      
+
       // Navigate back to templates list
       navigate('/admin/templates');
     } catch (error) {
@@ -380,13 +381,13 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
 
   const handleAddSection = () => {
     const newId = Date.now().toString();
-    setSections([...sections, { 
-      id: newId, 
-      title: `Section ${sections.length + 1}`, 
+    setSections([...sections, {
+      id: newId,
+      title: `Section ${sections.length + 1}`,
       content: '<p>Enter content here...</p>',
       isExpanded: true
     }]);
-    
+
     // Force re-render of the editor components
     setEditorKey(Date.now());
   };
@@ -396,36 +397,36 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
       showToast('Cannot delete the only section', 'error');
       return;
     }
-    
+
     setSections(sections.filter(section => section.id !== id));
   };
 
   const handleDuplicateSection = (id: string) => {
     const sectionToDuplicate = sections.find(section => section.id === id);
     if (!sectionToDuplicate) return;
-    
+
     const newId = Date.now().toString();
-    const newSection = { 
-      ...sectionToDuplicate, 
-      id: newId, 
+    const newSection = {
+      ...sectionToDuplicate,
+      id: newId,
       title: `${sectionToDuplicate.title} (Copy)`,
       isExpanded: true
     };
-    
+
     setSections([...sections, newSection]);
-    
+
     // Force re-render of the editor components
     setEditorKey(Date.now());
   };
 
   const handleSectionChange = (id: string, field: 'title' | 'content', value: string) => {
-    setSections(sections.map(section => 
+    setSections(sections.map(section =>
       section.id === id ? { ...section, [field]: value } : section
     ));
   };
 
   const toggleSectionExpand = (id: string) => {
-    setSections(sections.map(section => 
+    setSections(sections.map(section =>
       section.id === id ? { ...section, isExpanded: !section.isExpanded } : section
     ));
   };
@@ -460,7 +461,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
         timestamp: new Date().toISOString(),
         custom_feedback: sections.map(s => `<h3>${s.title}</h3>${s.content}`).join('')
       };
-      
+
       await generatePDF(sampleResponse);
       showToast('Preview PDF generated', 'success');
     } catch (error) {
@@ -474,30 +475,30 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/jpeg, image/png, image/gif');
-    
+
     // When a file is selected
     input.onchange = async () => {
       if (!input.files || !input.files[0]) return;
-      
+
       const file = input.files[0];
-      
+
       // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!validTypes.includes(file.type)) {
         showToast('Invalid file type. Please upload JPG, PNG, or GIF images.', 'error');
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         showToast('Image is too large. Maximum size is 5MB.', 'error');
         return;
       }
-      
+
       try {
         // Show loading toast
         showToast('Uploading image...', 'info');
-        
+
         // Upload to Supabase Storage
         const fileName = `${Date.now()}-${file.name}`;
         const { data, error } = await supabase.storage
@@ -506,23 +507,23 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
             cacheControl: '3600',
             upsert: false
           });
-        
+
         if (error) throw error;
-        
+
         // Get public URL
         const { data: publicURL } = supabase.storage
           .from('template-images')
           .getPublicUrl(`public/${fileName}`);
-        
+
         if (!publicURL) throw new Error('Failed to get public URL');
-        
+
         // Find the active editor (first expanded section)
         const activeSection = sections.find(s => s.isExpanded);
         if (!activeSection) {
           showToast('Please expand a section to insert an image', 'error');
           return;
         }
-        
+
         // Insert image into editor
         const quill = quillRefs.current[activeSection.id]?.getEditor();
         if (quill) {
@@ -532,14 +533,14 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
         } else {
           showToast('Editor not found. Please try again.', 'error');
         }
-        
+
         showToast('Image uploaded successfully', 'success');
       } catch (error) {
         console.error('Error uploading image:', error);
         showToast('Error uploading image: ' + (error instanceof Error ? error.message : 'Unknown error'), 'error');
       }
     };
-    
+
     // Trigger file selection
     input.click();
   };
@@ -673,11 +674,10 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
           <button
             onClick={handleSaveTemplate}
             disabled={saving || !templateName.trim() || !!nameError}
-            className={`flex items-center px-4 py-2 rounded-lg ${
-              saving || !templateName.trim() || !!nameError
+            className={`flex items-center px-4 py-2 rounded-lg ${saving || !templateName.trim() || !!nameError
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-secondary text-white hover:bg-primary'
-            }`}
+              }`}
             type="button"
           >
             <Save className="w-5 h-5 mr-2" />
@@ -708,7 +708,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                   <p className="mt-1 text-sm text-red-500">{nameError}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-text mb-1" htmlFor="templateSelector">
                   Load Existing Template
@@ -740,7 +740,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                   </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${showTemplateSettings ? 'transform rotate-180' : ''}`} />
                 </button>
-                
+
                 {showTemplateSettings && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-md space-y-3">
                     <div>
@@ -761,7 +761,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="flex items-center">
                       <input
                         type="checkbox"
@@ -779,7 +779,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
               </div>
             </div>
           </div>
-          
+
           <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Available Variables</h2>
             <div className="space-y-2 text-sm">
@@ -822,11 +822,11 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                 Add Section
               </button>
             </div>
-            
+
             <div className="space-y-6">
               {sections.map((section, index) => (
-                <div 
-                  key={`${section.id}-${editorKey}`} 
+                <div
+                  key={`${section.id}-${editorKey}`}
                   className="border border-gray-200 rounded-lg overflow-hidden"
                   data-section-expanded={section.isExpanded}
                 >
@@ -871,7 +871,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Editor container - conditionally render based on section.isExpanded */}
                   {section.isExpanded && (
                     <div className="editor-container">
@@ -883,6 +883,8 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
                         placeholder="Enter section content..."
                         theme="snow"
                         style={{ height: '250px' }}
+                        modules={quillModules}
+                        formats={quillFormats}
                       />
                     </div>
                   )}
@@ -890,7 +892,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
               ))}
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => navigate('/admin/templates')}
@@ -933,7 +935,7 @@ export default function TemplateEditor({ initialTemplate = null, initialQuizzes 
               {sections.map((section, index) => (
                 <div key={section.id} className="mb-6 last:mb-0">
                   <h3 className="text-xl font-semibold mb-3">{section.title}</h3>
-                  <div 
+                  <div
                     className="prose max-w-none"
                     dangerouslySetInnerHTML={{ __html: section.content }}
                   />

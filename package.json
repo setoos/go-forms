@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "quill": "^2.0.3",
+    "quill-table-ui": "^1.0.7"
+  }
+}

@@ -106,38 +106,42 @@ interface ThemeContextType {
   setScores: (scores: Record<string, number>) => void;
   themeLoading: boolean;
   setThemeLoading: (loading: boolean) => void;
+  points: number;
+  setPoints: (points: number) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: defaultTheme,
-  updateTheme: async () => {},
-  resetTheme: () => {},
+  updateTheme: async () => { },
+  resetTheme: () => { },
   isDarkMode: false,
-  toggleDarkMode: () => {},
-  setTheme: () => {},
+  toggleDarkMode: () => { },
+  setTheme: () => { },
   params: {},
-  setParams: () => {},
+  setParams: () => { },
   isSignOut: false,
-  setIsSignOut: () => {},
+  setIsSignOut: () => { },
   isResultSent: false,
-  setIsResultSent: () => {},
+  setIsResultSent: () => { },
   quizzes: [],
-  setQuizzes: async () => {},
+  setQuizzes: async () => { },
   loading: false,
-  setLoading: () => {},
+  setLoading: () => { },
   error: "",
-  setError: () => {},
-  loadQuizzes: () => {},
+  setError: () => { },
+  loadQuizzes: () => { },
   selectedQuiz: "",
-  setSelectedQuiz: () => {},
+  setSelectedQuiz: () => { },
   quizSubmissions: [],
-  setQuizSubmissions: () => {},
+  setQuizSubmissions: () => { },
   answers: {},
-  setAnswers: () => {},
+  setAnswers: () => { },
   scores: {},
-  setScores: () => {},
+  setScores: () => { },
   themeLoading: false,
-  setThemeLoading: () => {},
+  setThemeLoading: () => { },
+  points: 10,
+  setPoints: () => { },
 });
 
 export function useTheme() {
@@ -212,6 +216,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     Record<string, string | number | boolean | null>
   >({});
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [points, setPoints] = useState(10);
+
 
   const updateQuizzes = (newQuizzes: Quiz[]): Promise<void> => {
     setQuizzes(newQuizzes);
@@ -354,8 +360,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         console.error("Error loading theme:", error);
         applyTheme(defaultTheme, false);
       } finally {
-          setThemeLoading(false);
-          setLoading(false);
+        setThemeLoading(false);
+        setLoading(false);
       }
     };
 
@@ -504,6 +510,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setScores,
         themeLoading,
         setThemeLoading,
+        points, setPoints
       }}
     >
       {children}

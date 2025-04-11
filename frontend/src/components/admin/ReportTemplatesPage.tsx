@@ -24,6 +24,7 @@ import { generatePDF } from '../../lib/pdf';
 import { useAuth } from '../../lib/auth';
 import { sanitizeHtml, validateHtml, processTemplateVariables } from '../../lib/htmlSanitizer';
 import { supabase } from '../../lib/supabase';
+import { quillFormats, quillModules } from '../../lib/quillConfig';
 
 interface Section {
   id: string;
@@ -845,6 +846,8 @@ export default function ReportTemplatesPage() {
                         placeholder="Enter section content..."
                         theme="snow"
                         style={{ height: '250px' }}
+                        modules={quillModules}
+                        formats={quillFormats}
                       />
                     </div>
                   )}

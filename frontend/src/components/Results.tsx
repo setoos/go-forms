@@ -34,6 +34,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { processTemplateVariables } from "../lib/htmlSanitizer";
 import { useTheme } from "../lib/theme";
+import { quillFormats, quillModules } from "../lib/quillConfig";
 
 // Register Chart.js components
 ChartJS.register(
@@ -139,8 +140,8 @@ function Results({ isAdmin = false }: ResultsProps) {
                     /{{time}}/g,
                     completionTime
                       ? `${Math.floor(completionTime / 60)}:${String(
-                          completionTime % 60
-                        ).padStart(2, "0")}`
+                        completionTime % 60
+                      ).padStart(2, "0")}`
                       : "0:00"
                   )
                   .replace(/{{quiz_title}}/g, quizTitle || "Quiz")
@@ -149,12 +150,12 @@ function Results({ isAdmin = false }: ResultsProps) {
                     score >= 90
                       ? "Excellent"
                       : score >= 80
-                      ? "Very Good"
-                      : score >= 70
-                      ? "Good"
-                      : score >= 60
-                      ? "Satisfactory"
-                      : "Needs Improvement"
+                        ? "Very Good"
+                        : score >= 70
+                          ? "Good"
+                          : score >= 60
+                            ? "Satisfactory"
+                            : "Needs Improvement"
                   );
 
                 return `<h3>${s.title}</h3>${content}`;
@@ -194,8 +195,8 @@ function Results({ isAdmin = false }: ResultsProps) {
                       /{{time}}/g,
                       completionTime
                         ? `${Math.floor(completionTime / 60)}:${String(
-                            completionTime % 60
-                          ).padStart(2, "0")}`
+                          completionTime % 60
+                        ).padStart(2, "0")}`
                         : "0:00"
                     )
                     .replace(/{{quiz_title}}/g, quizTitle || "Quiz")
@@ -204,12 +205,12 @@ function Results({ isAdmin = false }: ResultsProps) {
                       score >= 90
                         ? "Excellent"
                         : score >= 80
-                        ? "Very Good"
-                        : score >= 70
-                        ? "Good"
-                        : score >= 60
-                        ? "Satisfactory"
-                        : "Needs Improvement"
+                          ? "Very Good"
+                          : score >= 70
+                            ? "Good"
+                            : score >= 60
+                              ? "Satisfactory"
+                              : "Needs Improvement"
                     );
 
                   return `<h3>${s.title}</h3>${content}`;
@@ -418,8 +419,8 @@ function Results({ isAdmin = false }: ResultsProps) {
                     /{{time}}/g,
                     completionTime
                       ? `${Math.floor(completionTime / 60)}:${String(
-                          completionTime % 60
-                        ).padStart(2, "0")}`
+                        completionTime % 60
+                      ).padStart(2, "0")}`
                       : "0:00"
                   )
                   .replace(/{{quiz_title}}/g, quizTitle || "Quiz")
@@ -428,12 +429,12 @@ function Results({ isAdmin = false }: ResultsProps) {
                     score >= 90
                       ? "Excellent"
                       : score >= 80
-                      ? "Very Good"
-                      : score >= 70
-                      ? "Good"
-                      : score >= 60
-                      ? "Satisfactory"
-                      : "Needs Improvement"
+                        ? "Very Good"
+                        : score >= 70
+                          ? "Good"
+                          : score >= 60
+                            ? "Satisfactory"
+                            : "Needs Improvement"
                   );
 
                 return `<h3>${s.title}</h3>${content}`;
@@ -452,8 +453,8 @@ function Results({ isAdmin = false }: ResultsProps) {
                 /{{time}}/g,
                 completionTime
                   ? `${Math.floor(completionTime / 60)}:${String(
-                      completionTime % 60
-                    ).padStart(2, "0")}`
+                    completionTime % 60
+                  ).padStart(2, "0")}`
                   : "0:00"
               )
               .replace(/{{quiz_title}}/g, quizTitle || "Quiz")
@@ -462,12 +463,12 @@ function Results({ isAdmin = false }: ResultsProps) {
                 score >= 90
                   ? "Excellent"
                   : score >= 80
-                  ? "Very Good"
-                  : score >= 70
-                  ? "Good"
-                  : score >= 60
-                  ? "Satisfactory"
-                  : "Needs Improvement"
+                    ? "Very Good"
+                    : score >= 70
+                      ? "Good"
+                      : score >= 60
+                        ? "Satisfactory"
+                        : "Needs Improvement"
               );
 
             setCustomFeedback(processedContent);
@@ -483,8 +484,8 @@ function Results({ isAdmin = false }: ResultsProps) {
               /{{time}}/g,
               completionTime
                 ? `${Math.floor(completionTime / 60)}:${String(
-                    completionTime % 60
-                  ).padStart(2, "0")}`
+                  completionTime % 60
+                ).padStart(2, "0")}`
                 : "0:00"
             )
             .replace(/{{quiz_title}}/g, quizTitle || "Quiz")
@@ -493,12 +494,12 @@ function Results({ isAdmin = false }: ResultsProps) {
               score >= 90
                 ? "Excellent"
                 : score >= 80
-                ? "Very Good"
-                : score >= 70
-                ? "Good"
-                : score >= 60
-                ? "Satisfactory"
-                : "Needs Improvement"
+                  ? "Very Good"
+                  : score >= 70
+                    ? "Good"
+                    : score >= 60
+                      ? "Satisfactory"
+                      : "Needs Improvement"
             );
 
           setCustomFeedback(processedContent);
@@ -705,11 +706,10 @@ function Results({ isAdmin = false }: ResultsProps) {
               <button
                 type="submit"
                 disabled={saving}
-                className={`w-full flex items-center justify-center px-6 py-3 rounded-lg ${
-                  saving
+                className={`w-full flex items-center justify-center px-6 py-3 rounded-lg ${saving
                     ? "bg-secondary cursor-not-allowed"
                     : "bg-secondary hover:bg-primary"
-                } text-white transition-colors`}
+                  } text-white transition-colors`}
               >
                 {saving ? (
                   <>
@@ -838,21 +838,8 @@ function Results({ isAdmin = false }: ResultsProps) {
                   value={customFeedback}
                   onChange={setCustomFeedback}
                   className="bg-background rounded-lg"
-                  modules={{
-                    toolbar: {
-                      container: [
-                        [{ header: [1, 2, 3, false] }],
-                        ["bold", "italic", "underline", "strike"],
-                        [{ list: "ordered" }, { list: "bullet" }],
-                        [{ color: [] }, { background: [] }],
-                        ["link", "image"],
-                        ["clean"],
-                      ],
-                      handlers: {
-                        image: handleImageUpload,
-                      },
-                    },
-                  }}
+                  modules={quillModules}
+                  formats={quillFormats}
                 />
                 {appliedTemplate && (
                   <div className="mt-4 flex justify-end">
@@ -883,20 +870,20 @@ function Results({ isAdmin = false }: ResultsProps) {
                           date: new Date().toLocaleDateString(),
                           time: completionTime
                             ? `${Math.floor(completionTime / 60)}:${String(
-                                completionTime % 60
-                              ).padStart(2, "0")}`
+                              completionTime % 60
+                            ).padStart(2, "0")}`
                             : "0:00",
                           quiz_title: quizTitle || "Quiz",
                           performance_category:
                             score >= 90
                               ? "Excellent"
                               : score >= 80
-                              ? "Very Good"
-                              : score >= 70
-                              ? "Good"
-                              : score >= 60
-                              ? "Satisfactory"
-                              : "Needs Improvement",
+                                ? "Very Good"
+                                : score >= 70
+                                  ? "Good"
+                                  : score >= 60
+                                    ? "Satisfactory"
+                                    : "Needs Improvement",
                         }),
                       }}
                     />
@@ -928,11 +915,10 @@ function Results({ isAdmin = false }: ResultsProps) {
                           Question {parseInt(questionId) + 1}
                         </h3>
                         <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            Number(score) >= 7
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${Number(score) >= 7
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
-                          }`}
+                            }`}
                         >
                           {score}/10
                         </span>
@@ -1026,11 +1012,10 @@ function Results({ isAdmin = false }: ResultsProps) {
                 <button
                   onClick={() => handleSendEmail()}
                   disabled={sendingEmail}
-                  className={`flex items-center justify-center px-6 py-3 border-2 border-secondary rounded-lg transition-colors ${
-                    sendingEmail
+                  className={`flex items-center justify-center px-6 py-3 border-2 border-secondary rounded-lg transition-colors ${sendingEmail
                       ? "text-gray-400 border-gray-400 cursor-not-allowed"
                       : "text-secondary hover:bg-accent"
-                  }`}
+                    }`}
                 >
                   {sendingEmail ? (
                     <>

@@ -74,7 +74,7 @@ export default function Quiz() {
       }));
 
       setQuiz(quizData);
-      setQuestions(shuffleQuestions(shuffledQuestions));
+      setQuestions(shuffledQuestions);
     } catch (error) {
       console.error("Error loading quiz:", error);
       setError("Failed to load quiz");
@@ -288,6 +288,8 @@ export default function Quiz() {
 
         {quiz.share_id && !globalThis.location.href.includes(quiz.share_id) && (
           <div className="mt-8 pt-8 border-t border-border">
+            {quiz.is_published ? (
+
             <a
               href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
               target="_blank"
@@ -299,6 +301,11 @@ export default function Quiz() {
                 {globalThis.location.origin}/quiz/{quiz.share_id}
               </span>
             </a>
+            ) : (
+              <span className="text-sm text-primary">
+                Publish this quiz to share it.
+              </span>
+            )}
           </div>
         )}
       </div>
