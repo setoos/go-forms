@@ -239,6 +239,8 @@ export default function SubmissionDetail() {
     );
   }
 
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -339,11 +341,10 @@ export default function SubmissionDetail() {
             </div>
             <div className="flex items-start">
               <div
-                className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 mr-3 ${
-                  submission.status === "completed"
-                    ? "bg-green-100 text-green-600"
-                    : "bg-yellow-100 text-yellow-600"
-                }`}
+                className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 mr-3 ${submission.status === "completed"
+                  ? "bg-green-100 text-green-600"
+                  : "bg-yellow-100 text-yellow-600"
+                  }`}
               >
                 {submission.status === "completed" ? (
                   <CheckCircle className="h-4 w-4" />
@@ -368,18 +369,22 @@ export default function SubmissionDetail() {
           </h2>
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-5xl font-bold text-secondary mb-2">
-              {submission.score / totalPoints * 100}%
+              {
+                Number.isInteger((submission.score / totalPoints) * 100)
+                  ? (submission.score / totalPoints) * 100
+                  : ((submission.score / totalPoints) * 100).toFixed(2)
+              }%
             </div>
             <p className="text-text mb-4">
               {submission.score >= 90
                 ? "Excellent"
                 : submission.score >= 80
-                ? "Very Good"
-                : submission.score >= 70
-                ? "Good"
-                : submission.score >= 60
-                ? "Satisfactory"
-                : "Needs Improvement"}
+                  ? "Very Good"
+                  : submission.score >= 70
+                    ? "Good"
+                    : submission.score >= 60
+                      ? "Satisfactory"
+                      : "Needs Improvement"}
             </p>
             <div className="w-full flex space-x-2 mt-2">
               <button
@@ -392,9 +397,8 @@ export default function SubmissionDetail() {
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail}
-                className={`flex-1 flex items-center justify-center py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${
-                  sendingEmail ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`flex-1 flex items-center justify-center py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${sendingEmail ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {sendingEmail ? (
                   <Loader className="h-4 w-4 mr-1.5 animate-spin" />
@@ -441,9 +445,8 @@ export default function SubmissionDetail() {
                         <XCircle className="h-5 w-5 text-red-500 mr-1" />
                       )}
                       <span
-                        className={`text-sm font-medium ${
-                          score >= questions.find((q) => q.id === questionId)?.points / 2 ? "text-green-700" : "text-red-700"
-                        }`}
+                        className={`text-sm font-medium ${score >= questions.find((q) => q.id === questionId)?.points / 2 ? "text-green-700" : "text-red-700"
+                          }`}
                       >
                         {score}/{questions.find((q) => q.id === questionId)?.points}
                       </span>
@@ -452,9 +455,8 @@ export default function SubmissionDetail() {
 
                   <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                     <div
-                      className={`h-2 rounded-full ${
-                        score >= (questions.find((q) => q.id === questionId)?.points || 0) / 2 ? "bg-green-500" : "bg-red-500"
-                      }`}
+                      className={`h-2 rounded-full ${score >= (questions.find((q) => q.id === questionId)?.points || 0) / 2 ? "bg-green-500" : "bg-red-500"
+                        }`}
                       style={{ width: `${score / (questions.find((q) => q.id === questionId)?.points || 0) * 100}%` }}
                     ></div>
                   </div>

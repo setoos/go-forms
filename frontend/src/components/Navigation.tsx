@@ -294,14 +294,14 @@ export default function Navigation() {
               <div className="flex gap-5">
                 {location.pathname !== "/admin/quizzes/new" &&
                   location.pathname !== "/admin/quizzes" && (
-                    <Link
-                      to="/admin/quizzes/new"
+                    <a
+                      href="/admin/quizzes/new"
                       className="flex items-center my-auto px-4 py-2 text-sm font-medium text-white bg-secondary rounded-lg hover:bg-primary transition-colors"
                       onClick={closeMobileMenu}
                     >
                       <PlusCircle className="h-5 w-5 mr-2" />
                       Create GoForm
-                    </Link>
+                    </a>
                   )}
                 <div className="my-auto">
                   <UserMenu />

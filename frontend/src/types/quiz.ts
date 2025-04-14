@@ -75,7 +75,7 @@ export interface Option {
   score: number;
   feedback: string | null;
   order: number;
-  is_correct: boolean;
+  is_correct?: boolean;
 }
 
 export interface MatchingPair {

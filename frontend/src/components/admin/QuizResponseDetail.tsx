@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  User, 
-  Calendar, 
-  Clock, 
-  FileText, 
-  Download, 
-  Mail, 
-  CheckCircle, 
-  XCircle, 
-  Loader, 
+import {
+  ArrowLeft,
+  User,
+  Calendar,
+  Clock,
+  FileText,
+  Download,
+  Mail,
+  CheckCircle,
+  XCircle,
+  Loader,
   AlertCircle,
   Send,
   Edit,
@@ -25,6 +25,7 @@ import { useAuth } from '../../lib/auth';
 import { generatePDF } from '../../lib/pdf';
 import { sendResultsEmail } from '../../lib/email';
 import { processTemplateVariables } from '../../lib/htmlSanitizer';
+import { quillFormats, quillModules } from '../../lib/quillConfig';
 
 interface QuizResponse {
   id: string;
@@ -166,12 +167,12 @@ export default function QuizResponseDetail() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       // Filter templates to only show those created by the current user or system templates
-      const filteredTemplates = (data || []).filter(template => 
+      const filteredTemplates = (data || []).filter(template =>
         !template.created_by || template.created_by === user?.id
       );
-      
+
       setTemplates(filteredTemplates);
     } catch (error) {
       console.error('Error loading templates:', error);
@@ -256,7 +257,7 @@ export default function QuizResponseDetail() {
 
       showToast('Feedback saved successfully', 'success');
       setEditingFeedback(false);
-      
+
       // Update local state
       setResponse({
         ...response,
@@ -272,7 +273,7 @@ export default function QuizResponseDetail() {
 
   const handleTemplateChange = async (templateId: string) => {
     if (!templateId) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('report_templates')
@@ -281,7 +282,7 @@ export default function QuizResponseDetail() {
         .single();
 
       if (error) throw error;
-      
+
       if (data) {
         try {
           const parsedContent = JSON.parse(data.content);
@@ -294,19 +295,19 @@ export default function QuizResponseDetail() {
                 email: response?.participant_email || 'user@example.com',
                 score: response?.score.toString() || '0',
                 date: new Date(response?.submission_date || Date.now()).toLocaleDateString(),
-                time: response?.completion_time ? 
-                  `${Math.floor(response.completion_time / 60)}:${String(response.completion_time % 60).padStart(2, '0')}` : 
+                time: response?.completion_time ?
+                  `${Math.floor(response.completion_time / 60)}:${String(response.completion_time % 60).padStart(2, '0')}` :
                   '0:00',
                 quiz_title: response?.quiz_name || 'Quiz',
-                performance_category: response?.score >= 90 ? 'Excellent' : 
-                                      response?.score >= 80 ? 'Very Good' : 
-                                      response?.score >= 70 ? 'Good' : 
-                                      response?.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
+                performance_category: response?.score >= 90 ? 'Excellent' :
+                  response?.score >= 80 ? 'Very Good' :
+                    response?.score >= 70 ? 'Good' :
+                      response?.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
               });
-              
+
               return `<h3>${s.title}</h3>${content}`;
             }).join('');
-            
+
             setCustomFeedback(processedContent);
           } else {
             // Process template variables for non-array content
@@ -315,16 +316,16 @@ export default function QuizResponseDetail() {
               email: response?.participant_email || 'user@example.com',
               score: response?.score.toString() || '0',
               date: new Date(response?.submission_date || Date.now()).toLocaleDateString(),
-              time: response?.completion_time ? 
-                `${Math.floor(response.completion_time / 60)}:${String(response.completion_time % 60).padStart(2, '0')}` : 
+              time: response?.completion_time ?
+                `${Math.floor(response.completion_time / 60)}:${String(response.completion_time % 60).padStart(2, '0')}` :
                 '0:00',
               quiz_title: response?.quiz_name || 'Quiz',
-              performance_category: response?.score >= 90 ? 'Excellent' : 
-                                    response?.score >= 80 ? 'Very Good' : 
-                                    response?.score >= 70 ? 'Good' : 
-                                    response?.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
+              performance_category: response?.score >= 90 ? 'Excellent' :
+                response?.score >= 80 ? 'Very Good' :
+                  response?.score >= 70 ? 'Good' :
+                    response?.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
             });
-            
+
             setCustomFeedback(processedContent);
           }
         } catch (e) {
@@ -334,16 +335,16 @@ export default function QuizResponseDetail() {
             email: response?.participant_email || 'user@example.com',
             score: response?.score.toString() || '0',
             date: new Date(response?.submission_date || Date.now()).toLocaleDateString(),
-            time: response?.completion_time ? 
-              `${Math.floor(response.completion_time / 60)}:${String(response.completion_time % 60).padStart(2, '0')}` : 
+            time: response?.completion_time ?
+              `${Math.floor(response.completion_time / 60)}:${String(response.completion_time % 60).padStart(2, '0')}` :
               '0:00',
             quiz_title: response?.quiz_name || 'Quiz',
-            performance_category: response?.score >= 90 ? 'Excellent' : 
-                                  response?.score >= 80 ? 'Very Good' : 
-                                  response?.score >= 70 ? 'Good' : 
-                                  response?.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
+            performance_category: response?.score >= 90 ? 'Excellent' :
+              response?.score >= 80 ? 'Very Good' :
+                response?.score >= 70 ? 'Good' :
+                  response?.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
           });
-          
+
           setCustomFeedback(processedContent);
         }
         setSelectedTemplate(templateId);
@@ -369,7 +370,7 @@ export default function QuizResponseDetail() {
   const getOptionFeedback = (questionId: string, answer: any) => {
     const question = getQuestionById(questionId);
     if (!question || question.type !== 'multiple_choice' || !answer.optionId) return null;
-    
+
     const option = question.options?.find(o => o.id === answer.optionId);
     return option ? { feedback: option.feedback, score: option.score } : null;
   };
@@ -507,9 +508,8 @@ export default function QuizResponseDetail() {
               </div>
             </div>
             <div className="flex items-start">
-              <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 mr-3 ${
-                response.status === 'completed' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
-              }`}>
+              <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 mr-3 ${response.status === 'completed' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
+                }`}>
                 {response.status === 'completed' ? (
                   <CheckCircle className="h-4 w-4" />
                 ) : (
@@ -532,10 +532,10 @@ export default function QuizResponseDetail() {
             </div>
             <p className="text-text mb-4">
               {response.score >= 90 ? 'Excellent' :
-               response.score >= 80 ? 'Very Good' :
-               response.score >= 70 ? 'Good' :
-               response.score >= 60 ? 'Satisfactory' :
-               'Needs Improvement'}
+                response.score >= 80 ? 'Very Good' :
+                  response.score >= 70 ? 'Good' :
+                    response.score >= 60 ? 'Satisfactory' :
+                      'Needs Improvement'}
             </p>
             <div className="w-full flex space-x-2 mt-2">
               <button
@@ -548,9 +548,8 @@ export default function QuizResponseDetail() {
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail}
-                className={`flex-1 flex items-center justify-center px-3 py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${
-                  sendingEmail ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`flex-1 flex items-center justify-center px-3 py-2 border border-secondary text-secondary rounded-md hover:bg-accent ${sendingEmail ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
               >
                 {sendingEmail ? (
                   <Loader className="h-4 w-4 mr-1.5 animate-spin" />
@@ -571,7 +570,7 @@ export default function QuizResponseDetail() {
             const question = getQuestionById(questionId);
             const optionData = getOptionFeedback(questionId, response.answers[questionId]);
             const score = typeof answerData === 'number' ? answerData : (optionData?.score || 0);
-            
+
             return (
               <div key={questionId} className="border border-border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
@@ -587,29 +586,27 @@ export default function QuizResponseDetail() {
                     ) : (
                       <XCircle className="h-5 w-5 text-red-500 mr-1" />
                     )}
-                    <span className={`text-sm font-medium ${
-                      score >= 7 ? 'text-green-700' : 'text-red-700'
-                    }`}>
+                    <span className={`text-sm font-medium ${score >= 7 ? 'text-green-700' : 'text-red-700'
+                      }`}>
                       {score}/10
                     </span>
                   </div>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                  <div 
-                    className={`h-2 rounded-full ${
-                      score >= 7 ? 'bg-green-500' : 'bg-red-500'
-                    }`}
+                  <div
+                    className={`h-2 rounded-full ${score >= 7 ? 'bg-green-500' : 'bg-red-500'
+                      }`}
                     style={{ width: `${score * 10}%` }}
                   ></div>
                 </div>
-                
+
                 {/* Display option feedback if available */}
                 {optionData?.feedback && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-border">
                     <h4 className="text-sm font-medium text-text mb-2">Feedback for Score: {optionData.score}/10</h4>
-                    <div 
+                    <div
                       className="prose max-w-none"
-                      dangerouslySetInnerHTML={{ 
+                      dangerouslySetInnerHTML={{
                         __html: processTemplateVariables(optionData.feedback, {
                           name: response.participant_name,
                           email: response.participant_email,
@@ -617,10 +614,10 @@ export default function QuizResponseDetail() {
                           date: new Date(response.submission_date).toLocaleDateString(),
                           time: formatDuration(response.completion_time),
                           quiz_title: response.quiz_name,
-                          performance_category: response.score >= 90 ? 'Excellent' : 
-                                                response.score >= 80 ? 'Very Good' : 
-                                                response.score >= 70 ? 'Good' : 
-                                                response.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
+                          performance_category: response.score >= 90 ? 'Excellent' :
+                            response.score >= 80 ? 'Very Good' :
+                              response.score >= 70 ? 'Good' :
+                                response.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
                         })
                       }}
                     />
@@ -684,7 +681,7 @@ export default function QuizResponseDetail() {
             )}
           </div>
         </div>
-        
+
         {editingFeedback ? (
           <ReactQuill
             value={customFeedback}
@@ -694,12 +691,14 @@ export default function QuizResponseDetail() {
             theme="snow"
             className="mb-4"
             style={{ minHeight: '200px' }}
+            modules={quillModules}
+            formats={quillFormats}
           />
         ) : (
           <div className="prose max-w-none">
             {customFeedback ? (
-              <div 
-                dangerouslySetInnerHTML={{ 
+              <div
+                dangerouslySetInnerHTML={{
                   __html: processTemplateVariables(customFeedback, {
                     name: response.participant_name,
                     email: response.participant_email,
@@ -707,10 +706,10 @@ export default function QuizResponseDetail() {
                     date: new Date(response.submission_date).toLocaleDateString(),
                     time: formatDuration(response.completion_time),
                     quiz_title: response.quiz_name,
-                    performance_category: response.score >= 90 ? 'Excellent' : 
-                                          response.score >= 80 ? 'Very Good' : 
-                                          response.score >= 70 ? 'Good' : 
-                                          response.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
+                    performance_category: response.score >= 90 ? 'Excellent' :
+                      response.score >= 80 ? 'Very Good' :
+                        response.score >= 70 ? 'Good' :
+                          response.score >= 60 ? 'Satisfactory' : 'Needs Improvement'
                   })
                 }}
               />

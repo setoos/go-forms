@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Save, 
-  ArrowLeft, 
-  Download, 
-  Eye, 
-  Trash2, 
-  Plus, 
+import {
+  Save,
+  ArrowLeft,
+  Download,
+  Eye,
+  Trash2,
+  Plus,
   Copy,
   FileText,
   Image,
@@ -24,6 +24,7 @@ import { supabase } from '../../lib/supabase';
 import { showToast } from '../../lib/toast';
 import { generatePDF } from '../../lib/pdf';
 import { useAuth } from '../../lib/auth';
+import { quillFormats, quillModules } from '../../lib/quillConfig';
 
 interface Template {
   id: string;
@@ -72,7 +73,7 @@ export default function ResultsEditor() {
       setError('You must be logged in to access this page');
       return;
     }
-    
+
     loadTemplates();
     loadQuizzes();
     if (id && id !== 'new') {
@@ -109,7 +110,7 @@ export default function ResultsEditor() {
   const loadQuizzes = async () => {
     try {
       if (!user) return;
-      
+
       const { data, error } = await supabase
         .from('quizzes')
         .select('id, title')
@@ -143,7 +144,7 @@ export default function ResultsEditor() {
         setTemplateName(templateData.name);
         setIsDefault(templateData.is_default || false);
         setSelectedQuiz(templateData.quiz_id || null);
-        
+
         try {
           const parsedContent = JSON.parse(templateData.content);
           if (Array.isArray(parsedContent)) {
@@ -154,7 +155,7 @@ export default function ResultsEditor() {
         } catch (e) {
           setSections([{ id: '1', title: 'Content', content: templateData.content }]);
         }
-        
+
         setLoading(false);
         return;
       }
@@ -221,7 +222,7 @@ export default function ResultsEditor() {
       setTemplateName(data.name);
       setIsDefault(data.is_default || false);
       setSelectedQuiz(data.quiz_id || null);
-      
+
       try {
         const parsedContent = JSON.parse(data.content);
         if (Array.isArray(parsedContent)) {
@@ -244,21 +245,21 @@ export default function ResultsEditor() {
   const loadTemplates = async () => {
     try {
       if (!user) return;
-      
+
       const { data, error } = await supabase
         .from('report_templates')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       // Filter templates to only show those created by the current user or system templates
-      const filteredTemplates = (data || []).filter(template => 
+      const filteredTemplates = (data || []).filter(template =>
         !template.created_by || template.created_by === user.id
       );
-      
+
       setTemplates(filteredTemplates);
-      
+
       // Extract template names for validation
       setExistingTemplateNames(filteredTemplates.map(t => t.name));
     } catch (error) {
@@ -269,7 +270,7 @@ export default function ResultsEditor() {
 
   const handleTemplateChange = async (templateId: string) => {
     if (!templateId) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('report_templates')
@@ -278,31 +279,31 @@ export default function ResultsEditor() {
         .single();
 
       if (error) throw error;
-      
+
       if (data) {
         setSelectedTemplate(templateId);
         setTemplateName(data.name);
         setIsDefault(data.is_default || false);
         setSelectedQuiz(data.quiz_id || null);
-        
+
         try {
           const parsedContent = JSON.parse(data.content);
           if (Array.isArray(parsedContent)) {
             setSections(parsedContent);
           } else {
             // If it's not in the expected format, create a single section
-            setSections([{ 
-              id: '1', 
-              title: 'Content', 
-              content: data.content 
+            setSections([{
+              id: '1',
+              title: 'Content',
+              content: data.content
             }]);
           }
         } catch (e) {
           // If parsing fails, it's probably just HTML content
-          setSections([{ 
-            id: '1', 
-            title: 'Content', 
-            content: data.content 
+          setSections([{
+            id: '1',
+            title: 'Content',
+            content: data.content
           }]);
         }
       }
@@ -325,10 +326,10 @@ export default function ResultsEditor() {
 
     try {
       setSaving(true);
-      
+
       // Serialize sections to JSON
       const content = JSON.stringify(sections);
-      
+
       const templateData = {
         name: templateName.trim(),
         content,
@@ -352,7 +353,7 @@ export default function ResultsEditor() {
           .is('quiz_id', null)
           .eq('is_default', true);
       }
-      
+
       let data;
       if (selectedTemplate) {
         // Update existing template
@@ -360,13 +361,13 @@ export default function ResultsEditor() {
           .from('report_templates')
           .update({
             ...templateData,
-            version: templates.find(t => t.id === selectedTemplate)?.version ? 
+            version: templates.find(t => t.id === selectedTemplate)?.version ?
               (templates.find(t => t.id === selectedTemplate)?.version || 0) + 1 : 1
           })
           .eq('id', selectedTemplate)
           .select()
           .single();
-          
+
         if (error) throw error;
         data = updatedData;
       } else {
@@ -379,13 +380,13 @@ export default function ResultsEditor() {
           })
           .select()
           .single();
-          
+
         if (error) throw error;
         data = newData;
       }
-      
+
       showToast('Template saved successfully', 'success');
-      
+
       // Update templates list
       if (selectedTemplate) {
         setTemplates(templates.map(t => t.id === selectedTemplate ? data : t));
@@ -393,7 +394,7 @@ export default function ResultsEditor() {
         setTemplates([data, ...templates]);
         setSelectedTemplate(data.id);
       }
-      
+
       // Update existing template names
       setExistingTemplateNames(prev => {
         if (selectedTemplate) {
@@ -412,7 +413,7 @@ export default function ResultsEditor() {
 
   const handleDeleteTemplate = async (templateId: string) => {
     if (!confirm('Are you sure you want to delete this template?')) return;
-    
+
     try {
       const { error } = await supabase
         .from('report_templates')
@@ -420,10 +421,10 @@ export default function ResultsEditor() {
         .eq('id', templateId);
 
       if (error) throw error;
-      
+
       const deletedTemplate = templates.find(t => t.id === templateId);
       setTemplates(templates.filter(t => t.id !== templateId));
-      
+
       if (selectedTemplate === templateId) {
         setSelectedTemplate('');
         setTemplateName('');
@@ -435,12 +436,12 @@ export default function ResultsEditor() {
           { id: '3', title: 'Recommendations', content: '<p>We recommend focusing on the following areas to improve your skills.</p>' }
         ]);
       }
-      
+
       // Update existing template names
       if (deletedTemplate) {
         setExistingTemplateNames(prev => prev.filter(name => name !== deletedTemplate.name));
       }
-      
+
       showToast('Template deleted successfully', 'success');
     } catch (error) {
       console.error('Error deleting template:', error);
@@ -450,10 +451,10 @@ export default function ResultsEditor() {
 
   const handleAddSection = () => {
     const newId = Date.now().toString();
-    setSections([...sections, { 
-      id: newId, 
-      title: `Section ${sections.length + 1}`, 
-      content: '<p>Enter content here...</p>' 
+    setSections([...sections, {
+      id: newId,
+      title: `Section ${sections.length + 1}`,
+      content: '<p>Enter content here...</p>'
     }]);
   };
 
@@ -462,26 +463,26 @@ export default function ResultsEditor() {
       showToast('Cannot delete the only section', 'error');
       return;
     }
-    
+
     setSections(sections.filter(section => section.id !== id));
   };
 
   const handleDuplicateSection = (id: string) => {
     const sectionToDuplicate = sections.find(section => section.id === id);
     if (!sectionToDuplicate) return;
-    
+
     const newId = Date.now().toString();
-    const newSection = { 
-      ...sectionToDuplicate, 
-      id: newId, 
-      title: `${sectionToDuplicate.title} (Copy)` 
+    const newSection = {
+      ...sectionToDuplicate,
+      id: newId,
+      title: `${sectionToDuplicate.title} (Copy)`
     };
-    
+
     setSections([...sections, newSection]);
   };
 
   const handleSectionChange = (id: string, field: 'title' | 'content', value: string) => {
-    setSections(sections.map(section => 
+    setSections(sections.map(section =>
       section.id === id ? { ...section, [field]: value } : section
     ));
   };
@@ -510,7 +511,7 @@ export default function ResultsEditor() {
         timestamp: new Date().toISOString(),
         custom_feedback: sections.map(s => `<h3>${s.title}</h3>${s.content}`).join('')
       };
-      
+
       await generatePDF(sampleResponse);
       showToast('Preview PDF generated', 'success');
     } catch (error) {
@@ -524,30 +525,30 @@ export default function ResultsEditor() {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/jpeg, image/png, image/gif');
-    
+
     // When a file is selected
     input.onchange = async () => {
       if (!input.files || !input.files[0]) return;
-      
+
       const file = input.files[0];
-      
+
       // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!validTypes.includes(file.type)) {
         showToast('Invalid file type. Please upload JPG, PNG, or GIF images.', 'error');
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         showToast('Image is too large. Maximum size is 5MB.', 'error');
         return;
       }
-      
+
       try {
         // Show loading toast
         showToast('Uploading image...', 'info');
-        
+
         // Upload to Supabase Storage
         const fileName = `${Date.now()}-${file.name}`;
         const { data, error } = await supabase.storage
@@ -556,16 +557,16 @@ export default function ResultsEditor() {
             cacheControl: '3600',
             upsert: false
           });
-        
+
         if (error) throw error;
-        
+
         // Get public URL
         const { data: publicURL } = supabase.storage
           .from('template-images')
           .getPublicUrl(`public/${fileName}`);
-        
+
         if (!publicURL) throw new Error('Failed to get public URL');
-        
+
         // Insert image into editor
         const quill = quillRef.current?.getEditor();
         if (quill) {
@@ -573,14 +574,14 @@ export default function ResultsEditor() {
           quill.insertEmbed(range.index, 'image', publicURL.publicUrl);
           quill.setSelection(range.index + 1);
         }
-        
+
         showToast('Image uploaded successfully', 'success');
       } catch (error) {
         console.error('Error uploading image:', error);
         showToast('Error uploading image: ' + (error instanceof Error ? error.message : 'Unknown error'), 'error');
       }
     };
-    
+
     // Trigger file selection
     input.click();
   };
@@ -693,11 +694,10 @@ export default function ResultsEditor() {
           <button
             onClick={handleSaveTemplate}
             disabled={saving || !templateName.trim() || !!nameError}
-            className={`flex items-center px-4 py-2 rounded-lg ${
-              saving || !templateName.trim() || !!nameError
+            className={`flex items-center px-4 py-2 rounded-lg ${saving || !templateName.trim() || !!nameError
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-secondary text-white hover:bg-primary'
-            }`}
+              }`}
           >
             <Save className="w-5 h-5 mr-2" />
             Save Template
@@ -726,7 +726,7 @@ export default function ResultsEditor() {
                   <p className="mt-1 text-sm text-red-500">{nameError}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-text mb-1">
                   Load Existing Template
@@ -756,7 +756,7 @@ export default function ResultsEditor() {
                   </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${showTemplateSettings ? 'transform rotate-180' : ''}`} />
                 </button>
-                
+
                 {showTemplateSettings && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-md space-y-3">
                     <div>
@@ -776,7 +776,7 @@ export default function ResultsEditor() {
                         ))}
                       </select>
                     </div>
-                    
+
                     <div className="flex items-center">
                       <input
                         type="checkbox"
@@ -792,7 +792,7 @@ export default function ResultsEditor() {
                   </div>
                 )}
               </div>
-              
+
               {selectedTemplate && (
                 <button
                   onClick={() => handleDeleteTemplate(selectedTemplate)}
@@ -804,7 +804,7 @@ export default function ResultsEditor() {
               )}
             </div>
           </div>
-          
+
           <div className="bg-background rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Available Variables</h2>
             <div className="space-y-2 text-sm">
@@ -846,7 +846,7 @@ export default function ResultsEditor() {
                 Add Section
               </button>
             </div>
-            
+
             <div className="space-y-6">
               {sections.map((section, index) => (
                 <div key={section.id} className="border border-gray-200 rounded-lg p-4">
@@ -881,19 +881,21 @@ export default function ResultsEditor() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <ReactQuill
                     ref={quillRef}
                     value={section.content}
                     onChange={(content) => handleSectionChange(section.id, 'content', content)}
                     //modules={modules}
                     className="bg-background rounded-lg"
+                    modules={quillModules}
+                    formats={quillFormats}
                   />
                 </div>
               ))}
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => navigate(-1)}
@@ -933,7 +935,7 @@ export default function ResultsEditor() {
               {sections.map((section, index) => (
                 <div key={section.id} className="mb-6 last:mb-0">
                   <h3 className="text-xl font-semibold mb-3">{section.title}</h3>
-                  <div 
+                  <div
                     className="prose max-w-none"
                     dangerouslySetInnerHTML={{ __html: section.content }}
                   />

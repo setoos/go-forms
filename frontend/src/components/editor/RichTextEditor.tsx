@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { 
-  Image, 
-  Link, 
-  Table, 
-  Code, 
+import {
+  Image,
+  Link,
+  Table,
+  Code,
   Save,
   Undo,
   Redo,
@@ -15,6 +15,7 @@ import {
 import { handleImageUpload } from '../../lib/storage';
 import { showToast } from '../../lib/toast';
 import { validateHtml } from '../../lib/htmlSanitizer';
+import { quillFormats, quillModules } from '../../lib/quillConfig';
 
 interface RichTextEditorProps {
   value: string;
@@ -43,22 +44,22 @@ export default function RichTextEditor({
   const [htmlValue, setHtmlValue] = useState(value);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  
+
   // Set up auto-save
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    
+
     if (autoSave && onSave) {
       interval = setInterval(() => {
         handleSave();
       }, autoSaveInterval);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [autoSave, autoSaveInterval, onSave, value]);
-  
+
   // Update HTML value when the main value changes
   useEffect(() => {
     if (!htmlMode) {
@@ -74,10 +75,10 @@ export default function RichTextEditor({
       }, 100);
     }
   }, [htmlMode]);
-  
+
   const handleSave = async () => {
     if (!onSave) return;
-    
+
     try {
       setIsSaving(true);
       await onSave();
@@ -89,7 +90,7 @@ export default function RichTextEditor({
       setIsSaving(false);
     }
   };
-  
+
   const handleHtmlModeToggle = () => {
     if (htmlMode) {
       // Switching from HTML to WYSIWYG
@@ -100,7 +101,7 @@ export default function RichTextEditor({
           showToast(`Invalid HTML: ${errors[0]}`, 'error');
           return;
         }
-        
+
         onChange(htmlValue);
       } catch (error) {
         showToast('Error processing HTML', 'error');
@@ -110,10 +111,10 @@ export default function RichTextEditor({
       // Switching from WYSIWYG to HTML
       setHtmlValue(value);
     }
-    
+
     setHtmlMode(!htmlMode);
   };
-  
+
   const handleImageInsert = () => {
     handleImageUpload((url) => {
       const quill = quillRef.current?.getEditor();
@@ -124,13 +125,13 @@ export default function RichTextEditor({
       }
     });
   };
-  
+
   const handleTableInsert = () => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
-    
+
     const range = quill.getSelection(true);
-    
+
     // Insert a 3x3 table HTML
     const tableHTML = `
       <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
@@ -155,21 +156,21 @@ export default function RichTextEditor({
         </tbody>
       </table>
     `;
-    
+
     quill.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
     quill.setSelection(range.index + 1);
   };
-  
+
   const handleUndo = () => {
     const quill = quillRef.current?.getEditor();
     if (quill) quill.history.undo();
   };
-  
+
   const handleRedo = () => {
     const quill = quillRef.current?.getEditor();
     if (quill) quill.history.redo();
   };
-  
+
   // Custom modules for ReactQuill
   const modules = {
     toolbar: {
@@ -195,14 +196,14 @@ export default function RichTextEditor({
       bindings: {
         enter: {
           key: 13,
-          handler: function() {
+          handler: function () {
             // Default behavior for Enter key
             return true;
           }
         },
         tab: {
           key: 9,
-          handler: function() {
+          handler: function () {
             return true;
           }
         }
@@ -212,7 +213,7 @@ export default function RichTextEditor({
       matchVisual: false // Prevents unwanted formatting issues with pasted content
     }
   };
-  
+
   return (
     <div className={`rich-text-editor ${htmlMode ? 'html-mode' : ''}`}>
       <div className="editor-toolbar bg-gray-50 p-2 rounded-t-lg border border-gray-300 flex items-center justify-between">
@@ -262,7 +263,7 @@ export default function RichTextEditor({
             </>
           )}
         </div>
-        
+
         {onSave && (
           <div className="flex items-center space-x-2">
             {lastSaved && (
@@ -273,11 +274,10 @@ export default function RichTextEditor({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className={`p-1.5 rounded flex items-center ${
-                isSaving 
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+              className={`p-1.5 rounded flex items-center ${isSaving
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-accent text-primary hover:bg-accent'
-              }`}
+                }`}
               title="Save"
               type="button"
             >
@@ -287,7 +287,7 @@ export default function RichTextEditor({
           </div>
         )}
       </div>
-      
+
       {htmlMode ? (
         <textarea
           ref={textareaRef}
@@ -311,6 +311,8 @@ export default function RichTextEditor({
             style={{ height, display: 'block' }}
             preserveWhitespace={true}
             theme="snow"
+            modules={quillModules}
+            formats={quillFormats}
           />
         </div>
       )}
