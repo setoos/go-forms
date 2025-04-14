@@ -226,7 +226,7 @@ export default function Quiz() {
     );
   }
 
-  if (!quiz || !questions[currentQuestion]) {
+  if (!quiz && !questions[currentQuestion]) {
     return (
       <div className="max-w-3xl mx-auto">
         <div className="bg-background rounded-lg shadow-xl p-8 text-center">
@@ -239,6 +239,25 @@ export default function Quiz() {
             className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
             Return Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if(questions.length === 0 || !questions[currentQuestion]) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-background rounded-lg shadow-xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-text mb-4">No Questions</h2>
+          <p className="text-text mb-6">
+            You haven't added any questions to this quiz yet.
+          </p>
+          <button
+            onClick={() => navigate("/admin")}
+            className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
+          >
+            Return to Quizzes
           </button>
         </div>
       </div>

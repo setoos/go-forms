@@ -44,9 +44,8 @@ function StatCard({
 
         {change !== undefined && (
           <div
-            className={`flex items-center text-sm ${
-              change >= 0 ? "text-green-600" : "text-red-600"
-            }`}
+            className={`flex items-center text-sm ${change >= 0 ? "text-green-600" : "text-red-600"
+              }`}
           >
             {change >= 0 ? (
               <ArrowUpRight className="h-4 w-4 mr-1" />
@@ -70,13 +69,19 @@ function StatCard({
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { loading, themeLoading } = useTheme();
+
+  const { quizzes, quizSubmissions } = useTheme();
+
+  const avgCompletionTime = quizSubmissions.reduce((acc, submission) => {
+    return acc + (submission.completion_time || 0);
+  }, 0) / quizSubmissions.length;
+  
 
   // Mock stats data
   const stats = [
     {
-      title: "Total Quizzes",
-      value: 24,
+      title: "Total GoForms",
+      value: quizzes.length,
       icon: <FileQuestion className="h-6 w-6 text-white" />,
       change: 12,
       changeLabel: "this month",
@@ -84,7 +89,7 @@ export default function Dashboard() {
     },
     {
       title: "Total Responses",
-      value: 1842,
+      value: quizSubmissions.length,
       icon: <Users className="h-6 w-6 text-white" />,
       change: 8.5,
       color: "bg-blue-600",
@@ -98,7 +103,7 @@ export default function Dashboard() {
     },
     {
       title: "Avg. Completion Time",
-      value: "4m 32s",
+      value: `${avgCompletionTime.toFixed(2)}m`,
       icon: <Clock className="h-6 w-6 text-white" />,
       change: -1.8,
       changeLabel: "faster",
@@ -172,11 +177,10 @@ export default function Dashboard() {
                   </p>
                   <div className="mt-2">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        event.type === "deadline"
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${event.type === "deadline"
                           ? "bg-red-100 text-red-800"
                           : "bg-green-100 text-green-800"
-                      }`}
+                        }`}
                     >
                       {event.type === "deadline" ? "Deadline" : "Launch"}
                     </span>
