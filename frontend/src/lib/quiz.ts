@@ -100,7 +100,7 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
         })
         .select()
         .single();
-
+        
       if (error) throw error;
       quizId = data.id;
     } else {
@@ -151,7 +151,9 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
           required: question.required,
           media_url: question.media_url,
           answer_key: question.answer_key,
-          rubric: question.rubric
+          rubric: question.rubric,
+          tf_feedback: question.tf_feedback || {},
+          is_hide: question.is_hide
         })
         .select()
         .single();

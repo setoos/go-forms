@@ -18,7 +18,7 @@ export default function QuickActions() {
   
   const quickActions = [
     { 
-      label: 'Create Quiz', 
+      label: 'Create GoForm', 
       icon: <PlusCircle className="h-5 w-5" />, 
       onClick: () => navigate('/admin/quizzes/new'),
       color: 'bg-secondary hover:bg-primary text-white'

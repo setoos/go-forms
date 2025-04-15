@@ -5,13 +5,14 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
 import { showToast } from '../../lib/toast';
 import type { Quiz } from '../../types/quiz';
+import { useTheme } from '../../lib/theme';
 
 export default function QuizList() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const { quizSubmissions } = useTheme();
 
   useEffect(() => {
     if (user) {
@@ -171,14 +172,14 @@ export default function QuizList() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${quiz.is_published
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
                       }`}>
                       {quiz.is_published ? 'Published' : 'Draft'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {quiz.completion_count} responses
+                    {quizSubmissions.length} responses
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {new Date(quiz.created_at).toLocaleDateString()}
@@ -229,3 +230,7 @@ export default function QuizList() {
     </div>
   );
 }
+
+
+
+

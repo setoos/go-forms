@@ -7,7 +7,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 const recentActivities = [
   {
     id: '1',
-    type: 'quiz_created',
+    type: 'goform_created',
     title: 'Marketing Assessment',
     date: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
     link: '/admin/quizzes/1'
@@ -21,8 +21,8 @@ const recentActivities = [
   },
   {
     id: '3',
-    type: 'quiz_response',
-    title: 'Product Knowledge Quiz',
+    type: 'goform_response',
+    title: 'Product Knowledge GoForm',
     user: 'john.doe@example.com',
     score: 85,
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
@@ -37,7 +37,7 @@ const recentActivities = [
   },
   {
     id: '5',
-    type: 'quiz_published',
+    type: 'goform_published',
     title: 'Team Evaluation Survey',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
     link: '/admin/quizzes/5'
@@ -62,7 +62,7 @@ export default function RecentActivity() {
         {recentActivities.map(activity => (
           <div key={activity.id} className="flex items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
             <div className="flex-shrink-0 mr-3">
-              {activity.type.includes('quiz') ? (
+              {activity.type.includes('goform') ? (
                 <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
                   <FileQuestion className="h-5 w-5 text-secondary" />
                 </div>
@@ -76,11 +76,11 @@ export default function RecentActivity() {
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center justify-between">
                 <h3 className="text-sm font-medium text-text truncate">
-                  {activity.type === 'quiz_created' && 'Created quiz'}
+                  {activity.type === 'goform_created' && 'Created GoForm'}
                   {activity.type === 'template_edited' && 'Edited template'}
-                  {activity.type === 'quiz_response' && 'New quiz response'}
+                  {activity.type === 'goform_response' && 'New GoForm response'}
                   {activity.type === 'form_created' && 'Created form'}
-                  {activity.type === 'quiz_published' && 'Published quiz'}
+                  {activity.type === 'goform_published' && 'Published GoForm'}
                 </h3>
                 <span className="text-xs text-gray-500 flex items-center mt-1 sm:mt-0">
                   <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
@@ -92,7 +92,7 @@ export default function RecentActivity() {
                 <Link to={activity.link} className="font-medium hover:text-secondary">
                   {activity.title}
                 </Link>
-                {activity.type === 'quiz_response' && (
+                {activity.type === 'goform_response' && (
                   <span className="ml-1">
                     by <span className="font-medium">{activity.user}</span> with score <span className="font-medium">{activity.score}%</span>
                   </span>
