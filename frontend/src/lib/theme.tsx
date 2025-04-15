@@ -536,8 +536,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadSubmissions();
-    console.log("quizSubmissions", quizSubmissions);
-  },[quizSubmissions])
+  },[])
 
   return (
     <ThemeContext.Provider

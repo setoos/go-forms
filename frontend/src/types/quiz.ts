@@ -65,7 +65,11 @@ export interface Question {
   ordering_items?: OrderingItem[];
   essay_rubrics?: EssayRubric[];
   feedback: string | null;
-
+  is_hide: boolean;
+  tf_feedback?: {
+    true?: string;
+    false?: string;
+  }; 
 }
 
 export interface Option {

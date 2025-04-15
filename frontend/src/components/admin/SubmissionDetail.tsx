@@ -88,7 +88,7 @@ export default function SubmissionDetail() {
         throw new Error("You do not have permission to view this submission");
       }
 
-      // Get the questions for this quiz
+      // Get all questions for this quiz
       const { data: questionsData, error: questionsError } = await supabase
         .from("questions")
         .select(
@@ -101,7 +101,8 @@ export default function SubmissionDetail() {
             text,
             is_correct
           ),
-          points
+          points,
+          tf_feedback
         `
         )
         .eq("quiz_id", submissionData.quiz_id)
@@ -109,7 +110,12 @@ export default function SubmissionDetail() {
 
       if (questionsError) throw questionsError;
 
-      // Format the submission
+      const questionsMap = questionsData.reduce((acc, question) => {
+        acc[question.id] = question;
+        return acc;
+      }, {} as Record<string, any>);
+
+      // Format submission with proper tf_feedback as impact_analysis
       const formattedSubmission: QuizSubmission = {
         id: submissionData.id,
         quiz_id: submissionData.quiz_id,
@@ -122,13 +128,33 @@ export default function SubmissionDetail() {
         status: submissionData.completion_time ? "completed" : "incomplete",
         answers: Object.entries(submissionData.answers || {}).reduce(
           (acc, [questionId, answerObj]: any) => {
+            const question = questionsMap?.[questionId];
+
+            const value = answerObj.value;
+            const answer = answerObj.impact_analysis; // should be true or false for true_false
+
+
+            let impact_analysis = "No impact analysis available";
+
+            if (question?.type === "true_false") {
+              const tfAnswer = String(answer).toLowerCase();
+              impact_analysis = tfAnswer ?? "No impact analysis available";
+
+            } else {
+              impact_analysis = answerObj.impact_analysis ?? "No impact analysis available";
+            }
+
+
+
+
             acc[questionId] = {
-              value: answerObj.value,
-              impact_analysis: answerObj.impact_analysis || "",
+              value,
+              impact_analysis,
             };
+
             return acc;
           },
-          {} as Record<string, { value: number; impact_analysis: string }>
+          {} as Record<string, { value: number | boolean; impact_analysis: string }>
         ),
         custom_feedback: submissionData.custom_feedback || "",
       };
@@ -215,7 +241,6 @@ export default function SubmissionDetail() {
     return question ? question.text : `Question ${questionId}`;
   };
 
-  const totalPoints = questions.reduce((acc, q) => acc + (q.points || 0), 0);
 
   if (!user) {
     return (
@@ -369,11 +394,7 @@ export default function SubmissionDetail() {
           </h2>
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-5xl font-bold text-secondary mb-2">
-              {
-                Number.isInteger((submission.score / totalPoints) * 100)
-                  ? (submission.score / totalPoints) * 100
-                  : ((submission.score / totalPoints) * 100).toFixed(2)
-              }%
+              {submission.score}%
             </div>
             <p className="text-text mb-4">
               {submission.score >= 90
@@ -493,3 +514,5 @@ export default function SubmissionDetail() {
     </div>
   );
 }
+
+
