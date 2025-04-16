@@ -143,7 +143,9 @@ export default function Quiz() {
     setAnswers(newAnswers);
     setScores(newScores);
 
-    if (currentQuestion === questions.length - 1) {
+    const visibleQuestions = questions.filter(q => !q.is_hide);
+
+    if (currentQuestion === visibleQuestions.length - 1) {
       setIsResultSent(true);
 
       const totalScore = Object.values(newScores).reduce(
