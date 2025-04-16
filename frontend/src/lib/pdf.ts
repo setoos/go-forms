@@ -34,7 +34,6 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
       } else {
         templateContent = quizTemplate.content;
       }
-
       // If we have template content, try to parse it
       if (templateContent) {
         try {
@@ -67,7 +66,9 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
             feedback,
             score
           ),
-          points
+          points,
+          tf_feedback,
+          is_hide
         `)
         .eq('quiz_id', response.quiz_id)
         .order('order');
@@ -87,8 +88,6 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         putOnlyUsedFonts: true,
         floatPrecision: 16 // For better rendering quality
       });
-      const totalPoints = questionDetails.reduce((acc: number, q: any) => acc + (q.points || 0), 0);
-
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
@@ -144,7 +143,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
 
       doc.setFontSize(24);
       doc.setTextColor(147, 51, 234); // Purple color
-      const percentage = (response.score / totalPoints) * 100;
+      const percentage = response.score;
       doc.text(
         `${Number.isInteger(percentage) ? percentage : percentage.toFixed(2)}%`,
         pageWidth - margin - 30,

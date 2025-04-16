@@ -17,8 +17,8 @@ import {
   Area,
   Legend
 } from 'recharts';
-import { 
-  Users, 
+import {
+  Users,
   ArrowUpRight,
   ArrowDownRight,
   Clock,
@@ -41,6 +41,7 @@ import { supabase } from '../../lib/supabase';
 import { showToast } from '../../lib/toast';
 import { format, parseISO } from 'date-fns';
 import { useAuth } from '../../lib/auth';
+import { useTheme } from '../../lib/theme';
 
 // Define color constants
 const COLORS = ['#9333ea', '#c084fc', '#e9d5ff', '#f3e8ff'];
@@ -149,6 +150,13 @@ export default function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const { quizzes, quizSubmissions } = useTheme();
+
+  const avgScore = quizSubmissions.reduce((acc, submission) => {
+    return acc + (submission.score || 0);
+  }, 0) / quizSubmissions.length;
+  
 
   useEffect(() => {
     // Check if user is authenticated
@@ -304,11 +312,10 @@ export default function AnalyticsDashboard() {
               <button
                 key={range}
                 onClick={() => setDateRange(range)}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                  dateRange === range
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${dateRange === range
                     ? 'bg-accent text-primary'
                     : 'text-gray-500 hover:text-text'
-                }`}
+                  }`}
               >
                 {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
               </button>
@@ -363,14 +370,14 @@ export default function AnalyticsDashboard() {
               <Brain className="h-6 w-6 text-secondary" />
               <span className="text-sm font-medium text-secondary">Total GoForms</span>
             </div>
-            <p className="text-2xl font-bold text-text">{data.quizInsights.totalQuizzes}</p>
+            <p className="text-2xl font-bold text-text">{quizzes.length}</p>
           </div>
           <div className="bg-accent rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
               <Target className="h-6 w-6 text-secondary" />
               <span className="text-sm font-medium text-secondary">Total Attempts</span>
             </div>
-            <p className="text-2xl font-bold text-text">{data.quizInsights.totalAttempts}</p>
+            <p className="text-2xl font-bold text-text">{quizSubmissions.length}</p>
           </div>
           <div className="bg-accent rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
@@ -378,7 +385,7 @@ export default function AnalyticsDashboard() {
               <span className="text-sm font-medium text-secondary">Avg Score</span>
             </div>
             <p className="text-2xl font-bold text-text">
-              {Math.round(data.quizInsights.overallAverageScore)}%
+              {Math.round(avgScore)}%
             </p>
           </div>
           <div className="bg-accent rounded-lg p-4">
@@ -400,12 +407,12 @@ export default function AnalyticsDashboard() {
               <AreaChart data={trendData}>
                 <defs>
                   <linearGradient id="colorAttempts" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.1} />
+                    <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_COLORS.secondary} stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor={CHART_COLORS.secondary} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={CHART_COLORS.secondary} stopOpacity={0.1} />
+                    <stop offset="95%" stopColor={CHART_COLORS.secondary} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -445,7 +452,7 @@ export default function AnalyticsDashboard() {
               <thead>
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  GoForm Title
+                    GoForm Title
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Attempts

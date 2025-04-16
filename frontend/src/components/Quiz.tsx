@@ -105,30 +105,32 @@ export default function Quiz() {
     const question = questions[currentQuestion];
     const questionId = question.id;
 
-  
+
     // Determine selectedOptionId if available (for MCQs)
     const selectedOptionId =
       typeof answer === "object" && "optionId" in answer
         ? (answer as any).optionId
         : answer;
-  
+
     // Try to find selected option (MCQs)
     const selectedOption = question.options?.find(
       (opt) => opt.id === selectedOptionId
     );
-  
+
     // Use selectedOptionId if found, otherwise store full answer
     const newAnswers = {
       ...answers,
       [questionId]: selectedOptionId ?? answer,
     };
-  
+
     // Determine impact analysis from answer or selectedOption
     const impactAnalysis =
       typeof answer === "object" && answer !== null && "feedback" in answer
         ? (answer as any).feedback ?? "No impact analysis available"
-        : selectedOption?.feedback ?? "No impact analysis available";
-  
+        : question.type === "true_false"
+          ? question.tf_feedback?.[String(answer).toLowerCase() as "true" | "false"] ?? "No impact analysis available"
+          : selectedOption?.feedback ?? "No impact analysis available";
+
     // Update scores
     const newScores = {
       ...scores,
@@ -137,20 +139,20 @@ export default function Quiz() {
         impact_analysis: impactAnalysis,
       },
     };
-  
+
     setAnswers(newAnswers);
     setScores(newScores);
-  
+
     if (currentQuestion === questions.length - 1) {
       setIsResultSent(true);
-  
+
       const totalScore = Object.values(newScores).reduce(
         (acc, val) => acc + (typeof val === "object" ? val.value : 0),
         0
       );
-  
+
       const completionTime = Math.floor((Date.now() - startTime) / 1000);
-  
+
       if (!isSampleQuiz) {
         try {
           const { data: attempt, error: attemptError } = await supabase
@@ -164,9 +166,9 @@ export default function Quiz() {
             })
             .select()
             .single();
-  
+
           if (attemptError) throw attemptError;
-  
+
           const sessions = Object.entries(newAnswers).map(
             ([qId, selectedOptionId]) => ({
               attempt_id: attempt.id,
@@ -175,17 +177,17 @@ export default function Quiz() {
               time_spent: Math.floor(completionTime / questions.length),
             })
           );
-  
+
           const { error: sessionsError } = await supabase
             .from("quiz_sessions")
             .insert(sessions);
-  
+
           if (sessionsError) throw sessionsError;
         } catch (error) {
           console.error("Error saving quiz attempt:", error);
         }
       }
-  
+
       navigate(`/results`, {
         state: {
           quizId: quiz?.id,
@@ -200,6 +202,7 @@ export default function Quiz() {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
+  const visibleQuestions = questions.filter(q => !q.is_hide);
 
   if (loading) {
     return (
@@ -226,7 +229,7 @@ export default function Quiz() {
     );
   }
 
-  if (!quiz || !questions[currentQuestion]) {
+  if (!quiz && !questions[currentQuestion]) {
     return (
       <div className="max-w-3xl mx-auto">
         <div className="bg-background rounded-lg shadow-xl p-8 text-center">
@@ -239,6 +242,25 @@ export default function Quiz() {
             className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
           >
             Return Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (questions.length === 0 || !questions[currentQuestion]) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-background rounded-lg shadow-xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-text mb-4">No Questions</h2>
+          <p className="text-text mb-6">
+            You haven't added any questions to this quiz yet.
+          </p>
+          <button
+            onClick={() => navigate("/admin")}
+            className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-primary transition-colors"
+          >
+            Return to Quizzes
           </button>
         </div>
       </div>
@@ -262,7 +284,7 @@ export default function Quiz() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-secondary">
-              Question {currentQuestion + 1} of {questions.length}
+              Question {currentQuestion + 1} of {visibleQuestions.length}
             </span>
             <span className="text-sm text-gray-500">
               Score: {Object.values(scores).reduce((acc, val) => acc + val.value, 0)}
@@ -278,29 +300,29 @@ export default function Quiz() {
         </div>
 
         <h2 className="text-2xl font-bold text-text mb-8">
-          {questions[currentQuestion].text}
+          {visibleQuestions[currentQuestion].text}
         </h2>
 
         <QuestionComponent
-          question={questions[currentQuestion]}
+          question={visibleQuestions[currentQuestion]}
           onAnswer={handleAnswer}
         />
 
-        {quiz.share_id && !globalThis.location.href.includes(quiz.share_id) && (
+        {quiz?.share_id && !globalThis.location.href.includes(quiz.share_id) && (
           <div className="mt-8 pt-8 border-t border-border">
             {quiz.is_published ? (
 
-            <a
-              href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-gray-500"
-            >
-              Share this quiz:{" "}
-              <span className="text-primary">
-                {globalThis.location.origin}/quiz/{quiz.share_id}
-              </span>
-            </a>
+              <a
+                href={`${globalThis.location.origin}/quiz/${quiz.share_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500"
+              >
+                Share this quiz:{" "}
+                <span className="text-primary">
+                  {globalThis.location.origin}/quiz/{quiz.share_id}
+                </span>
+              </a>
             ) : (
               <span className="text-sm text-primary">
                 Publish this quiz to share it.

@@ -32,13 +32,12 @@ export function MultipleChoiceQuestion({
           <div key={option.id}>
             <button
               onClick={() => handleOptionSelect(option)}
-              className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${
-                selectedOption?.id === option.id
-                  ? option.is_correct
-                    ? "border-green-500 bg-green-50"
-                    : "border-red-500 bg-red-50"
-                  : "border-gray-200 hover:border-secondary hover:bg-accent"
-              }`}
+              className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${selectedOption?.id === option.id
+                ? option.is_correct
+                  ? "border-green-500 bg-green-50"
+                  : "border-red-500 bg-red-50"
+                : "border-gray-200 hover:border-secondary hover:bg-accent"
+                }`}
             >
               <div className="flex items-center">
                 <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 mr-3">
@@ -96,9 +95,11 @@ export function TrueFalseQuestion({
       answer: value.toLowerCase(),
       correct: isCorrect,
       question_id: question.id,
-      feedback: question.answer_key?.explanation,
+      feedback: question.tf_feedback?.[value.toLowerCase() as "true" | "false"] || "",
     });
   };
+
+  const selectedKey = selected?.toLowerCase() as "true" | "false";
 
   return (
     <div className="space-y-4">
@@ -128,24 +129,23 @@ export function TrueFalseQuestion({
         })}
       </div>
 
-      {showFeedback && showOptionFeedback && question.answer_key?.feedback && (
+      {showFeedback && showOptionFeedback && (
         <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
           <div
             className="prose max-w-none"
             dangerouslySetInnerHTML={{
-              __html: processTemplateVariables(question.answer_key.feedback, {
-                name: "User",
-                email: "user@example.com",
-                score: selected
-                  ? selected.toLowerCase() === "true"
-                    ? "True"
-                    : "False"
-                  : "",
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                quiz_title: "Quiz",
-                performance_category: "N/A",
-              }),
+              __html: processTemplateVariables(
+                question.tf_feedback?.[selectedKey] || "",
+                {
+                  name: "User",
+                  email: "user@example.com",
+                  score: selected || "",
+                  date: new Date().toLocaleDateString(),
+                  time: new Date().toLocaleTimeString(),
+                  quiz_title: "Quiz",
+                  performance_category: "N/A",
+                }
+              ),
             }}
           />
         </div>
@@ -153,6 +153,7 @@ export function TrueFalseQuestion({
     </div>
   );
 }
+
 
 // Fill in the Blank Question
 export function FillBlankQuestion({
@@ -355,11 +356,10 @@ export function MatchingQuestion({
               <button
                 key={`left-${pair.left_item}`}
                 onClick={() => setSelectedLeft(pair.left_item)}
-                className={`w-full p-4 rounded-lg border-2 transition-colors ${
-                  isSelected
-                    ? "border-secondary bg-accent"
-                    : "border-gray-200 hover:border-secondary hover:bg-accent"
-                }`}
+                className={`w-full p-4 rounded-lg border-2 transition-colors ${isSelected
+                  ? "border-secondary bg-accent"
+                  : "border-gray-200 hover:border-secondary hover:bg-accent"
+                  }`}
                 disabled={submitted}
               >
                 {pair.left_item}
@@ -402,11 +402,10 @@ export function MatchingQuestion({
             return (
               <div
                 key={`feedback-${pair.left_item}`}
-                className={`p-4 border rounded-lg ${
-                  isCorrect
-                    ? "border-green-500 bg-green-50"
-                    : "border-red-500 bg-red-50"
-                }`}
+                className={`p-4 border rounded-lg ${isCorrect
+                  ? "border-green-500 bg-green-50"
+                  : "border-red-500 bg-red-50"
+                  }`}
               >
                 <p className="font-medium">
                   <strong>{pair.left_item}</strong> →{" "}
@@ -421,10 +420,9 @@ export function MatchingQuestion({
                         name: "User",
                         email: "user@example.com",
                         score: isCorrect
-                          ? `${
-                              question.points /
-                              (question.matching_pairs?.length || 1)
-                            }`
+                          ? `${question.points /
+                          (question.matching_pairs?.length || 1)
+                          }`
                           : "0",
                         date: new Date().toLocaleDateString(),
                         time: new Date().toLocaleTimeString(),
@@ -511,13 +509,12 @@ export function OrderingQuestion({
                   ↓
                 </button>
                 <div
-                  className={`flex-1 p-4 rounded-lg border-2 transition-colors ${
-                    submitted
-                      ? isCorrect
-                        ? "border-green-500 bg-green-50"
-                        : "border-red-500 bg-red-50"
-                      : "border-gray-200 bg-background"
-                  }`}
+                  className={`flex-1 p-4 rounded-lg border-2 transition-colors ${submitted
+                    ? isCorrect
+                      ? "border-green-500 bg-green-50"
+                      : "border-red-500 bg-red-50"
+                    : "border-gray-200 bg-background"
+                    }`}
                 >
                   {item.item}
                 </div>

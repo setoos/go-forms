@@ -64,14 +64,17 @@ export const darkTheme: ThemeConfig = {
   branding: defaultTheme.branding,
 };
 
-interface QuizSubmission {
+export interface QuizSubmission {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
-  score: number;
-  created_at: string;
   quiz_id: string;
+  quiz_name: string;
+  participant_name: string;
+  participant_email: string;
+  score: number;
+  submission_date: string;
+  completion_time: number;
+  status: 'completed' | 'incomplete';
+  answers: Record<string, any>;
 }
 
 interface ThemeContextType {
@@ -477,6 +480,63 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       quizResponses();
     }
   }, [user, selectedQuiz]);
+
+  const loadSubmissions = async () => {
+    try {
+      // Build query
+      let query = supabase
+        .from('quiz_responses')
+        .select(`
+          id,
+          quiz_id,
+          name,
+          email,
+          score,
+          created_at,
+          completion_time,
+          answers,
+          quizzes (
+            id,
+            title,
+            created_by
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      const userSubmissions = (data || []).filter(submission => 
+        submission.quizzes?.created_by === user?.id
+      );
+
+      // Format submissions
+      const formattedSubmissions: QuizSubmission[] = userSubmissions.map(submission => ({
+        id: submission.id,
+        quiz_id: submission.quiz_id,
+        quiz_name: submission.quizzes?.title || 'Unknown Quiz',
+        participant_name: submission.name,
+        participant_email: submission.email,
+        score: submission.score,
+        submission_date: submission.created_at,
+        completion_time: submission.completion_time || 0,
+        status: submission.completion_time ? 'completed' : 'incomplete',
+        answers: submission.answers
+      }));
+
+      setQuizSubmissions(formattedSubmissions);
+    } catch (error) {
+      console.error('Error loading submissions:', error);
+      setError('Failed to load submissions. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSubmissions();
+  },[])
 
   return (
     <ThemeContext.Provider
