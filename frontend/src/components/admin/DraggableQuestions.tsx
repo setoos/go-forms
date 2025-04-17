@@ -11,6 +11,7 @@ import {
 import "react-quill/dist/quill.snow.css";
 import type { Quiz, Question, Option } from "../../types/quiz";
 import { CSS } from "@dnd-kit/utilities";
+import { useTheme } from "../../lib/theme";
 
 const questionTypes = [
     { value: "multiple_choice", label: "Multiple Choice" },
@@ -46,14 +47,6 @@ export function SortableQuestion({
     handleDeleteQuestion,
     initialQuestions,
 }: SortableQuestionProps) {
-
-    // Questions state
-    const [questions, setQuestions] = useState<Question[]>(
-        initialQuestions || []
-    );
-    const [activeOptionEditors, setActiveOptionEditors] = useState<{
-        [key: string]: boolean;
-    }>({});
     
     const {
         attributes,
@@ -63,6 +56,7 @@ export function SortableQuestion({
         transition,
     } = useSortable({ id: question.id });
 
+    const { quizQuestionType } = useTheme();
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -103,7 +97,7 @@ export function SortableQuestion({
                         </p>
                         <p className="text-xs text-gray-500">
                             {questionTypes.find((t) => t.value === question.type)
-                                ?.label || "Multiple Choice"}
+                                ?.label && quizQuestionType || "Multiple Choice"}
                         </p>
                     </div>
                 </div>

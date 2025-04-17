@@ -39,6 +39,10 @@ export interface Quiz {
   access_type?: 'public' | 'private' | 'invite';
   password_hash?: string | null;
   requires_auth?: boolean;
+  quiz_score?: number;
+  quiz_type?: 'configure' | 'template' | 'customize';
+  quiz_question_type?: 'multiple_choice' | 'true_false' | 'fill_blank' | 'short_answer' | 'matching' | 'ordering' | 'essay' | 'picture_based' | 'complete_statement' | 'definition';
+  question_count?: number;
 }
 
 export interface Question {
