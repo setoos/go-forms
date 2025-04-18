@@ -105,14 +105,19 @@ interface ThemeContextType {
   setAnswers: (
     answers: Record<string, string | number | boolean | null>
   ) => void;
-  scores: Record<string, number>;
-  setScores: (scores: Record<string, number>) => void;
+  quizScore: number;
+  setQuizScore: (score: number) => void;
   themeLoading: boolean;
   setThemeLoading: (loading: boolean) => void;
   points: number;
   setPoints: (points: number) => void;
+  quizType: string;
+  setQuizType: (type: string) => void;
+  quizQuestionType: string;
+  setQuizQuestionType: (type: string) => void;
+  questionCount: number;
+  setQuestionCount: (count: number) => void;
 }
-
 const ThemeContext = createContext<ThemeContextType>({
   theme: defaultTheme,
   updateTheme: async () => { },
@@ -139,12 +144,18 @@ const ThemeContext = createContext<ThemeContextType>({
   setQuizSubmissions: () => { },
   answers: {},
   setAnswers: () => { },
-  scores: {},
-  setScores: () => { },
+  quizScore: 10,
+  setQuizScore: () => { },
   themeLoading: false,
   setThemeLoading: () => { },
   points: 10,
   setPoints: () => { },
+  quizType: "",
+  setQuizType: () => { },
+  quizQuestionType: "",
+  setQuizQuestionType: () => { },
+  questionCount: 10,
+  setQuestionCount: () => { },
 });
 
 export function useTheme() {
@@ -218,8 +229,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<
     Record<string, string | number | boolean | null>
   >({});
-  const [scores, setScores] = useState<Record<string, number>>({});
   const [points, setPoints] = useState(10);
+  const [quizScore, setQuizScore] = useState(100);
+  const [quizType, setQuizType] = useState("");
+  const [quizQuestionType, setQuizQuestionType] = useState("");
+  const [questionCount, setQuestionCount] = useState(10);
 
 
   const updateQuizzes = (newQuizzes: Quiz[]): Promise<void> => {
@@ -536,7 +550,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadSubmissions();
-  },[])
+  },[user, quizSubmissions])
 
   return (
     <ThemeContext.Provider
@@ -566,11 +580,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setQuizSubmissions,
         answers,
         setAnswers,
-        scores,
-        setScores,
         themeLoading,
         setThemeLoading,
-        points, setPoints
+        points, 
+        setPoints,
+        quizType,
+        setQuizType,
+        quizQuestionType,
+        setQuizQuestionType,
+        quizScore,
+        setQuizScore,
+        questionCount,
+        setQuestionCount,
       }}
     >
       {children}

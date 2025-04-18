@@ -179,8 +179,11 @@ export default function QuizList() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {quizSubmissions.length} responses
+                    {
+                      quizSubmissions.filter((submission) => submission.quiz_id === quiz.id).length
+                    } responses
                   </td>
+
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {new Date(quiz.created_at).toLocaleDateString()}
                   </td>

@@ -20,6 +20,9 @@ import {
   BookOpen,
   EyeOffIcon,
   EyeIcon,
+  LayoutTemplate,
+  SlidersHorizontal,
+  Brush,
 } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -95,20 +98,22 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   const [loading, setLoading] = useState(!initialQuiz);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeStep, setActiveStep] = useState<"questions" | "details" | "publish">(
-    "details"
-  );
+
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [expandedSettings, setExpandedSettings] = useState(false);
   const quillRefs = useRef<{ [key: string]: ReactQuill | null }>({});
-  const { points, setPoints } = useTheme();
+  const { points, setPoints, quizType, setQuizType, quizScore, setQuizScore, quizQuestionType, setQuizQuestionType, questionCount, setQuestionCount, } = useTheme();
 
   // Get template ID from URL query params
   const queryParams = new URLSearchParams(location.search);
   const templateId = queryParams.get("template");
   const editMode = queryParams.get("edit");
+
+  const [activeStep, setActiveStep] = useState<"configure" | "questions" | "details" | "publish">(
+    id ? "details" : templateId ? 'questions' : "configure"
+  );
 
   // Quiz state
   const [quiz, setQuiz] = useState<Quiz>(
@@ -127,6 +132,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       version: 1,
       approval_status: "pending",
       share_id: null,
+      quiz_score: null,
+      quiz_type: null,
+      quiz_question_type: null,
+      question_count: null,
     }
   );
 
@@ -143,18 +152,17 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   const [showModal, setShowModal] = useState(false);
   const [retryCallback, setRetryCallback] = useState<null | (() => void)>(null);
 
-  if (location.pathname.includes("new") || location.pathname.includes('?template')) {
+  if (location.pathname.includes("new") || location.pathname.includes('?template') || !!id ) {
     useUnsavedChangesWarning(isDirty);
 
     usePrompt(isDirty, (retry) => {
       setRetryCallback(() => retry);
       setShowModal(true);
-    });
+    }, ['/templates/library']);
   }
 
   // Load quiz data
   useEffect(() => {
-    setIsDirty(true);
     if (!user) {
       setError("You must be logged in to create or edit GoForms");
       setLoading(false);
@@ -176,6 +184,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
         if (templateId) {
           // Load from template
           const templateData = await getQuizTemplate(templateId);
+          setIsDirty(true);
 
           if (templateData) {
             setQuiz({
@@ -185,6 +194,9 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               updated_at: new Date().toISOString(),
             });
             setQuestions(templateData.questions);
+
+            const type = localStorage.getItem("quiz_type");
+            if (type) handleQuizChange("quiz_type", type);
 
             // If edit mode is specified, set the active step
             if (editMode === "questions") {
@@ -227,12 +239,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
   // Handle quiz field changes
   const handleQuizChange = (field: keyof Quiz, value: any) => {
-    setQuiz((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
+    setQuiz((prev) => ({ ...prev, [field]: value }));
   };
 
   // Add a new question
   const handleAddQuestion = () => {
+
+    setIsDirty(true);
     const newQuestion: Question = {
       id: `temp-${Date.now()}`,
       quiz_id: quiz.id,
@@ -246,6 +260,11 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       created_at: new Date().toISOString(),
       options: [],
     };
+
+    if (quiz.quiz_type === 'configure' && questions.length === quiz.question_count) {
+      showToast("Your question limit exceeds!", 'error');
+      return;
+    }
 
     setQuestions([...questions, newQuestion]);
     setExpandedQuestion(questions.length);
@@ -537,7 +556,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       }
 
       // Validate questions
-      if (activeStep === "questions") {
+      if (activeStep !== "details" && activeStep !== "configure") {
         if (questions.length === 0) {
           showToast("Please add at least one question", "error");
           return;
@@ -550,14 +569,19 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             showToast(`Question ${i + 1} is missing text`, "error");
             return;
           }
+          const isMultipleChoice =
+            (quiz.quiz_type === "configure" && !quiz.quiz_question_type && question.type === "multiple_choice") ||
+            (quiz.quiz_type !== "configure" && question.type === "multiple_choice");
 
           if (
-            question.type === "multiple_choice" &&
+            isMultipleChoice &&
             (!question.options || question.options.length < 2)
           ) {
             showToast(`Question ${i + 1} needs at least two options`, "error");
             return;
           }
+
+
 
           // if (question.type === 'multiple_choice' && !question.options?.some(o => o.is_correct)) {
           //   showToast(`Question ${i + 1} needs at least one correct option`, 'error');
@@ -568,16 +592,23 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
             showToast(`Question ${i + 1} is missing text`, "error");
             return;
           }
-
-          if (
-            question.type === "multiple_choice" &&
-            (!question.options || question.options.length < 2)
-          ) {
-            showToast(`Question ${i + 1} needs at least two options`, "error");
-            return;
-          }
         }
 
+      }
+
+      if (quiz.quiz_type === "configure" && activeStep === "details") {
+        if (!quiz.quiz_question_type) {
+          showToast("Please select a question type", "error");
+          return;
+        }
+        if (!quiz.quiz_score) {
+          showToast("Please select a score", "error");
+          return;
+        }
+        if (!quiz.question_count) {
+          showToast("Please add at least one question", "error");
+          return;
+        }
       }
       setSaving(true);
 
@@ -798,6 +829,69 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
     })
   );
 
+  const handleNext = async () => {
+
+    const errors = await validateQuiz(quiz);
+    if (errors.length > 0) {
+      showToast(errors[0], "error");
+      return;
+    }
+
+    // Validate questions
+    if (activeStep === "questions") {
+      if (questions.length === 0) {
+        showToast("Please add at least one question", "error");
+        return;
+      }
+
+      for (let i = 0; i < questions.length; i++) {
+        const question = questions[i];
+
+        if (!question.text.trim()) {
+          showToast(`Question ${i + 1} is missing text`, "error");
+          return;
+        }
+
+        if (
+          question.type === "multiple_choice" &&
+          quiz.quiz_question_type === "multiple_choice" &&
+          (!question.options || question.options.length < 2)
+        ) {
+          showToast(`Question ${i + 1} needs at least two options`, "error");
+          return;
+        }
+
+        if (!question.text.trim()) {
+          showToast(`Question ${i + 1} is missing text`, "error");
+          return;
+        }
+      }
+
+    }
+
+    setActiveStep("publish");
+  };
+
+  const handleTemplateClick = () => {
+    localStorage.setItem("quiz_type", "template");
+    navigate('/templates/library');
+  };
+
+  const handleConfigureClick = () => {
+    setActiveStep("details");
+    handleQuizChange("quiz_type", "configure");
+    handleQuizChange("quiz_question_type", "multiple_choice");
+    handleQuizChange("question_count", 10);
+    handleQuizChange("quiz_score", 100);
+    setQuizType("configure");
+  };
+
+  const handleCustomizeClick = () => {
+    setActiveStep("details");
+    handleQuizChange("quiz_type", "customize");
+  };
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -892,9 +986,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
       {/* Steps */}
       <div className="bg-background rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center justify-between">
-          <div onClick={() => setActiveStep("details")} className="flex items-center cursor-pointer">
+
+          <div onClick={() => setActiveStep("configure")} className="flex items-center cursor-pointer">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${activeStep === "details"
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${activeStep === "configure"
                 ? "bg-secondary text-white"
                 : "bg-gray-200 text-gray-600"
                 }`}
@@ -902,8 +997,26 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               1
             </div>
             <div className="ml-3">
-              <h3 className="font-medium text-text">Details</h3>
+              <h3 className="font-medium text-text">Configure</h3>
               <p className="text-sm text-gray-500">Configure GoForm settings</p>
+            </div>
+          </div>
+
+          <div className="w-16 h-0.5 bg-gray-200"></div>
+
+
+          <div onClick={() => setActiveStep("details")} className="flex items-center cursor-pointer">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${activeStep === "details"
+                ? "bg-secondary text-white"
+                : "bg-gray-200 text-gray-600"
+                }`}
+            >
+              2
+            </div>
+            <div className="ml-3">
+              <h3 className="font-medium text-text">Details</h3>
+              <p className="text-sm text-gray-500">Details of your GoForm</p>
             </div>
           </div>
 
@@ -916,7 +1029,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 : "bg-gray-200 text-gray-600"
                 }`}
             >
-              2
+              3
             </div>
             <div className="ml-3">
               <h3 className="font-medium text-text">Questions</h3>
@@ -933,7 +1046,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                 : "bg-gray-200 text-gray-600"
                 }`}
             >
-              3
+              4
             </div>
             <div className="ml-3">
               <h3 className="font-medium text-text">Publish</h3>
@@ -976,12 +1089,6 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   >
                     Add Question
                   </button>
-                  <button
-                    onClick={() => navigate("/templates/library")}
-                    className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
-                  >
-                    Use Template
-                  </button>
                 </div>
               </div>
             ) : (
@@ -1004,558 +1111,545 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                     items={questions.map((q) => q.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {questions.map((question, index) => (
-                      <div key={question.id} id={question.id}>
-                        <div className="flex items-center gap-5 w-full">
-                          <div className="flex items-center gap-3">
-                            <span
-                              onClick={() => toggleQuestionVisibility(index)}
-                              className="font-bold text-primary my-auto cursor-pointer"
-                            >
-                              {questions[index].is_hide ? (
-                                <EyeIcon className="size-5" />
-                              ) : (
-                                <EyeOffIcon className="size-5" />
-                              )}
-                            </span>
-                          </div>
+                    {questions.map((question, index) => {
 
-                          <div className="w-full">
-                            <SortableQuestion
-                              key={question.id}
-                              setExpandedQuestion={setExpandedQuestion}
-                              question={question}
-                              index={index}
-                              expandedQuestion={expandedQuestion}
-                              toggleQuestionExpand={toggleQuestionExpand}
-                              handleDuplicateQuestion={handleDuplicateQuestion}
-                              handleDeleteQuestion={handleDeleteQuestion}
-                            />
-                          </div>
-                        </div>
-                        {expandedQuestion === index && (
-                          <div className="p-4 border-t border-border">
-                            <div className="mb-4">
-                              <label className="block text-sm font-medium text-text mb-1">
-                                Question Text
-                              </label>
-                              <input
-                                type="text"
-                                value={question.text}
-                                onChange={(e) =>
-                                  handleQuestionChange(index, "text", e.target.value)
-                                }
-                                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                placeholder="Enter question text"
+                      const calculatedPoints =
+                        (quiz.quiz_type === 'configure'
+                          ? (quiz.quiz_score !== undefined && quiz.question_count
+                            ? quiz.quiz_score / quiz.question_count
+                            : undefined)
+                          : undefined) ??
+                        question.points ??
+                        points ??
+                        10;
+                      return (
+                        <div key={question.id} id={question.id}>
+                          <div className="flex items-center gap-5 w-full">
+                            <div className="flex items-center gap-3">
+                              <span
+                                onClick={() => toggleQuestionVisibility(index)}
+                                className="font-bold text-primary my-auto cursor-pointer"
+                              >
+                                {questions[index].is_hide ? (
+                                  <EyeOffIcon className="size-5" />
+                                ) : (
+                                  <EyeIcon className="size-5" />
+
+                                )}
+                              </span>
+                            </div>
+
+                            <div className="w-full">
+                              <SortableQuestion
+                                key={question.id}
+                                setExpandedQuestion={setExpandedQuestion}
+                                question={question}
+                                index={index}
+                                expandedQuestion={expandedQuestion}
+                                toggleQuestionExpand={toggleQuestionExpand}
+                                handleDuplicateQuestion={handleDuplicateQuestion}
+                                handleDeleteQuestion={handleDeleteQuestion}
                               />
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                              <div>
-                                <label className="block text-sm font-medium text-text mb-1">
-                                  Question Type
-                                </label>
-                                <select
-                                  value={question.type}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      index,
-                                      "type",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                >
-                                  {questionTypes.map((type) => (
-                                    <option key={type.value} value={type.value}>
-                                      {type.label}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-text mb-1">
-                                  Cognitive Level
-                                </label>
-                                <select
-                                  value={question.cognitive_level || "understanding"}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      index,
-                                      "cognitive_level",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                >
-                                  {cognitiveLevels.map((level) => (
-                                    <option key={level.value} value={level.value}>
-                                      {level.label}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-text mb-1">
-                                  Difficulty Level
-                                </label>
-                                <select
-                                  value={question.difficulty_level || "medium"}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      index,
-                                      "difficulty_level",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                >
-                                  {difficultyLevels.map((level) => (
-                                    <option key={level.value} value={level.value}>
-                                      {level.label}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-
-                            <div className="mb-4">
-                              <label className="block text-sm font-medium text-text mb-1">
-                                Instructions (Optional)
-                              </label>
-                              <textarea
-                                value={question.instructions || ""}
-                                onChange={(e) =>
-                                  handleQuestionChange(
-                                    index,
-                                    "instructions",
-                                    e.target.value
-                                  )
-                                }
-                                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                placeholder="Enter instructions for this question"
-                                rows={2}
-                              />
-                            </div>
-
-                            {/* Multiple Choice Options */}
-                            {question.type === "multiple_choice" && (
+                          </div>
+                          {expandedQuestion === index && (
+                            <div className="p-4 border-t border-border">
                               <div className="mb-4">
-                                <div className="flex items-center justify-between mb-2">
-                                  <label className="block text-sm font-medium text-text">
-                                    Options
+                                <label className="block text-sm font-medium text-text mb-1">
+                                  Question Text
+                                </label>
+                                <input
+                                  type="text"
+                                  value={question.text}
+                                  onChange={(e) =>
+                                    handleQuestionChange(index, "text", e.target.value)
+                                  }
+                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  placeholder="Enter question text"
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-text mb-1">
+                                    Question Type
                                   </label>
-                                  <button
-                                    onClick={() => handleAddOption(index)}
-                                    className="text-sm text-secondary hover:text-primary"
+                                  <select
+                                    value={quiz.quiz_question_type || question.type}
+                                    onChange={(e) =>
+                                      handleQuestionChange(
+                                        index,
+                                        "type",
+                                        e.target.value
+                                      )
+                                    }
+                                    disabled={quiz.quiz_type === 'configure'}
+                                    className={`w-full px-3 py-2 border ${quiz.quiz_type === 'configure' ? 'cursor-not-allowed bg-gray-100' : ''} rounded-md focus:ring-secondary border-border focus:border-secondary`}
                                   >
-                                    + Add Option
-                                  </button>
+                                    {questionTypes.map((type) => (
+                                      <option key={type.value} value={type.value}>
+                                        {type.label}
+                                      </option>
+                                    ))}
+                                  </select>
                                 </div>
 
+                                <div>
+                                  <label className="block text-sm font-medium text-text mb-1">
+                                    Cognitive Level
+                                  </label>
+                                  <select
+                                    value={question.cognitive_level || "understanding"}
+                                    onChange={(e) =>
+                                      handleQuestionChange(
+                                        index,
+                                        "cognitive_level",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  >
+                                    {cognitiveLevels.map((level) => (
+                                      <option key={level.value} value={level.value}>
+                                        {level.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
 
-                                <div className="space-y-4">
-                                  {question.options?.map((option, optionIndex) => {
-                                    const editorKey = `${index}-${optionIndex}`;
-                                    const isExpanded = activeOptionEditors[editorKey];
+                                <div>
+                                  <label className="block text-sm font-medium text-text mb-1">
+                                    Difficulty Level
+                                  </label>
+                                  <select
+                                    value={question.difficulty_level || "medium"}
+                                    onChange={(e) =>
+                                      handleQuestionChange(
+                                        index,
+                                        "difficulty_level",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  >
+                                    {difficultyLevels.map((level) => (
+                                      <option key={level.value} value={level.value}>
+                                        {level.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
 
-                                    return (
-                                      <div key={option.id} className="border border-border rounded-lg p-4 mb-4">
-                                        {/* Always visible summary line */}
-                                        <div className="flex items-center">
-                                          <div
-                                            onClick={() => toggleOptionEditor(index, optionIndex)}
-                                            className="cursor-pointer flex items-center justify-between w-full"
-                                          >
-                                            <div className="flex items-center gap-3">
-                                              <span className="text-sm font-medium">Option {optionIndex + 1}</span>
-                                            </div>
-                                            <div className="flex items-center">
-                                              <button
-                                                className="p-1.5 text-gray-500 hover:text-text mr-1"
-                                                title={isExpanded ? "Collapse option editor" : "Expand option editor"}
-                                              >
-                                                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                                              </button>
-                                            </div>
-                                          </div>
+                              <div className="mb-4">
+                                <label className="block text-sm font-medium text-text mb-1">
+                                  Instructions (Optional)
+                                </label>
+                                <textarea
+                                  value={question.instructions || ""}
+                                  onChange={(e) =>
+                                    handleQuestionChange(
+                                      index,
+                                      "instructions",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                  placeholder="Enter instructions for this question"
+                                  rows={2}
+                                />
+                              </div>
 
-                                          <button
-                                            onClick={() => handleDeleteOption(index, optionIndex)}
-                                            className="p-1.5 text-red-500 hover:text-red-700"
-                                            title="Delete option"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </button>
-                                        </div>
-
-                                        {/* Conditionally render editor section */}
-                                        {isExpanded && (
-                                          <div className="mt-4">
-                                            <div className="mb-3 flex items-center gap-4">
-                                              <label className="block text-sm font-medium text-text mb-1">Is Correct</label>
-                                              <input
-                                                type="checkbox"
-                                                checked={option.is_correct}
-                                                onChange={(e) =>
-                                                  handleOptionChange(index, optionIndex, "is_correct", e.target.checked)
-                                                }
-                                                className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
-                                              />
-                                            </div>
-
-                                            <div className="mb-3">
-                                              <label className="block text-sm font-medium text-text mb-1">Option Text</label>
-                                              <input
-                                                type="text"
-                                                value={option.text}
-                                                onChange={(e) =>
-                                                  handleOptionChange(index, optionIndex, "text", e.target.value)
-                                                }
-                                                className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                                placeholder="Option text"
-                                              />
-                                            </div>
-
-                                            <div className="mb-3">
-                                              <label className="block text-sm font-medium text-text mb-1">Score</label>
-                                              <input
-                                                type="number"
-                                                value={option.score}
-                                                onChange={(e) =>
-                                                  handleOptionChange(
-                                                    index,
-                                                    optionIndex,
-                                                    "score",
-                                                    parseInt(e.target.value) || 0
-                                                  )
-                                                }
-                                                className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                                placeholder="Score"
-                                              />
-                                            </div>
-
-                                            <div>
-                                              <label className="block text-sm font-medium text-text mb-1">
-                                                Feedback (Rich Content)
-                                              </label>
-                                              <ReactQuill
-                                                ref={(el) => {
-                                                  quillRefs.current[`option-${index}-${optionIndex}`] = el;
-                                                }}
-                                                value={option.feedback || ""}
-                                                onChange={(content) =>
-                                                  handleOptionChange(index, optionIndex, "feedback", content)
-                                                }
-                                                theme="snow"
-                                                className="mb-4"
-                                                modules={quillModules}
-                                                formats={quillFormats}
-                                                placeholder="Enter rich feedback content for this option..."
-                                              />
-                                              <p className="text-xs text-gray-500 mt-1">
-                                                This rich content will be displayed in the PDF report when this option is selected.
-                                              </p>
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-                                  {(!question.options ||
-                                    question.options.length === 0) ? (
+                              {/* Multiple Choice Options */}
+                              {(quiz.quiz_question_type || question.type) === "multiple_choice" && (
+                                <div className="mb-4">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-medium text-text">
+                                      Options
+                                    </label>
                                     <button
                                       onClick={() => handleAddOption(index)}
-                                      className="w-full py-2 border-2 border-dashed border-secondary rounded-lg text-gray-500 hover:text-text"
+                                      className="text-sm text-secondary hover:text-primary"
                                     >
                                       + Add Option
                                     </button>
-                                  ) : (
-                                    <button
-                                      onClick={() => handleAddOption(index)}
-                                      className="py-2 px-4 border-2 border border-secondary rounded-md text-secondary mx-auto flex items-center"
-                                    >
-                                      <Plus className="w-4 h-4" />
-                                      <span className="ml-2">Add Option</span>
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            )}
+                                  </div>
 
-                            {question.type === "matching" && (
-                              <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                  <h4 className="font-medium">Matching Pairs</h4>
-                                  <button
-                                    onClick={() => addMatchingPair(index)}
-                                    className="text-secondary hover:text-primary flex items-center gap-2"
-                                  >
-                                    <Plus className="w-5 h-5" />
-                                    <span className="text-secondary">Add Pair</span>
-                                  </button>
-                                </div>
 
-                                {question.matching_pairs?.map((pair, pairIndex) => (
-                                  <div
-                                    key={`matching-${index}-${pairIndex}`}
-                                    className="space-y-3 border p-4 rounded-md"
-                                  >
-                                    <div className="flex gap-4">
-                                      <input
-                                        type="text"
-                                        value={pair.left_item}
-                                        onChange={(e) => {
-                                          const updatedPairs = [...(question.matching_pairs || [])];
-                                          updatedPairs[pairIndex] = {
-                                            ...updatedPairs[pairIndex],
-                                            left_item: e.target.value,
-                                          };
-                                          updateMatchingPairs(index, updatedPairs);
-                                        }}
-                                        className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                        placeholder="Left item"
-                                      />
-                                      <input
-                                        type="text"
-                                        value={pair.right_item}
-                                        onChange={(e) => {
-                                          const updatedPairs = [...(question.matching_pairs || [])];
-                                          updatedPairs[pairIndex] = {
-                                            ...updatedPairs[pairIndex],
-                                            right_item: e.target.value,
-                                          };
-                                          updateMatchingPairs(index, updatedPairs);
-                                        }}
-                                        className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                        placeholder="Right item"
-                                      />
+                                  <div className="space-y-4">
+                                    {question.options?.map((option, optionIndex) => {
+                                      const editorKey = `${index}-${optionIndex}`;
+                                      const isExpanded = activeOptionEditors[editorKey];
+
+                                      return (
+                                        <div key={option.id} className="border border-border rounded-lg p-4 mb-4">
+                                          {/* Always visible summary line */}
+                                          <div className="flex items-center">
+                                            <div
+                                              onClick={() => toggleOptionEditor(index, optionIndex)}
+                                              className="cursor-pointer flex items-center justify-between w-full"
+                                            >
+                                              <div className="flex items-center gap-3">
+                                                <span className="text-sm font-medium">Option {optionIndex + 1}</span>
+                                              </div>
+                                              <div className="flex items-center">
+                                                <button
+                                                  className="p-1.5 text-gray-500 hover:text-text mr-1"
+                                                  title={isExpanded ? "Collapse option editor" : "Expand option editor"}
+                                                >
+                                                  {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                                </button>
+                                              </div>
+                                            </div>
+
+                                            <button
+                                              onClick={() => handleDeleteOption(index, optionIndex)}
+                                              className="p-1.5 text-red-500 hover:text-red-700"
+                                              title="Delete option"
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </button>
+                                          </div>
+
+                                          {/* Conditionally render editor section */}
+                                          {isExpanded && (
+                                            <div className="mt-4">
+                                              <div className="mb-3 flex items-center gap-4">
+                                                <label className="block text-sm font-medium text-text mb-1">Is Correct</label>
+                                                <input
+                                                  type="checkbox"
+                                                  checked={option.is_correct}
+                                                  onChange={(e) =>
+                                                    handleOptionChange(index, optionIndex, "is_correct", e.target.checked)
+                                                  }
+                                                  className="h-4 w-4 text-secondary focus:ring-secondary border-border rounded"
+                                                />
+                                              </div>
+
+                                              <div className="mb-3">
+                                                <label className="block text-sm font-medium text-text mb-1">Option Text</label>
+                                                <input
+                                                  type="text"
+                                                  value={option.text}
+                                                  onChange={(e) =>
+                                                    handleOptionChange(index, optionIndex, "text", e.target.value)
+                                                  }
+                                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                                  placeholder="Option text"
+                                                />
+                                              </div>
+
+                                              <div className="mb-3">
+                                                <label className="block text-sm font-medium text-text mb-1">Score</label>
+                                                <input
+                                                  type="number"
+                                                  value={option.score}
+                                                  onChange={(e) => {
+                                                    const value = parseInt(e.target.value) || 0;
+
+                                                    if (
+                                                      quiz.quiz_type === "configure" &&
+                                                      value > (question.points ?? 0)
+                                                    ) {
+                                                      showToast(`Score can't be greater than the question's total points`, "error");
+                                                      return;
+                                                    }
+
+                                                    handleOptionChange(index, optionIndex, "score", value);
+                                                  }}
+
+                                                  className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                                  placeholder="Score"
+                                                />
+                                              </div>
+
+                                              <div>
+                                                <label className="block text-sm font-medium text-text mb-1">
+                                                  Feedback (Rich Content)
+                                                </label>
+                                                <ReactQuill
+                                                  ref={(el) => {
+                                                    quillRefs.current[`option-${index}-${optionIndex}`] = el;
+                                                  }}
+                                                  value={option.feedback || ""}
+                                                  onChange={(content) =>
+                                                    handleOptionChange(index, optionIndex, "feedback", content)
+                                                  }
+                                                  theme="snow"
+                                                  className="mb-4"
+                                                  modules={quillModules}
+                                                  formats={quillFormats}
+                                                  placeholder="Enter rich feedback content for this option..."
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                  This rich content will be displayed in the PDF report when this option is selected.
+                                                </p>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                    {(!question.options ||
+                                      question.options.length === 0) ? (
                                       <button
-                                        onClick={() => {
-                                          const updatedPairs = [...(question.matching_pairs || [])];
-                                          updatedPairs.splice(pairIndex, 1);
-                                          updateMatchingPairs(index, updatedPairs);
-                                        }}
-                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() => handleAddOption(index)}
+                                        className="w-full py-2 border-2 border-dashed border-secondary rounded-lg text-gray-500 hover:text-text"
                                       >
-                                        <Trash2 className="w-5 h-5" />
+                                        + Add Option
                                       </button>
-                                    </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => handleAddOption(index)}
+                                        className="py-2 px-4 border-2 border-dashed border-secondary rounded-md text-secondary mx-auto flex items-center"
+                                      >
+                                        <Plus className="w-4 h-4" />
+                                        <span className="ml-2">Add Option</span>
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
 
-                                    <div>
-                                      <label className="block text-sm font-medium text-text mb-1">
-                                        Feedback (Rich Content)
-                                      </label>
-                                      <ReactQuill
-                                        value={pair.feedback || ""}
-                                        onChange={(content) => {
-                                          const updatedPairs = [...(question.matching_pairs || [])];
-                                          updatedPairs[pairIndex] = {
-                                            ...updatedPairs[pairIndex],
-                                            feedback: content,
-                                          };
-                                          updateMatchingPairs(index, updatedPairs);
-                                        }}
-                                        placeholder="Enter rich feedback content for this pair..."
-                                        theme="snow"
-                                        className="mb-2"
-                                        modules={quillModules}
-                                        formats={quillFormats}
-                                      />
-
-                                      <p className="text-xs text-gray-500">
-                                        This rich content will be displayed in the PDF report for this matching pair.
-                                      </p>
+                              {(quiz.quiz_question_type || question.type) === "true_false" && (
+                                <div className="mb-4">
+                                  {/* Correct Answer Selector */}
+                                  <div className="mb-6">
+                                    <label className="block text-sm font-medium text-text mb-2">
+                                      Correct Answer
+                                    </label>
+                                    <div className="flex items-center space-x-6">
+                                      {["true", "false"].map((val) => (
+                                        <label key={val} className="flex items-center space-x-2">
+                                          <input
+                                            type="radio"
+                                            name={`correct-answer-${index}`}
+                                            value={val}
+                                            checked={question.answer_key?.correct_answer === (val === "true")}
+                                            onChange={() =>
+                                              updateQuestion(index, {
+                                                answer_key: {
+                                                  correct_answer: val === "true",
+                                                },
+                                              })
+                                            }
+                                            className="text-secondary focus:ring-secondary"
+                                          />
+                                          <span>{val.charAt(0).toUpperCase() + val.slice(1)}</span>
+                                        </label>
+                                      ))}
                                     </div>
                                   </div>
-                                ))}
-                                {question.matching_pairs?.length !== 0 && (
-                                  // <div className="flex items-center ">
-                                  <button
-                                    onClick={() => addMatchingPair(index)}
-                                    className="text-secondary hover:text-primary mx-auto flex items-center gap-2 my-5 justify-center border border-secondary rounded-md px-4 py-2"
-                                  >
-                                    <Plus className="w-5 h-5" />
-                                    <span className="text-secondary">Add Pair</span>
-                                  </button>
-                                  // </div>
-                                )}
-                              </div>
-                            )}
 
-
-
-                            {question.type === "ordering" && (
-                              <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                  <h4 className="font-medium">Ordering Items</h4>
-                                  <button
-                                    onClick={() => addOrderingItem(index)}
-                                    className="text-secondary hover:text-primary flex items-center gap-2"
-                                  >
-                                    <Plus className="w-5 h-5" />
-                                    <span className="text-secondary">Add Item</span>
-                                  </button>
-                                </div>
-
-                                {question.ordering_items?.map((item, itemIndex) => (
-                                  <div
-                                    key={itemIndex}
-                                    className="space-y-3 border p-4 rounded-md"
-                                  >
-                                    <div className="flex gap-4">
-                                      <input
-                                        type="text"
-                                        value={item.item}
-                                        onChange={(e) => {
-                                          const newQuestions = [...questions];
-                                          newQuestions[index].ordering_items![
-                                            itemIndex
-                                          ].item = e.target.value;
-                                          setQuestions(newQuestions);
-                                        }}
-                                        className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                        placeholder="Item text"
-                                      />
-                                      <input
-                                        type="number"
-                                        value={item.correct_position}
-                                        onChange={(e) => {
-                                          const newQuestions = [...questions];
-                                          newQuestions[index].ordering_items![
-                                            itemIndex
-                                          ].correct_position = parseInt(
-                                            e.target.value
-                                          );
-                                          setQuestions(newQuestions);
-                                        }}
-                                        className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                        placeholder="Position"
-                                      />
-                                      <button
-                                        onClick={() => {
-                                          const newQuestions = [...questions];
-                                          newQuestions[index].ordering_items!.splice(
-                                            itemIndex,
-                                            1
-                                          );
-                                          setQuestions(newQuestions);
-                                        }}
-                                        className="text-red-600 hover:text-red-800"
-                                      >
-                                        <Trash2 className="w-5 h-5" />
-                                      </button>
-                                    </div>
-
+                                  {/* Feedback Editors */}
+                                  <div className="grid grid-cols-1 gap-6">
                                     <div>
                                       <label className="block text-sm font-medium text-text mb-1">
-                                        Feedback (Rich Content)
+                                        Feedback for True
                                       </label>
                                       <ReactQuill
                                         ref={(el) => {
-                                          quillRefs.current[
-                                            `ordering-${index}-${itemIndex}`
-                                          ] = el;
+                                          quillRefs.current[`feedback-true-${index}`] = el;
                                         }}
-                                        value={item.feedback || ""}
-                                        onChange={(content) => {
-                                          const newQuestions = [...questions];
-                                          newQuestions[index].ordering_items![
-                                            itemIndex
-                                          ].feedback = content;
-                                          setQuestions(newQuestions);
-                                        }}
-                                        placeholder="Enter feedback content for this item..."
+                                        value={question.tf_feedback?.true || ""}
+                                        onChange={(content) =>
+                                          updateQuestion(index, {
+                                            tf_feedback: {
+                                              ...question.tf_feedback,
+                                              true: content,
+                                            },
+                                          })
+                                        }
+                                        placeholder="Feedback when answer is True"
                                         theme="snow"
                                         className="mb-2"
                                         modules={quillModules}
                                         formats={quillFormats}
                                       />
-                                      <p className="text-xs text-gray-500">
-                                        This feedback will appear in the PDF for this
-                                        ordering item.
-                                      </p>
+                                    </div>
+
+                                    <div>
+                                      <label className="block text-sm font-medium text-text mb-1">
+                                        Feedback for False
+                                      </label>
+                                      <ReactQuill
+                                        ref={(el) => {
+                                          quillRefs.current[`feedback-false-${index}`] = el;
+                                        }}
+                                        value={question.tf_feedback?.false || ""}
+                                        onChange={(content) =>
+                                          updateQuestion(index, {
+                                            tf_feedback: {
+                                              ...question.tf_feedback,
+                                              false: content,
+                                            },
+                                          })
+                                        }
+                                        placeholder="Feedback when answer is False"
+                                        theme="snow"
+                                        className="mb-2"
+                                        modules={quillModules}
+                                        formats={quillFormats}
+                                      />
                                     </div>
                                   </div>
-                                ))}
-                                {question.ordering_items?.length !== 0 && (
-                                  <button
-                                    onClick={() => addOrderingItem(index)}
-                                    className="text-secondary hover:text-primary flex items-center gap-2 mx-auto border border-secondary rounded-md px-4 py-2"
-                                  >
-                                    <Plus className="w-5 h-5" />
-                                    <span className="text-secondary">Add Item</span>
-                                  </button>
-                                )}
-                              </div>
-                            )}
-
-
-                            {question.type === "essay" && (
-                              <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                  <h4 className="font-medium">Rubric Criteria</h4>
-                                  <button
-                                    onClick={() => addEssayRubric(index)}
-                                    className="text-secondary hover:text-primary"
-                                  >
-                                    <Plus className="w-5 h-5" />
-                                  </button>
                                 </div>
+                              )}
 
-                                {question.essay_rubrics?.map(
-                                  (rubric, rubricIndex) => (
+                              {(quiz.quiz_question_type || question.type) === "matching" && (
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium">Matching Pairs</h4>
+                                    <button
+                                      onClick={() => addMatchingPair(index)}
+                                      className="text-secondary hover:text-primary flex items-center gap-2"
+                                    >
+                                      <Plus className="w-5 h-5" />
+                                      <span className="text-secondary">Add Pair</span>
+                                    </button>
+                                  </div>
+
+                                  {question.matching_pairs?.map((pair, pairIndex) => (
                                     <div
-                                      key={rubricIndex}
+                                      key={`matching-${index}-${pairIndex}`}
                                       className="space-y-3 border p-4 rounded-md"
                                     >
-                                      <div className="flex gap-4 flex-wrap">
+                                      <div className="flex gap-4">
                                         <input
                                           type="text"
-                                          value={rubric.criteria}
+                                          value={pair.left_item}
                                           onChange={(e) => {
-                                            const newQuestions = [...questions];
-                                            newQuestions[index].essay_rubrics![
-                                              rubricIndex
-                                            ].criteria = e.target.value;
-                                            setQuestions(newQuestions);
+                                            const updatedPairs = [...(question.matching_pairs || [])];
+                                            updatedPairs[pairIndex] = {
+                                              ...updatedPairs[pairIndex],
+                                              left_item: e.target.value,
+                                            };
+                                            updateMatchingPairs(index, updatedPairs);
                                           }}
                                           className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                          placeholder="Criteria"
+                                          placeholder="Left item"
                                         />
                                         <input
                                           type="text"
-                                          value={rubric.description || ""}
+                                          value={pair.right_item}
+                                          onChange={(e) => {
+                                            const updatedPairs = [...(question.matching_pairs || [])];
+                                            updatedPairs[pairIndex] = {
+                                              ...updatedPairs[pairIndex],
+                                              right_item: e.target.value,
+                                            };
+                                            updateMatchingPairs(index, updatedPairs);
+                                          }}
+                                          className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                          placeholder="Right item"
+                                        />
+                                        <button
+                                          onClick={() => {
+                                            const updatedPairs = [...(question.matching_pairs || [])];
+                                            updatedPairs.splice(pairIndex, 1);
+                                            updateMatchingPairs(index, updatedPairs);
+                                          }}
+                                          className="text-red-600 hover:text-red-800"
+                                        >
+                                          <Trash2 className="w-5 h-5" />
+                                        </button>
+                                      </div>
+
+                                      <div>
+                                        <label className="block text-sm font-medium text-text mb-1">
+                                          Feedback (Rich Content)
+                                        </label>
+                                        <ReactQuill
+                                          value={pair.feedback || ""}
+                                          onChange={(content) => {
+                                            const updatedPairs = [...(question.matching_pairs || [])];
+                                            updatedPairs[pairIndex] = {
+                                              ...updatedPairs[pairIndex],
+                                              feedback: content,
+                                            };
+                                            updateMatchingPairs(index, updatedPairs);
+                                          }}
+                                          placeholder="Enter rich feedback content for this pair..."
+                                          theme="snow"
+                                          className="mb-2"
+                                          modules={quillModules}
+                                          formats={quillFormats}
+                                        />
+
+                                        <p className="text-xs text-gray-500">
+                                          This rich content will be displayed in the PDF report for this matching pair.
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  {question.matching_pairs?.length !== 0 && (
+                                    // <div className="flex items-center ">
+                                    <button
+                                      onClick={() => addMatchingPair(index)}
+                                      className="text-secondary hover:text-primary mx-auto flex items-center gap-2 my-5 justify-center border border-secondary rounded-md px-4 py-2"
+                                    >
+                                      <Plus className="w-5 h-5" />
+                                      <span className="text-secondary">Add Pair</span>
+                                    </button>
+                                    // </div>
+                                  )}
+                                </div>
+                              )}
+
+
+
+                              {(quiz.quiz_question_type || question.type) === "ordering" && (
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium">Ordering Items</h4>
+                                    <button
+                                      onClick={() => addOrderingItem(index)}
+                                      className="text-secondary hover:text-primary flex items-center gap-2"
+                                    >
+                                      <Plus className="w-5 h-5" />
+                                      <span className="text-secondary">Add Item</span>
+                                    </button>
+                                  </div>
+
+                                  {question.ordering_items?.map((item, itemIndex) => (
+                                    <div
+                                      key={itemIndex}
+                                      className="space-y-3 border p-4 rounded-md"
+                                    >
+                                      <div className="flex gap-4">
+                                        <input
+                                          type="text"
+                                          value={item.item}
                                           onChange={(e) => {
                                             const newQuestions = [...questions];
-                                            newQuestions[index].essay_rubrics![
-                                              rubricIndex
-                                            ].description = e.target.value;
+                                            newQuestions[index].ordering_items![
+                                              itemIndex
+                                            ].item = e.target.value;
                                             setQuestions(newQuestions);
                                           }}
                                           className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                          placeholder="Description"
+                                          placeholder="Item text"
                                         />
                                         <input
                                           type="number"
-                                          value={rubric.max_points}
+                                          value={item.correct_position}
                                           onChange={(e) => {
                                             const newQuestions = [...questions];
-                                            newQuestions[index].essay_rubrics![
-                                              rubricIndex
-                                            ].max_points = parseInt(e.target.value);
+                                            newQuestions[index].ordering_items![
+                                              itemIndex
+                                            ].correct_position = parseInt(
+                                              e.target.value
+                                            );
                                             setQuestions(newQuestions);
                                           }}
                                           className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                          placeholder="Points"
+                                          placeholder="Position"
                                         />
                                         <button
                                           onClick={() => {
                                             const newQuestions = [...questions];
-                                            newQuestions[index].essay_rubrics!.splice(
-                                              rubricIndex,
+                                            newQuestions[index].ordering_items!.splice(
+                                              itemIndex,
                                               1
                                             );
                                             setQuestions(newQuestions);
@@ -1573,335 +1667,366 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                         <ReactQuill
                                           ref={(el) => {
                                             quillRefs.current[
-                                              `essay-${index}-${rubricIndex}`
+                                              `ordering-${index}-${itemIndex}`
                                             ] = el;
                                           }}
-                                          value={rubric.feedback || ""}
+                                          value={item.feedback || ""}
                                           onChange={(content) => {
                                             const newQuestions = [...questions];
-                                            newQuestions[index].essay_rubrics![
-                                              rubricIndex
+                                            newQuestions[index].ordering_items![
+                                              itemIndex
                                             ].feedback = content;
                                             setQuestions(newQuestions);
                                           }}
-                                          placeholder="Enter feedback for this rubric criterion..."
+                                          placeholder="Enter feedback content for this item..."
                                           theme="snow"
                                           className="mb-2"
                                           modules={quillModules}
                                           formats={quillFormats}
                                         />
                                         <p className="text-xs text-gray-500">
-                                          This rich content will appear in the essay
-                                          grading report.
+                                          This feedback will appear in the PDF for this
+                                          ordering item.
                                         </p>
                                       </div>
                                     </div>
-                                  )
-                                )}
-                              </div>
-                            )}
+                                  ))}
+                                  {question.ordering_items?.length !== 0 && (
+                                    <button
+                                      onClick={() => addOrderingItem(index)}
+                                      className="text-secondary hover:text-primary flex items-center gap-2 mx-auto border border-secondary rounded-md px-4 py-2"
+                                    >
+                                      <Plus className="w-5 h-5" />
+                                      <span className="text-secondary">Add Item</span>
+                                    </button>
+                                  )}
+                                </div>
+                              )}
 
-                            {question.type === "picture_based" && (
-                              <div className="space-y-4">
+
+                              {(quiz.quiz_question_type || question.type) === "essay" && (
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium">Rubric Criteria</h4>
+                                    <button
+                                      onClick={() => addEssayRubric(index)}
+                                      className="text-secondary hover:text-primary"
+                                    >
+                                      <Plus className="w-5 h-5" />
+                                    </button>
+                                  </div>
+
+                                  {question.essay_rubrics?.map(
+                                    (rubric, rubricIndex) => (
+                                      <div
+                                        key={rubricIndex}
+                                        className="space-y-3 border p-4 rounded-md"
+                                      >
+                                        <div className="flex gap-4 flex-wrap">
+                                          <input
+                                            type="text"
+                                            value={rubric.criteria}
+                                            onChange={(e) => {
+                                              const newQuestions = [...questions];
+                                              newQuestions[index].essay_rubrics![
+                                                rubricIndex
+                                              ].criteria = e.target.value;
+                                              setQuestions(newQuestions);
+                                            }}
+                                            className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                            placeholder="Criteria"
+                                          />
+                                          <input
+                                            type="text"
+                                            value={rubric.description || ""}
+                                            onChange={(e) => {
+                                              const newQuestions = [...questions];
+                                              newQuestions[index].essay_rubrics![
+                                                rubricIndex
+                                              ].description = e.target.value;
+                                              setQuestions(newQuestions);
+                                            }}
+                                            className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                            placeholder="Description"
+                                          />
+                                          <input
+                                            type="number"
+                                            value={rubric.max_points}
+                                            onChange={(e) => {
+                                              const newQuestions = [...questions];
+                                              newQuestions[index].essay_rubrics![
+                                                rubricIndex
+                                              ].max_points = parseInt(e.target.value);
+                                              setQuestions(newQuestions);
+                                            }}
+                                            className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                            placeholder="Points"
+                                          />
+                                          <button
+                                            onClick={() => {
+                                              const newQuestions = [...questions];
+                                              newQuestions[index].essay_rubrics!.splice(
+                                                rubricIndex,
+                                                1
+                                              );
+                                              setQuestions(newQuestions);
+                                            }}
+                                            className="text-red-600 hover:text-red-800"
+                                          >
+                                            <Trash2 className="w-5 h-5" />
+                                          </button>
+                                        </div>
+
+                                        <div>
+                                          <label className="block text-sm font-medium text-text mb-1">
+                                            Feedback (Rich Content)
+                                          </label>
+                                          <ReactQuill
+                                            ref={(el) => {
+                                              quillRefs.current[
+                                                `essay-${index}-${rubricIndex}`
+                                              ] = el;
+                                            }}
+                                            value={rubric.feedback || ""}
+                                            onChange={(content) => {
+                                              const newQuestions = [...questions];
+                                              newQuestions[index].essay_rubrics![
+                                                rubricIndex
+                                              ].feedback = content;
+                                              setQuestions(newQuestions);
+                                            }}
+                                            placeholder="Enter feedback for this rubric criterion..."
+                                            theme="snow"
+                                            className="mb-2"
+                                            modules={quillModules}
+                                            formats={quillFormats}
+                                          />
+                                          <p className="text-xs text-gray-500">
+                                            This rich content will appear in the essay
+                                            grading report.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
+
+                              {(quiz.quiz_question_type || question.type) === "picture_based" && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-text mb-1">
+                                      Image URL
+                                    </label>
+                                    <input
+                                      type="url"
+                                      value={question.media_url || ""}
+                                      onChange={(e) =>
+                                        updateQuestion(index, {
+                                          media_url: e.target.value,
+                                        })
+                                      }
+                                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                      placeholder="Enter image URL"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="block text-sm font-medium text-text mb-1">
+                                      Feedback (Rich Content)
+                                    </label>
+                                    <ReactQuill
+                                      ref={(el) => {
+                                        quillRefs.current[`picture-${index}`] = el;
+                                      }}
+                                      value={question.feedback || ""}
+                                      onChange={(content) =>
+                                        updateQuestion(index, { feedback: content })
+                                      }
+                                      placeholder="Enter rich feedback content for this image-based question..."
+                                      theme="snow"
+                                      className="mb-2"
+                                      modules={quillModules}
+                                      formats={quillFormats}
+                                    />
+                                    <p className="text-xs text-gray-500">
+                                      This feedback will be shown in the PDF when this
+                                      question is answered.
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {(quiz.quiz_question_type || question.type) === "fill_blank" && (
                                 <div>
                                   <label className="block text-sm font-medium text-text mb-1">
-                                    Image URL
+                                    Feedback (Rich Content)
                                   </label>
-                                  <input
-                                    type="url"
-                                    value={question.media_url || ""}
-                                    onChange={(e) =>
+                                  <ReactQuill
+                                    ref={(el) => {
+                                      quillRefs.current[`answer-${index}`] = el;
+                                    }}
+                                    value={question.feedback || ""}
+                                    onChange={(content) =>
                                       updateQuestion(index, {
-                                        media_url: e.target.value,
+                                        feedback: content,
                                       })
                                     }
+                                    placeholder="Enter explanation or feedback..."
+                                    theme="snow"
+                                    className="mb-2"
+                                    modules={quillModules}
+                                    formats={quillFormats}
+                                  />
+                                  <p className="text-xs text-gray-500">
+                                    This explanation will appear in reports and after submission.
+                                  </p>
+                                </div>
+                              )}
+
+                              {(quiz.quiz_question_type || question.type) === "definition" && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Feedback (Rich Content)
+                                    </label>
+
+                                    <ReactQuill
+                                      ref={(el) => {
+                                        if (el) {
+                                          quillRefs.current[`definition-${index}`] = el;
+                                        }
+                                      }}
+                                      value={question.feedback || ""}
+                                      onChange={(content) =>
+                                        updateQuestion(index, { feedback: content })
+                                      }
+                                      placeholder="Enter rich feedback content for this question..."
+                                      theme="snow"
+                                      className="mb-2"
+                                      modules={quillModules}
+                                      formats={quillFormats}
+                                    />
+
+                                    <p className="text-xs text-gray-500">
+                                      This feedback will be shown in the PDF when this
+                                      question is answered.
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {(quiz.quiz_question_type || question.type) === "complete_statement" && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Feedback (Rich Content)
+                                    </label>
+
+                                    <ReactQuill
+                                      ref={(el) => {
+                                        if (el) {
+                                          quillRefs.current[
+                                            `complete-statement-${index}`
+                                          ] = el;
+                                        }
+                                      }}
+                                      value={question.feedback || ""}
+                                      onChange={(content) =>
+                                        updateQuestion(index, { feedback: content })
+                                      }
+                                      placeholder="Enter rich feedback content for this complete statement question..."
+                                      theme="snow"
+                                      className="mb-2"
+                                      modules={quillModules}
+                                      formats={quillFormats}
+                                    />
+
+                                    <p className="text-xs text-gray-500">
+                                      This feedback will be shown in the PDF when this
+                                      question is answered.
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {(quiz.quiz_question_type || question.type) === "short_answer" && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                      Feedback (Rich Content)
+                                    </label>
+
+                                    <ReactQuill
+                                      ref={(el) => {
+                                        if (el) {
+                                          quillRefs.current[`short-answer-${index}`] =
+                                            el;
+                                        }
+                                      }}
+                                      value={question.feedback || ""}
+                                      onChange={(content) =>
+                                        updateQuestion(index, { feedback: content })
+                                      }
+                                      placeholder="Enter rich feedback content for this short answer question..."
+                                      theme="snow"
+                                      className="mb-2"
+                                      modules={quillModules}
+                                      formats={quillFormats}
+                                    />
+
+                                    <p className="text-xs text-gray-500">
+                                      This feedback will be shown in the PDF when this
+                                      question is answered.
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8">
+                                <div>
+                                  <label className="block text-sm font-medium text-text mb-1">
+                                    Points
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={calculatedPoints}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value);
+                                      handleQuestionChange(index, "points", value);
+                                      setPoints(value);
+                                    }}
                                     className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                    placeholder="Enter image URL"
+                                    placeholder="Points"
+                                    min={0}
                                   />
                                 </div>
 
                                 <div>
                                   <label className="block text-sm font-medium text-text mb-1">
-                                    Feedback (Rich Content)
+                                    Time Limit (seconds, optional)
                                   </label>
-                                  <ReactQuill
-                                    ref={(el) => {
-                                      quillRefs.current[`picture-${index}`] = el;
-                                    }}
-                                    value={question.feedback || ""}
-                                    onChange={(content) =>
-                                      updateQuestion(index, { feedback: content })
+                                  <input
+                                    type="number"
+                                    value={question.time_limit || ""}
+                                    onChange={(e) =>
+                                      handleQuestionChange(
+                                        index,
+                                        "time_limit",
+                                        e.target.value ? parseInt(e.target.value) : null
+                                      )
                                     }
-                                    placeholder="Enter rich feedback content for this image-based question..."
-                                    theme="snow"
-                                    className="mb-2"
-                                    modules={quillModules}
-                                    formats={quillFormats}
+                                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                                    placeholder="Time limit in seconds"
+                                    min={0}
                                   />
-                                  <p className="text-xs text-gray-500">
-                                    This feedback will be shown in the PDF when this
-                                    question is answered.
-                                  </p>
                                 </div>
-                              </div>
-                            )}
-
-                            {question.type === "true_false" && (
-                              <div className="mb-4">
-                                {/* Correct Answer Selector */}
-                                <div className="mb-6">
-                                  <label className="block text-sm font-medium text-text mb-2">
-                                    Correct Answer
-                                  </label>
-                                  <div className="flex items-center space-x-6">
-                                    {["true", "false"].map((val) => (
-                                      <label key={val} className="flex items-center space-x-2">
-                                        <input
-                                          type="radio"
-                                          name={`correct-answer-${index}`}
-                                          value={val}
-                                          checked={question.answer_key?.correct_answer === (val === "true")}
-                                          onChange={() =>
-                                            updateQuestion(index, {
-                                              answer_key: {
-                                                correct_answer: val === "true",
-                                              },
-                                            })
-                                          }
-                                          className="text-secondary focus:ring-secondary"
-                                        />
-                                        <span>{val.charAt(0).toUpperCase() + val.slice(1)}</span>
-                                      </label>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                {/* Feedback Editors */}
-                                <div className="grid grid-cols-1 gap-6">
-                                  <div>
-                                    <label className="block text-sm font-medium text-text mb-1">
-                                      Feedback for True
-                                    </label>
-                                    <ReactQuill
-                                      ref={(el) => {
-                                        quillRefs.current[`feedback-true-${index}`] = el;
-                                      }}
-                                      value={question.tf_feedback?.true || ""}
-                                      onChange={(content) =>
-                                        updateQuestion(index, {
-                                          tf_feedback: {
-                                            ...question.tf_feedback,
-                                            true: content,
-                                          },
-                                        })
-                                      }
-                                      placeholder="Feedback when answer is True"
-                                      theme="snow"
-                                      className="mb-2"
-                                      modules={quillModules}
-                                      formats={quillFormats}
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-sm font-medium text-text mb-1">
-                                      Feedback for False
-                                    </label>
-                                    <ReactQuill
-                                      ref={(el) => {
-                                        quillRefs.current[`feedback-false-${index}`] = el;
-                                      }}
-                                      value={question.tf_feedback?.false || ""}
-                                      onChange={(content) =>
-                                        updateQuestion(index, {
-                                          tf_feedback: {
-                                            ...question.tf_feedback,
-                                            false: content,
-                                          },
-                                        })
-                                      }
-                                      placeholder="Feedback when answer is False"
-                                      theme="snow"
-                                      className="mb-2"
-                                      modules={quillModules}
-                                      formats={quillFormats}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-
-
-                            {question.type === "fill_blank" && (
-                              <div>
-                                <label className="block text-sm font-medium text-text mb-1">
-                                  Feedback (Rich Content)
-                                </label>
-                                <ReactQuill
-                                  ref={(el) => {
-                                    quillRefs.current[`answer-${index}`] = el;
-                                  }}
-                                  value={question.feedback || ""}
-                                  onChange={(content) =>
-                                    updateQuestion(index, {
-                                      feedback: content,
-                                    })
-                                  }
-                                  placeholder="Enter explanation or feedback..."
-                                  theme="snow"
-                                  className="mb-2"
-                                  modules={quillModules}
-                                  formats={quillFormats}
-                                />
-                                <p className="text-xs text-gray-500">
-                                  This explanation will appear in reports and after submission.
-                                </p>
-                              </div>
-                            )}
-
-                            {question.type === "definition" && (
-                              <div className="space-y-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Feedback (Rich Content)
-                                  </label>
-
-                                  <ReactQuill
-                                    ref={(el) => {
-                                      if (el) {
-                                        quillRefs.current[`definition-${index}`] = el;
-                                      }
-                                    }}
-                                    value={question.feedback || ""}
-                                    onChange={(content) =>
-                                      updateQuestion(index, { feedback: content })
-                                    }
-                                    placeholder="Enter rich feedback content for this question..."
-                                    theme="snow"
-                                    className="mb-2"
-                                    modules={quillModules}
-                                    formats={quillFormats}
-                                  />
-
-                                  <p className="text-xs text-gray-500">
-                                    This feedback will be shown in the PDF when this
-                                    question is answered.
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-
-                            {question.type === "complete_statement" && (
-                              <div className="space-y-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Feedback (Rich Content)
-                                  </label>
-
-                                  <ReactQuill
-                                    ref={(el) => {
-                                      if (el) {
-                                        quillRefs.current[
-                                          `complete-statement-${index}`
-                                        ] = el;
-                                      }
-                                    }}
-                                    value={question.feedback || ""}
-                                    onChange={(content) =>
-                                      updateQuestion(index, { feedback: content })
-                                    }
-                                    placeholder="Enter rich feedback content for this complete statement question..."
-                                    theme="snow"
-                                    className="mb-2"
-                                    modules={quillModules}
-                                    formats={quillFormats}
-                                  />
-
-                                  <p className="text-xs text-gray-500">
-                                    This feedback will be shown in the PDF when this
-                                    question is answered.
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-
-                            {question.type === "short_answer" && (
-                              <div className="space-y-4">
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Feedback (Rich Content)
-                                  </label>
-
-                                  <ReactQuill
-                                    ref={(el) => {
-                                      if (el) {
-                                        quillRefs.current[`short-answer-${index}`] =
-                                          el;
-                                      }
-                                    }}
-                                    value={question.feedback || ""}
-                                    onChange={(content) =>
-                                      updateQuestion(index, { feedback: content })
-                                    }
-                                    placeholder="Enter rich feedback content for this short answer question..."
-                                    theme="snow"
-                                    className="mb-2"
-                                    modules={quillModules}
-                                    formats={quillFormats}
-                                  />
-
-                                  <p className="text-xs text-gray-500">
-                                    This feedback will be shown in the PDF when this
-                                    question is answered.
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8">
-                              <div>
-                                <label className="block text-sm font-medium text-text mb-1">
-                                  Points
-                                </label>
-                                <input
-                                  type="number"
-                                  value={question.points || points || 10}
-                                  onChange={(e) => {
-                                    const value = parseInt(e.target.value);
-                                    handleQuestionChange(index, "points", value);
-                                    setPoints(value);
-                                  }}
-                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                  placeholder="Points"
-                                  min={0}
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-text mb-1">
-                                  Time Limit (seconds, optional)
-                                </label>
-                                <input
-                                  type="number"
-                                  value={question.time_limit || ""}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      index,
-                                      "time_limit",
-                                      e.target.value ? parseInt(e.target.value) : null
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
-                                  placeholder="Time limit in seconds"
-                                  min={0}
-                                />
                               </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          )}
+                        </div>
+                      )
+                    })}
                   </SortableContext>
                 </DndContext>
               </div>
@@ -1938,7 +2063,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                   )}
                 </button>
                 <button
-                  onClick={() => setActiveStep("publish")}
+                  onClick={() => handleNext()}
                   className="flex items-center px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
                 >
                   Next
@@ -1951,14 +2076,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               Table of Contents
             </h3>
             <ul className="text-sm space-y-1">
-              {questions.map((q) => (
+              {questions.map((q, index) => (
                 <li key={q.id}>
                   <a
                     href={`#${q.id}`}
-                    className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition text-sm font-medium truncate"
+                    className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent text-text transition text-sm font-medium truncate"
                     title={q.text}
                   >
-                    <span className="text-blue-400 text-xs">●</span>
+                    <span className="text-text text-xs">{index + 1}</span>
                     <span className="truncate">{q.text}</span>
                   </a>
                 </li>
@@ -2026,7 +2151,60 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                     ))}
                   </select>
                 </div>
+                {quiz.quiz_type === 'configure' && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-text mb-1">
+                      Question Type
+                    </label>
+                    <select
+                      value={quiz.quiz_question_type}
+                      onChange={(e) => {
+                        handleQuizChange("quiz_question_type", e.target.value);
+                        setQuizQuestionType(e.target.value);
+                      }}
+                      disabled={quiz.quiz_type === 'configure' && !!id}
+                      className={`w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary ${quiz.quiz_type === 'configure' && !!id ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    >
+                      {questionTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
+              {quiz.quiz_type === 'configure' && (
+                <div className="mb-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-text mb-1">
+                      No. of Questions
+                    </label>
+                    <input
+                      type="number"
+                      value={quiz.question_count || 10}
+                      onChange={(e) => handleQuizChange("question_count", parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                      placeholder="No. of Questions"
+                      min={0}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text mb-1">
+                      Quiz Score
+                    </label>
+                    <input
+                      type="number"
+                      value={quiz.quiz_score || 100}
+                      onChange={(e) => handleQuizChange("quiz_score", parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
+                      placeholder="Score"
+                      min={0}
+                    />
+                  </div>
+                </div>
+              )}
+
 
               <div>
                 <button
@@ -2115,7 +2293,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
               onClick={handleContinueToDetails}
               className="flex items-center px-6 py-3 bg-secondary text-white rounded-lg hover:bg-primary"
             >
-              {questions.length === 0 ? 'Add Questions' : 'View Questions'}
+              Save & Next
             </button>
           </div>
         </div>
@@ -2163,6 +2341,47 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
           </div>
         </div>
       )}
+
+      {activeStep === "configure" && (
+        <div className="bg-background rounded-lg shadow-md px-6 py-10 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Use Template Card */}
+            <div onClick={() => handleTemplateClick()} className="bg-white rounded-2xl shadow hover:shadow-lg transition duration-300 border border-accent cursor-pointer px-6 py-10">
+              <div className="flex items-center gap-2 mb-2">
+                <LayoutTemplate className="text-primary w-5 h-5" />
+                <h3 className="text-xl font-semibold text-gray-800">Use Template</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Choose from pre-made templates to kickstart your setup quickly and efficiently.
+              </p>
+            </div>
+
+            {/* Configure Card */}
+            <div onClick={() => handleConfigureClick()} className="bg-white rounded-2xl shadow hover:shadow-lg transition duration-300 border border-accent cursor-pointer px-6 py-10">
+              <div className="flex items-center gap-2 mb-2">
+                <SlidersHorizontal className="text-primary w-5 h-5" />
+                <h3 className="text-xl font-semibold text-gray-800">Configure</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Set up the details and options to tailor the experience for your needs.
+              </p>
+            </div>
+
+            {/* Customize Card */}
+            <div onClick={() => handleCustomizeClick()} className="bg-white rounded-2xl shadow hover:shadow-lg transition duration-300 border border-accent cursor-pointer px-6 py-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Brush className="text-primary w-5 h-5" />
+                <h3 className="text-xl font-semibold text-gray-800">Customize</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Personalize the interface and behavior to match your unique preferences.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
       {/* Share Modal */}
       {showShareModal && (
