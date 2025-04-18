@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Copy, 
-  Eye, 
-  Clock, 
-  Users, 
-  Tag, 
-  ChevronDown, 
-  ChevronUp, 
-  FileText, 
-  CheckCircle, 
-  AlertTriangle, 
-  Award, 
-  BookOpen, 
-  Briefcase, 
-  Shield, 
-  Brain, 
-  Layers, 
-  BarChart, 
+import {
+  Search,
+  Filter,
+  Download,
+  Copy,
+  Eye,
+  Clock,
+  Users,
+  Tag,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  CheckCircle,
+  AlertTriangle,
+  Award,
+  BookOpen,
+  Briefcase,
+  Shield,
+  Brain,
+  Layers,
+  BarChart,
   FileQuestion,
   Plus,
   ArrowRight,
@@ -133,7 +133,7 @@ const quizTemplates = [
     usageCount: 987,
     lastUpdated: '2025-04-10'
   },
-  
+
   // Academic - Science
   {
     id: 'science-biology-cells',
@@ -177,7 +177,7 @@ const quizTemplates = [
     usageCount: 1342,
     lastUpdated: '2025-04-05'
   },
-  
+
   // Academic - History
   {
     id: 'history-world-war-2',
@@ -200,7 +200,7 @@ const quizTemplates = [
     usageCount: 1876,
     lastUpdated: '2025-04-02'
   },
-  
+
   // Academic - Language
   {
     id: 'language-grammar-essentials',
@@ -223,7 +223,7 @@ const quizTemplates = [
     usageCount: 2145,
     lastUpdated: '2025-03-28'
   },
-  
+
   // Professional Development - Leadership
   {
     id: 'leadership-management-fundamentals',
@@ -267,7 +267,7 @@ const quizTemplates = [
     usageCount: 1987,
     lastUpdated: '2025-03-22'
   },
-  
+
   // Professional Development - Technical Skills
   {
     id: 'technical-programming-fundamentals',
@@ -290,7 +290,7 @@ const quizTemplates = [
     usageCount: 2134,
     lastUpdated: '2025-03-20'
   },
-  
+
   // Professional Development - Soft Skills
   {
     id: 'soft-skills-communication',
@@ -313,7 +313,7 @@ const quizTemplates = [
     usageCount: 2567,
     lastUpdated: '2025-03-18'
   },
-  
+
   // Compliance Training - Safety
   {
     id: 'safety-workplace-fundamentals',
@@ -336,7 +336,7 @@ const quizTemplates = [
     usageCount: 3245,
     lastUpdated: '2025-03-15'
   },
-  
+
   // Compliance Training - Security
   {
     id: 'security-data-protection',
@@ -359,7 +359,7 @@ const quizTemplates = [
     usageCount: 3567,
     lastUpdated: '2025-03-12'
   },
-  
+
   // Compliance Training - Ethics
   {
     id: 'ethics-business-conduct',
@@ -382,7 +382,7 @@ const quizTemplates = [
     usageCount: 2987,
     lastUpdated: '2025-03-10'
   },
-  
+
   // Employee Assessment - Performance
   {
     id: 'performance-annual-review',
@@ -405,7 +405,7 @@ const quizTemplates = [
     usageCount: 4567,
     lastUpdated: '2025-03-08'
   },
-  
+
   // Employee Assessment - Knowledge Check
   {
     id: 'knowledge-product-training',
@@ -428,7 +428,7 @@ const quizTemplates = [
     usageCount: 3245,
     lastUpdated: '2025-03-05'
   },
-  
+
   // Employee Assessment - Skill Evaluation
   {
     id: 'skill-customer-service',
@@ -487,38 +487,38 @@ export default function QuizTemplateLibrary() {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         template.title.toLowerCase().includes(query) ||
         template.description.toLowerCase().includes(query) ||
         template.tags.some(tag => tag.toLowerCase().includes(query));
-      
+
       if (!matchesSearch) return false;
     }
-    
+
     // Category filter
     if (selectedCategory && template.category !== selectedCategory) {
       return false;
     }
-    
+
     // Subcategory filter
     if (selectedSubcategory && template.subcategory !== selectedSubcategory) {
       return false;
     }
-    
+
     // Audience level filter
-    if (selectedAudienceLevel && 
-        template.audienceLevel !== selectedAudienceLevel && 
-        template.audienceLevel !== 'all') {
+    if (selectedAudienceLevel &&
+      template.audienceLevel !== selectedAudienceLevel &&
+      template.audienceLevel !== 'all') {
       return false;
     }
-    
+
     // Duration filter
     if (selectedDuration) {
       if (selectedDuration === 30 && template.duration > 30) return false;
       if (selectedDuration === 60 && (template.duration <= 30 || template.duration > 60)) return false;
       if (selectedDuration === 90 && template.duration <= 60) return false;
     }
-    
+
     return true;
   }).sort((a, b) => {
     if (sortBy === 'popularity') {
@@ -676,11 +676,10 @@ export default function QuizTemplateLibrary() {
         <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => handleCategoryFilter(null)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-              selectedCategory === null
+            className={`px-3 py-1.5 rounded-full text-sm font-medium ${selectedCategory === null
                 ? 'bg-accent text-primary'
                 : 'bg-gray-100 text-text hover:bg-gray-200'
-            }`}
+              }`}
           >
             All Categories
           </button>
@@ -688,11 +687,10 @@ export default function QuizTemplateLibrary() {
             <button
               key={category.id}
               onClick={() => handleCategoryFilter(category.id)}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
-                selectedCategory === category.id
+              className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${selectedCategory === category.id
                   ? 'bg-accent text-primary'
                   : 'bg-gray-100 text-text hover:bg-gray-200'
-              }`}
+                }`}
             >
               {React.cloneElement(category.icon, { className: 'h-4 w-4 mr-1.5' })}
               {category.name}
@@ -705,11 +703,10 @@ export default function QuizTemplateLibrary() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleSubcategoryFilter(null)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-                selectedSubcategory === null
+              className={`px-3 py-1.5 rounded-full text-sm font-medium ${selectedSubcategory === null
                   ? 'bg-accent text-primary'
                   : 'bg-gray-100 text-text hover:bg-gray-200'
-              }`}
+                }`}
             >
               All {categories.find(c => c.id === selectedCategory)?.name}
             </button>
@@ -719,11 +716,10 @@ export default function QuizTemplateLibrary() {
                 <button
                   key={subcategory.id}
                   onClick={() => handleSubcategoryFilter(subcategory.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-                    selectedSubcategory === subcategory.id
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium ${selectedSubcategory === subcategory.id
                       ? 'bg-accent text-primary'
                       : 'bg-gray-100 text-text hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   {subcategory.name}
                 </button>
@@ -737,11 +733,11 @@ export default function QuizTemplateLibrary() {
         {templatesByCategory.map(category => {
           // Skip categories with no templates after filtering
           if (category.templates.length === 0) return null;
-          
+
           return (
             <div key={category.id} className="bg-background rounded-lg shadow-md overflow-hidden">
               {/* Category Header */}
-              <div 
+              <div
                 className="flex items-center justify-between p-6 bg-gray-50 cursor-pointer"
                 onClick={() => toggleCategoryExpand(category.id)}
               >
@@ -768,8 +764,8 @@ export default function QuizTemplateLibrary() {
                     <div key={template.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                       {/* Template Preview Image */}
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
-                        <img 
-                          src={template.previewImage} 
+                        <img
+                          src={template.previewImage}
                           alt={template.title}
                           className="w-full h-full object-cover"
                         />
@@ -796,9 +792,9 @@ export default function QuizTemplateLibrary() {
                             {audienceLevels.find(a => a.id === template.audienceLevel)?.name}
                           </span>
                         </div>
-                        
+
                         <p className="text-sm text-gray-600 mb-4 line-clamp-2">{template.description}</p>
-                        
+
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center text-xs text-gray-500">
                             <Calendar className="h-3.5 w-3.5 mr-1" />
@@ -806,10 +802,10 @@ export default function QuizTemplateLibrary() {
                           </div>
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
-                              <svg 
-                                key={i} 
-                                className={`h-3.5 w-3.5 ${i < Math.floor(template.popularity) ? 'text-yellow-400' : 'text-gray-300'}`} 
-                                fill="currentColor" 
+                              <svg
+                                key={i}
+                                className={`h-3.5 w-3.5 ${i < Math.floor(template.popularity) ? 'text-yellow-400' : 'text-gray-300'}`}
+                                fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -817,7 +813,7 @@ export default function QuizTemplateLibrary() {
                             ))}
                           </div>
                         </div>
-                        
+
                         <div className="flex justify-between">
                           <button
                             onClick={() => toggleTemplateExpand(template.id)}
@@ -832,7 +828,7 @@ export default function QuizTemplateLibrary() {
                             Use Template
                           </button>
                         </div>
-                        
+
                         {/* Expanded Template Info */}
                         {expandedTemplate === template.id && (
                           <div className="mt-4 pt-4 border-t border-gray-200">
@@ -846,7 +842,7 @@ export default function QuizTemplateLibrary() {
                                 ))}
                               </div>
                             </div>
-                            
+
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-text mb-1">Scoring & Feedback</h4>
                               <div className="grid grid-cols-2 gap-2">
@@ -868,7 +864,7 @@ export default function QuizTemplateLibrary() {
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-text mb-1">Tags</h4>
                               <div className="flex flex-wrap gap-1">
@@ -879,7 +875,7 @@ export default function QuizTemplateLibrary() {
                                 ))}
                               </div>
                             </div>
-                            
+
                             <div className="flex flex-wrap gap-2 mt-4">
                               <button
                                 onClick={() => handlePreview(template.id)}
@@ -916,7 +912,7 @@ export default function QuizTemplateLibrary() {
             </div>
           );
         })}
-        
+
         {/* No results message */}
         {templatesByCategory.every(category => category.templates.length === 0) && (
           <div className="bg-background rounded-lg shadow-md p-12 text-center">
@@ -940,7 +936,7 @@ export default function QuizTemplateLibrary() {
           </div>
         )}
       </div>
-      
+
       {/* Create Custom Quiz CTA */}
       <div className="mt-12 bg-accent rounded-lg p-8 flex flex-col md:flex-row items-center justify-between">
         <div>

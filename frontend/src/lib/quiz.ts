@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
-import type { 
-  Quiz, 
-  QuizFilters, 
+import type {
+  Quiz,
+  QuizFilters,
   Question,
   Option,
   MatchingPair,
@@ -96,11 +96,16 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
           status: quiz.status || 'draft',
           is_published: quiz.is_published || false,
           created_by: quiz.created_by,
-          version: 1
+          version: 1,
+          quiz_score: quiz.quiz_score,
+          quiz_type: quiz.quiz_type,
+          quiz_question_type: quiz.quiz_question_type,
+          question_count: quiz.question_count,
+
         })
         .select()
         .single();
-        
+
       if (error) throw error;
       quizId = data.id;
     } else {
@@ -274,7 +279,7 @@ export async function generateQuizShare(
 export function shuffleQuestions(questions: Question[]): Question[] {
   // Create a copy of the questions array
   const shuffled = [...questions];
-  
+
   // Fisher-Yates shuffle algorithm
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -291,7 +296,7 @@ export function shuffleQuestions(questions: Question[]): Question[] {
 export function shuffleOptions(options: Option[]): Option[] {
   // Create a copy of the options array
   const shuffled = [...options];
-  
+
   // Fisher-Yates shuffle algorithm
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
