@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { PlusCircle, Edit, Trash2, Eye, AlertCircle, FileText, BarChart3, DollarSign, Loader } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
 import { showToast } from '../../lib/toast';
-import type { Quiz } from '../../types/quiz';
 import { useTheme } from '../../lib/theme';
+import { Quiz } from '@/types/quiz';
 
 export default function QuizList() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -30,17 +30,43 @@ export default function QuizList() {
         throw new Error('User not authenticated');
       }
 
-      const { data, error: fetchError } = await supabase
+      const response = await supabase
         .from('quizzes')
         .select('*')
         .eq('created_by', user.id)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
+      const fetchError = response.error;
+      const rawData = response.data;
+
       if (fetchError) {
         console.error('Error fetching quizzes:', fetchError);
         throw new Error('Failed to load quizzes. Please try again.');
       }
+
+      const data: Quiz[] = (rawData ?? []).map((quiz) => ({
+        id: quiz.id,
+        title: quiz.title,
+        description: quiz.description,
+        category: quiz.category,
+        time_limit: quiz.time_limit,
+        passing_score: quiz.passing_score,
+        approval_status: quiz.approval_status,
+        created_at: quiz.created_at,
+        updated_at: quiz.updated_at,
+        created_by: quiz.created_by,
+        is_published: quiz.is_published,
+        completion_count: quiz.completion_count,
+        average_score: quiz.average_score,
+        share_id: quiz.share_id,
+        requires_auth: quiz.requires_auth,
+        quiz_score: quiz.quiz_score,
+        quiz_type: quiz.quiz_type,
+        quiz_question_type: quiz.quiz_question_type,
+        question_count: quiz.question_count,
+      }) as Quiz);
+
 
       setQuizzes(data || []);
     } catch (error) {
@@ -185,7 +211,7 @@ export default function QuizList() {
                   </td>
 
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {new Date(quiz.created_at).toLocaleDateString()}
+                    {new Date(quiz.created_at!).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
                     <Link
@@ -217,7 +243,7 @@ export default function QuizList() {
                       <Edit className="w-5 h-5" />
                     </Link>
                     <button
-                      onClick={() => deleteQuiz(quiz.id)}
+                      onClick={() => deleteQuiz(quiz.id!)}
                       className="inline-flex items-center p-1 text-red-600 hover:text-red-900 transition-colors"
                       title="Delete GoForm"
                     >

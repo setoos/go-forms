@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import type { QuizAnalytics as Analytics } from '../../types/quiz';
+import type { QuizAnalytics as Analytics, QuizResponse } from '../../types/quiz';
 import QuizAnalyticsDashboard from './QuizAnalyticsDashboard';
 import { generatePDF } from '../../lib/pdf';
 import { showToast } from '../../lib/toast';
@@ -54,16 +54,18 @@ export default function QuizAnalytics() {
 
     try {
       if (format === 'pdf') {
-        const pdfData = {
+        const pdfData: QuizResponse = {
           id: id || '',
           name: 'Quiz Analytics Report',
           email: 'analytics@goforms.com',
           timestamp: new Date().toISOString(),
           score: analytics.averageScore,
-          answers: analytics.questionAnalytics.reduce((acc, q) => ({
-            ...acc,
-            [q.id]: Math.round(q.correctRate * 100)
-          }), {})
+          answers: analytics.questionAnalytics.map((q) => ({
+            value: Math.round(q.correctRate * 100),
+            impact_analysis: `Impact analysis for question ${q.id}`,
+          })),
+          quiz_id: id || '',
+          completion_time: new Date().toISOString(),
         };
         await generatePDF(pdfData);
       } else if (format === 'csv') {

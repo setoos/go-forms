@@ -35,7 +35,10 @@ import {
   getQuiz,
   getQuizTemplate,
 } from "../../lib/quiz";
-import type { Quiz, Question, Option } from "../../types/quiz";
+import type {
+  Quiz, Option, BaseQuestion, MultipleChoiceQuestion, Question,
+  TrueFalseQuestion,
+} from "../../types/quiz";
 import { QUIZ_CATEGORIES } from "../../types/quiz";
 import { quillFormats, quillModules } from "../../lib/quillConfig";
 import {
@@ -49,6 +52,9 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from 
 import { useTheme } from "../../lib/theme";
 import { usePrompt } from "../../lib/usePrompt";
 import { useUnsavedChangesWarning } from "../../lib/useUnsavedChangesWarning";
+
+
+
 
 // Question type options
 const questionTypes = [
@@ -90,7 +96,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   Other: <FileText className="h-5 w-5" />,
 };
 
-export default function QuizEditor({ initialQuiz, initialQuestions }) {
+export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQuiz: Quiz; initialQuestions: Question[] }) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -104,7 +110,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   const [copied, setCopied] = useState(false);
   const [expandedSettings, setExpandedSettings] = useState(false);
   const quillRefs = useRef<{ [key: string]: ReactQuill | null }>({});
-  const { points, setPoints, quizType, setQuizType, quizScore, setQuizScore, quizQuestionType, setQuizQuestionType, questionCount, setQuestionCount, } = useTheme();
+  const { points, setPoints, setQuizType, setQuizQuestionType } = useTheme();
 
   // Get template ID from URL query params
   const queryParams = new URLSearchParams(location.search);
@@ -152,7 +158,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   const [showModal, setShowModal] = useState(false);
   const [retryCallback, setRetryCallback] = useState<null | (() => void)>(null);
 
-  if (location.pathname.includes("new") || location.pathname.includes('?template') || !!id ) {
+  if (location.pathname.includes("new") || location.pathname.includes('?template') || !!id) {
     useUnsavedChangesWarning(isDirty);
 
     usePrompt(isDirty, (retry) => {
@@ -245,30 +251,55 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
   // Add a new question
   const handleAddQuestion = () => {
-
     setIsDirty(true);
-    const newQuestion: Question = {
+  
+    // Check for max question limit
+    if (
+      quiz.quiz_type === "configure" &&
+      questions.length === quiz.question_count
+    ) {
+      showToast("Your question limit exceeds!", "error");
+      return;
+    }
+  
+    const baseQuestion = {
       id: `temp-${Date.now()}`,
       quiz_id: quiz.id,
       text: "",
-      type: "multiple_choice",
       order: questions.length,
       points: points || 10,
-      cognitive_level: "understanding",
-      difficulty_level: "medium",
+      cognitive_level: "understanding" as const,
+      difficulty_level: "medium" as const,
       required: true,
       created_at: new Date().toISOString(),
-      options: [],
     };
-
-    if (quiz.quiz_type === 'configure' && questions.length === quiz.question_count) {
-      showToast("Your question limit exceeds!", 'error');
-      return;
+    
+  
+    let newQuestion: Question;
+  
+    switch (quiz.quiz_question_type) {
+      case "true_false":
+        newQuestion = {
+          ...baseQuestion,
+          type: "true_false",
+          answer_key: { correct_answer: true },
+          tf_feedback: {},
+        };
+        break;
+      case "multiple_choice":
+      default:
+        newQuestion = {
+          ...baseQuestion,
+          type: "multiple_choice",
+          options: [],
+        };
+        break;
     }
-
+  
     setQuestions([...questions, newQuestion]);
     setExpandedQuestion(questions.length);
   };
+  
 
   // Delete a question
   const handleDeleteQuestion = (index: number) => {
@@ -293,46 +324,69 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
   };
 
   // Duplicate a question
-  const handleDuplicateQuestion = (index: number) => {
-    const questionToDuplicate = questions[index];
-    const newQuestion: Question = {
+
+  const duplicateQuestion = (questionToDuplicate: Question, questions: Question[]): Question => {
+    const base: BaseQuestion = {
       ...questionToDuplicate,
       id: `temp-${Date.now()}`,
       text: `${questionToDuplicate.text} (Copy)`,
       order: questions.length,
-      options: questionToDuplicate.options
-        ? [
-          ...questionToDuplicate.options.map((o) => ({
+      created_at: new Date().toISOString(),
+    };
+
+    switch (questionToDuplicate.type) {
+      case 'multiple_choice':
+        return {
+          ...base,
+          type: 'multiple_choice',
+          options: questionToDuplicate.options.map((o) => ({
             ...o,
             id: `temp-${Date.now()}-${o.order}`,
           })),
-        ]
-        : [],
-      matching_pairs: questionToDuplicate.matching_pairs
-        ? [
-          ...questionToDuplicate.matching_pairs.map((p) => ({
+        };
+
+      case 'matching':
+        return {
+          ...base,
+          type: 'matching',
+          matching_pairs: questionToDuplicate.matching_pairs?.map((p) => ({
             ...p,
             id: `temp-${Date.now()}-${p.order}`,
-          })),
-        ]
-        : [],
-      ordering_items: questionToDuplicate.ordering_items
-        ? [
-          ...questionToDuplicate.ordering_items.map((i) => ({
+          })) || [],
+        };
+
+      case 'ordering':
+        return {
+          ...base,
+          type: 'ordering',
+          ordering_items: questionToDuplicate.ordering_items?.map((i) => ({
             ...i,
             id: `temp-${Date.now()}-${i.order}`,
-          })),
-        ]
-        : [],
-      essay_rubrics: questionToDuplicate.essay_rubrics
-        ? [
-          ...questionToDuplicate.essay_rubrics.map((r) => ({
+          })) || [],
+        };
+
+      case 'essay':
+        return {
+          ...base,
+          type: 'essay',
+          essay_rubrics: questionToDuplicate.essay_rubrics?.map((r) => ({
             ...r,
             id: `temp-${Date.now()}`,
-          })),
-        ]
-        : [],
-    };
+          })) || [],
+        };
+
+      default:
+        // For types like true_false, fill_blank, etc. that don't require deep cloning
+        return {
+          ...base,
+          type: questionToDuplicate.type,
+        } as Question;
+    }
+  };
+
+  const handleDuplicateQuestion = (index: number) => {
+    const questionToDuplicate = questions[index];
+    const newQuestion = duplicateQuestion(questionToDuplicate as Question, questions);
 
     setQuestions([...questions, newQuestion]);
     setExpandedQuestion(questions.length);
@@ -345,69 +399,89 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
     value: any
   ) => {
     const newQuestions = [...questions];
-    newQuestions[index] = {
+    const updatedQuestion = {
       ...newQuestions[index],
       [field]: value,
     };
 
-    // If changing question type, reset options
     if (field === "type") {
-      newQuestions[index].options = [];
-      newQuestions[index].matching_pairs = [];
-      newQuestions[index].ordering_items = [];
-      newQuestions[index].essay_rubrics = [];
-      newQuestions[index].answer_key = null;
+      const resetFields: Partial<Question> = {
+        options: [],
+        matching_pairs: [],
+        ordering_items: [],
+        essay_rubrics: [],
+        answer_key: null,
+      };
+
+      Object.assign(updatedQuestion, resetFields);
     }
 
+    newQuestions[index] = updatedQuestion as Question;
     setQuestions(newQuestions);
   };
 
   // Add an option to a question
   const handleAddOption = (questionIndex: number) => {
     const newQuestions = [...questions];
-    const options = newQuestions[questionIndex].options || [];
+    const question = newQuestions[questionIndex];
 
-    const newOption: Option = {
-      id: `temp-${Date.now()}-${options.length}`,
-      question_id: newQuestions[questionIndex].id,
-      text: "",
-      score: 0,
-      feedback: "",
-      order: options.length,
-      is_correct: false
-    };
+    if ('options' in question) {
+      const options = question.options || [];
 
-    newQuestions[questionIndex].options = [...options, newOption];
-    setQuestions(newQuestions);
+      const newOption: Option = {
+        id: `temp-${Date.now()}-${options.length}`,
+        question_id: question.id,
+        text: "",
+        score: 0,
+        feedback: "",
+        order: options.length,
+        is_correct: false,
+      };
 
-    // Set this option's editor as active
-    setActiveOptionEditors((prev) => ({
-      ...prev,
-      [`${questionIndex}-${options.length}`]: true,
-    }));
+      question.options = [...options, newOption];
+      newQuestions[questionIndex] = question;
+      setQuestions(newQuestions);
+
+      // Set this option's editor as active
+      setActiveOptionEditors((prev) => ({
+        ...prev,
+        [`${questionIndex}-${options.length}`]: true,
+      }));
+    } else {
+      console.warn("This question type does not support options.");
+    }
   };
+
 
   // Delete an option
   const handleDeleteOption = (questionIndex: number, optionIndex: number) => {
     const newQuestions = [...questions];
-    const options = [...(newQuestions[questionIndex].options || [])];
-    options.splice(optionIndex, 1);
+    const question = newQuestions[questionIndex];
 
-    // Update order for remaining options
-    const updatedOptions = options.map((o, i) => ({
-      ...o,
-      order: i,
-    }));
+    if ('options' in question) {
+      const options = [...(question.options || [])];
+      options.splice(optionIndex, 1);
 
-    newQuestions[questionIndex].options = updatedOptions;
-    setQuestions(newQuestions);
+      // Update order for remaining options
+      const updatedOptions = options.map((o, i) => ({
+        ...o,
+        order: i,
+      }));
 
-    // Remove this option's editor from active editors
-    const editorKey = `${questionIndex}-${optionIndex}`;
-    const newActiveEditors = { ...activeOptionEditors };
-    delete newActiveEditors[editorKey];
-    setActiveOptionEditors(newActiveEditors);
+      question.options = updatedOptions;
+      newQuestions[questionIndex] = question;
+      setQuestions(newQuestions);
+
+      // Remove this option's editor from active editors
+      const editorKey = `${questionIndex}-${optionIndex}`;
+      const newActiveEditors = { ...activeOptionEditors };
+      delete newActiveEditors[editorKey];
+      setActiveOptionEditors(newActiveEditors);
+    } else {
+      console.warn("This question type does not support options.");
+    }
   };
+
 
   // Update an option
   const handleOptionChange = (
@@ -417,25 +491,21 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
     value: any
   ) => {
     const newQuestions = [...questions];
-    const options = [...(newQuestions[questionIndex].options || [])];
+    const question = newQuestions[questionIndex];
 
-    options[optionIndex] = {
-      ...options[optionIndex],
-      [field]: value,
-    };
+    if ('options' in question) {
+      const options = [...(question.options || [])];
+      options[optionIndex] = {
+        ...options[optionIndex],
+        [field]: value,
+      };
 
-    // If changing score, update is_correct
-    // if (field === 'score') {
-    //   options[optionIndex].is_correct = value > 0;
-    // }
-
-    // If changing is_correct, update score
-    // if (field === 'is_correct') {
-    //   options[optionIndex].score = value ? 10 : 0;
-    // }
-
-    newQuestions[questionIndex].options = options;
-    setQuestions(newQuestions);
+      question.options = options;
+      newQuestions[questionIndex] = question;
+      setQuestions(newQuestions);
+    } else {
+      console.warn("This question type does not support options.");
+    }
   };
 
   // Toggle question expansion
@@ -701,87 +771,134 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
   function addMatchingPair(questionIndex: number) {
     const newQuestions = [...questions];
-    const currentPairs = newQuestions[questionIndex].matching_pairs || [];
+    const question = newQuestions[questionIndex];
 
-    newQuestions[questionIndex].matching_pairs = [
-      ...currentPairs,
-      {
-        id: crypto.randomUUID(), // ensure a unique ID for local updates
-        question_id: newQuestions[questionIndex].id || "",
+    if ('matching_pairs' in question) {
+      const currentPairs = question.matching_pairs || [];
+
+      const newPair = {
+        id: crypto.randomUUID(),
+        question_id: question.id || "",
         left_item: "",
         right_item: "",
         order: currentPairs.length,
         created_at: new Date().toISOString(),
         feedback: "",
-      },
-    ];
+      };
 
-    setQuestions(newQuestions);
+      question.matching_pairs = [...currentPairs, newPair];
+      newQuestions[questionIndex] = question;
+      setQuestions(newQuestions);
+    } else {
+      console.warn("This question type does not support matching pairs.");
+    }
   }
+
 
   function updateMatchingPairs(questionIndex: number, updatedPairs: any[]) {
     const newQuestions = [...questions];
-    newQuestions[questionIndex] = {
-      ...newQuestions[questionIndex],
-      matching_pairs: updatedPairs,
-    };
-    setQuestions(newQuestions);
+    const question = newQuestions[questionIndex];
+
+    if ('matching_pairs' in question) {
+      newQuestions[questionIndex] = {
+        ...question,
+        matching_pairs: updatedPairs,
+      };
+      setQuestions(newQuestions);
+    } else {
+      console.warn("This question type does not support matching pairs.");
+    }
   }
-
-
 
 
   function addOrderingItem(questionIndex: number) {
     const newQuestions = [...questions];
-    newQuestions[questionIndex].ordering_items = [
-      ...(newQuestions[questionIndex].ordering_items || []),
-      {
-        id: "",
-        question_id: "",
+    const question = newQuestions[questionIndex];
+
+    if ('ordering_items' in question) {
+      const items = question.ordering_items || [];
+      const newItem = {
+        id: crypto.randomUUID(),
+        question_id: question.id || "",
         item: "",
-        correct_position:
-          (newQuestions[questionIndex].ordering_items?.length || 0) + 1,
-        order: newQuestions[questionIndex].ordering_items?.length || 0,
+        correct_position: items.length + 1,
+        order: items.length,
         created_at: new Date().toISOString(),
         feedback: "",
-      },
-    ];
-    setQuestions(newQuestions);
+      };
+
+      question.ordering_items = [...items, newItem];
+      newQuestions[questionIndex] = question;
+      setQuestions(newQuestions);
+    } else {
+      console.warn("This question type does not support ordering items.");
+    }
   }
+
 
   function addEssayRubric(questionIndex: number) {
     const newQuestions = [...questions];
-    newQuestions[questionIndex].essay_rubrics = [
-      ...(newQuestions[questionIndex].essay_rubrics || []),
-      {
-        id: "",
-        question_id: "",
+    const question = newQuestions[questionIndex];
+
+    if ('essay_rubrics' in question) {
+      const rubrics = question.essay_rubrics || [];
+      const newRubric = {
+        id: crypto.randomUUID(),
+        question_id: question.id || "",
         criteria: "",
         description: "",
         max_points: 5,
         created_at: new Date().toISOString(),
         feedback: "",
-      },
-    ];
-    setQuestions(newQuestions);
+      };
+
+      question.essay_rubrics = [...rubrics, newRubric];
+      newQuestions[questionIndex] = question;
+      setQuestions(newQuestions);
+    } else {
+      console.warn("This question type does not support essay rubrics.");
+    }
   }
+
 
   function updateQuestion(index: number, updates: Partial<Question>) {
-    const newQuestions = [...questions];
-    newQuestions[index] = { ...newQuestions[index], ...updates };
+    const currentQuestion = questions[index];
+    const updatedQuestion = { ...currentQuestion, ...updates };
 
-    // Reset question-specific data when type changes
+    // Reset fields based on the new type
     if (updates.type) {
-      newQuestions[index].options = [];
-      newQuestions[index].matching_pairs = [];
-      newQuestions[index].ordering_items = [];
-      newQuestions[index].essay_rubrics = [];
-      newQuestions[index].answer_key = null;
-      newQuestions[index].rubric = null;
+      switch (updates.type) {
+        case "multiple_choice":
+          if ('options' in updatedQuestion) updatedQuestion.options = [];
+          break;
+
+        case "true_false":
+          if ('tf_feedback' in updatedQuestion) updatedQuestion.tf_feedback = {};
+          break;
+
+        case "matching":
+          if ('matching_pairs' in updatedQuestion) updatedQuestion.matching_pairs = [];
+          break;
+
+        case "ordering":
+          if ('ordering_items' in updatedQuestion) updatedQuestion.ordering_items = [];
+          break;
+
+        case "essay":
+          if ('essay_rubrics' in updatedQuestion) updatedQuestion.essay_rubrics = [];
+          break;
+
+        // Add more cases for other types if needed
+      }
+
+      updatedQuestion.answer_key = null;
     }
 
+    const newQuestions = [...questions];
+    newQuestions[index] = updatedQuestion as Question;
     setQuestions(newQuestions);
   }
+
 
   const toggleQuestionVisibility = async (index: number) => {
     const questionToToggle = questions[index];
@@ -1277,7 +1394,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
 
                                   <div className="space-y-4">
-                                    {question.options?.map((option, optionIndex) => {
+                                    {question.type === "multiple_choice" && question.options?.map((option, optionIndex) => {
                                       const editorKey = `${index}-${optionIndex}`;
                                       const isExpanded = activeOptionEditors[editorKey];
 
@@ -1390,8 +1507,8 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                         </div>
                                       );
                                     })}
-                                    {(!question.options ||
-                                      question.options.length === 0) ? (
+                                    {(question.type === "multiple_choice" && (!question.options ||
+                                      question.options.length === 0)) ? (
                                       <button
                                         onClick={() => handleAddOption(index)}
                                         className="w-full py-2 border-2 border-dashed border-secondary rounded-lg text-gray-500 hover:text-text"
@@ -1413,7 +1530,6 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
 
                               {(quiz.quiz_question_type || question.type) === "true_false" && (
                                 <div className="mb-4">
-                                  {/* Correct Answer Selector */}
                                   <div className="mb-6">
                                     <label className="block text-sm font-medium text-text mb-2">
                                       Correct Answer
@@ -1429,6 +1545,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                             onChange={() =>
                                               updateQuestion(index, {
                                                 answer_key: {
+                                                  ...question.answer_key,
                                                   correct_answer: val === "true",
                                                 },
                                               })
@@ -1441,7 +1558,6 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     </div>
                                   </div>
 
-                                  {/* Feedback Editors */}
                                   <div className="grid grid-cols-1 gap-6">
                                     <div>
                                       <label className="block text-sm font-medium text-text mb-1">
@@ -1509,7 +1625,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     </button>
                                   </div>
 
-                                  {question.matching_pairs?.map((pair, pairIndex) => (
+                                  {question.type === "matching" && question.matching_pairs?.map((pair, pairIndex) => (
                                     <div
                                       key={`matching-${index}-${pairIndex}`}
                                       className="space-y-3 border p-4 rounded-md"
@@ -1582,7 +1698,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                       </div>
                                     </div>
                                   ))}
-                                  {question.matching_pairs?.length !== 0 && (
+                                  {question.type === "matching" && question.matching_pairs?.length !== 0 && (
                                     // <div className="flex items-center ">
                                     <button
                                       onClick={() => addMatchingPair(index)}
@@ -1611,7 +1727,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     </button>
                                   </div>
 
-                                  {question.ordering_items?.map((item, itemIndex) => (
+                                  {question.type === "ordering" && question.ordering_items?.map((item, itemIndex) => (
                                     <div
                                       key={itemIndex}
                                       className="space-y-3 border p-4 rounded-md"
@@ -1619,28 +1735,47 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                       <div className="flex gap-4">
                                         <input
                                           type="text"
-                                          value={item.item}
+                                          value={
+                                            question.type === "ordering"
+                                              ? question.ordering_items?.[itemIndex]?.item || ""
+                                              : ""
+                                          }
                                           onChange={(e) => {
+                                            if (question.type !== "ordering") return;
+
                                             const newQuestions = [...questions];
-                                            newQuestions[index].ordering_items![
-                                              itemIndex
-                                            ].item = e.target.value;
-                                            setQuestions(newQuestions);
+                                            const currentQuestion = newQuestions[index];
+
+                                            if ("ordering_items" in currentQuestion && currentQuestion.ordering_items) {
+                                              currentQuestion.ordering_items[itemIndex].item = e.target.value;
+                                              setQuestions(newQuestions);
+                                            }
                                           }}
                                           className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                           placeholder="Item text"
                                         />
+
                                         <input
                                           type="number"
-                                          value={item.correct_position}
+                                          value={
+                                            question.type === "ordering"
+                                              ? question.ordering_items?.[itemIndex]?.correct_position || 0
+                                              : 0
+                                          }
                                           onChange={(e) => {
+                                            if (question.type !== "ordering") return;
+
                                             const newQuestions = [...questions];
-                                            newQuestions[index].ordering_items![
-                                              itemIndex
-                                            ].correct_position = parseInt(
-                                              e.target.value
-                                            );
-                                            setQuestions(newQuestions);
+                                            const currentQuestion = newQuestions[index];
+
+                                            if (
+                                              "ordering_items" in currentQuestion &&
+                                              Array.isArray(currentQuestion.ordering_items)
+                                            ) {
+                                              const updatedPosition = parseInt(e.target.value);
+                                              currentQuestion.ordering_items[itemIndex].correct_position = updatedPosition;
+                                              setQuestions(newQuestions);
+                                            }
                                           }}
                                           className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                           placeholder="Position"
@@ -1648,11 +1783,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                         <button
                                           onClick={() => {
                                             const newQuestions = [...questions];
-                                            newQuestions[index].ordering_items!.splice(
-                                              itemIndex,
-                                              1
-                                            );
-                                            setQuestions(newQuestions);
+                                            const currentQuestion = newQuestions[index];
+
+                                            if (
+                                              currentQuestion.type === "ordering" &&
+                                              Array.isArray(currentQuestion.ordering_items)
+                                            ) {
+                                              currentQuestion.ordering_items.splice(itemIndex, 1);
+                                              setQuestions(newQuestions);
+                                            }
                                           }}
                                           className="text-red-600 hover:text-red-800"
                                         >
@@ -1673,11 +1812,17 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                           value={item.feedback || ""}
                                           onChange={(content) => {
                                             const newQuestions = [...questions];
-                                            newQuestions[index].ordering_items![
-                                              itemIndex
-                                            ].feedback = content;
-                                            setQuestions(newQuestions);
+                                            const currentQuestion = newQuestions[index];
+
+                                            if (
+                                              currentQuestion.type === "ordering" &&
+                                              Array.isArray(currentQuestion.ordering_items)
+                                            ) {
+                                              currentQuestion.ordering_items[itemIndex].feedback = content;
+                                              setQuestions(newQuestions);
+                                            }
                                           }}
+
                                           placeholder="Enter feedback content for this item..."
                                           theme="snow"
                                           className="mb-2"
@@ -1691,7 +1836,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                       </div>
                                     </div>
                                   ))}
-                                  {question.ordering_items?.length !== 0 && (
+                                  {question.type === "ordering" && question.ordering_items?.length !== 0 && (
                                     <button
                                       onClick={() => addOrderingItem(index)}
                                       className="text-secondary hover:text-primary flex items-center gap-2 mx-auto border border-secondary rounded-md px-4 py-2"
@@ -1716,7 +1861,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                     </button>
                                   </div>
 
-                                  {question.essay_rubrics?.map(
+                                  {question.type === "essay" && question.essay_rubrics?.map(
                                     (rubric, rubricIndex) => (
                                       <div
                                         key={rubricIndex}
@@ -1728,11 +1873,17 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                             value={rubric.criteria}
                                             onChange={(e) => {
                                               const newQuestions = [...questions];
-                                              newQuestions[index].essay_rubrics![
-                                                rubricIndex
-                                              ].criteria = e.target.value;
-                                              setQuestions(newQuestions);
+                                              const currentQuestion = newQuestions[index];
+
+                                              if (
+                                                currentQuestion.type === "essay" &&
+                                                Array.isArray(currentQuestion.essay_rubrics)
+                                              ) {
+                                                currentQuestion.essay_rubrics[rubricIndex].criteria = e.target.value;
+                                                setQuestions(newQuestions);
+                                              }
                                             }}
+
                                             className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                             placeholder="Criteria"
                                           />
@@ -1741,23 +1892,33 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                             value={rubric.description || ""}
                                             onChange={(e) => {
                                               const newQuestions = [...questions];
-                                              newQuestions[index].essay_rubrics![
-                                                rubricIndex
-                                              ].description = e.target.value;
-                                              setQuestions(newQuestions);
+                                              const currentQuestion = newQuestions[index];
+
+                                              if (
+                                                currentQuestion.type === "essay" &&
+                                                Array.isArray(currentQuestion.essay_rubrics)
+                                              ) {
+                                                currentQuestion.essay_rubrics[rubricIndex].description = e.target.value;
+                                                setQuestions(newQuestions);
+                                              }
                                             }}
                                             className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                             placeholder="Description"
                                           />
                                           <input
                                             type="number"
-                                            value={rubric.max_points}
+                                            value={rubric.max_points || ""}
                                             onChange={(e) => {
                                               const newQuestions = [...questions];
-                                              newQuestions[index].essay_rubrics![
-                                                rubricIndex
-                                              ].max_points = parseInt(e.target.value);
-                                              setQuestions(newQuestions);
+                                              const currentQuestion = newQuestions[index];
+
+                                              if (
+                                                currentQuestion.type === "essay" &&
+                                                Array.isArray(currentQuestion.essay_rubrics)
+                                              ) {
+                                                currentQuestion.essay_rubrics[rubricIndex].max_points = parseInt(e.target.value, 10);
+                                                setQuestions(newQuestions);
+                                              }
                                             }}
                                             className="w-20 px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary"
                                             placeholder="Points"
@@ -1765,16 +1926,21 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                           <button
                                             onClick={() => {
                                               const newQuestions = [...questions];
-                                              newQuestions[index].essay_rubrics!.splice(
-                                                rubricIndex,
-                                                1
-                                              );
-                                              setQuestions(newQuestions);
+                                              const currentQuestion = newQuestions[index];
+
+                                              if (
+                                                currentQuestion.type === "essay" &&
+                                                Array.isArray(currentQuestion.essay_rubrics)
+                                              ) {
+                                                currentQuestion.essay_rubrics.splice(rubricIndex, 1);
+                                                setQuestions(newQuestions);
+                                              }
                                             }}
                                             className="text-red-600 hover:text-red-800"
                                           >
                                             <Trash2 className="w-5 h-5" />
                                           </button>
+
                                         </div>
 
                                         <div>
@@ -1790,10 +1956,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }) {
                                             value={rubric.feedback || ""}
                                             onChange={(content) => {
                                               const newQuestions = [...questions];
-                                              newQuestions[index].essay_rubrics![
-                                                rubricIndex
-                                              ].feedback = content;
-                                              setQuestions(newQuestions);
+                                              const currentQuestion = newQuestions[index];
+
+                                              if (
+                                                currentQuestion.type === "essay" &&
+                                                Array.isArray(currentQuestion.essay_rubrics)
+                                              ) {
+                                                currentQuestion.essay_rubrics[rubricIndex].feedback = content;
+                                                setQuestions(newQuestions);
+                                              }
                                             }}
                                             placeholder="Enter feedback for this rubric criterion..."
                                             theme="snow"

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Question, Option } from "../../types/quiz";
+import { Question, Option, TrueFalseQuestion, MatchingQuestion, OrderingQuestion, MultipleChoiceQuestion } from "../../types/quiz";
 import { processTemplateVariables } from "../../lib/htmlSanitizer";
 
 // Base props for all question types
@@ -10,7 +10,7 @@ interface BaseQuestionProps {
 }
 
 // Multiple Choice Question
-export function MultipleChoiceQuestion({
+export function MultipleChoiceQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -28,7 +28,7 @@ export function MultipleChoiceQuestion({
     <div className="space-y-4">
       <p className="text-sm text-gray-600 mb-4">{question.instructions}</p>
       <div className="space-y-3">
-        {question.options?.map((option: Option, index) => (
+        {(question as MultipleChoiceQuestion).options?.map((option: Option, index) => (
           <div key={option.id}>
             <button
               onClick={() => handleOptionSelect(option)}
@@ -76,7 +76,7 @@ export function MultipleChoiceQuestion({
 }
 
 // True/False Question
-export function TrueFalseQuestion({
+export function TrueFalseQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -95,7 +95,7 @@ export function TrueFalseQuestion({
       answer: value.toLowerCase(),
       correct: isCorrect,
       question_id: question.id,
-      feedback: question.tf_feedback?.[value.toLowerCase() as "true" | "false"] || "",
+      feedback: (question as TrueFalseQuestion).tf_feedback?.[value.toLowerCase() as "true" | "false"] || "",
     });
   };
 
@@ -110,7 +110,6 @@ export function TrueFalseQuestion({
           const isTrue = value.toLowerCase() === "true";
           const isCorrect =
             isTrue === (question.answer_key?.correct_answer === true);
-
           return (
             <button
               key={value}
@@ -135,7 +134,7 @@ export function TrueFalseQuestion({
             className="prose max-w-none"
             dangerouslySetInnerHTML={{
               __html: processTemplateVariables(
-                question.tf_feedback?.[selectedKey] || "",
+                (question as TrueFalseQuestion).tf_feedback?.[selectedKey] || "",
                 {
                   name: "User",
                   email: "user@example.com",
@@ -156,7 +155,7 @@ export function TrueFalseQuestion({
 
 
 // Fill in the Blank Question
-export function FillBlankQuestion({
+export function FillBlankQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -179,7 +178,7 @@ export function FillBlankQuestion({
         (alt) => alt.trim().toLowerCase() === normalizedAnswer
       );
 
-    setIsCorrect(correct);
+    setIsCorrect(correct ? true : false);
     setSubmitted(true);
     onAnswer(correct ? question.points : 0, {
       answer,
@@ -234,7 +233,7 @@ export function FillBlankQuestion({
 }
 
 // Short Answer Question
-export function ShortAnswerQuestion({
+export function ShortAnswerQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -300,7 +299,7 @@ export function ShortAnswerQuestion({
 }
 
 // Matching Question
-export function MatchingQuestion({
+export function MatchingQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -318,10 +317,10 @@ export function MatchingQuestion({
 
   const handleSubmit = () => {
     let totalScore = 0;
-    const totalPairs = question.matching_pairs?.length || 1;
+    const totalPairs = (question as MatchingQuestion).matching_pairs?.length || 1;
 
     const matchResults =
-      question.matching_pairs?.map((pair) => {
+      (question as MatchingQuestion).matching_pairs?.map((pair) => {
         const userMatch = matches[pair.left_item];
         const isCorrect = userMatch === pair.right_item;
 
@@ -350,7 +349,7 @@ export function MatchingQuestion({
       <div className="grid grid-cols-2 gap-8">
         {/* Left Side */}
         <div className="space-y-3">
-          {question.matching_pairs?.map((pair) => {
+          {(question as MatchingQuestion).matching_pairs?.map((pair) => {
             const isSelected = selectedLeft === pair.left_item;
             return (
               <button
@@ -370,7 +369,7 @@ export function MatchingQuestion({
 
         {/* Right Side */}
         <div className="space-y-3">
-          {question.matching_pairs?.map((pair) => (
+          {(question as MatchingQuestion).matching_pairs?.map((pair) => (
             <button
               key={`right-${pair.right_item}`}
               onClick={() => handleMatch(pair.right_item)}
@@ -395,7 +394,7 @@ export function MatchingQuestion({
       {/* Feedback */}
       {submitted && showFeedback && (
         <div className="mt-6 space-y-4">
-          {question.matching_pairs?.map((pair) => {
+          {(question as MatchingQuestion).matching_pairs?.map((pair) => {
             const userMatch = matches[pair.left_item] || "No match";
             const isCorrect = userMatch === pair.right_item;
 
@@ -421,7 +420,7 @@ export function MatchingQuestion({
                         email: "user@example.com",
                         score: isCorrect
                           ? `${question.points /
-                          (question.matching_pairs?.length || 1)
+                          ((question as MatchingQuestion).matching_pairs?.length || 1)
                           }`
                           : "0",
                         date: new Date().toLocaleDateString(),
@@ -444,13 +443,13 @@ export function MatchingQuestion({
 }
 
 // Ordering Question
-export function OrderingQuestion({
+export function OrderingQuestions({
   question,
   onAnswer,
   showFeedback,
 }: BaseQuestionProps) {
   const [items, setItems] = useState(
-    question.ordering_items?.sort(() => Math.random() - 0.5) || []
+    (question as OrderingQuestion).ordering_items?.sort(() => Math.random() - 0.5) || []
   );
   const [submitted, setSubmitted] = useState(false);
 
@@ -555,7 +554,7 @@ export function OrderingQuestion({
   );
 }
 // Essay Question
-export function EssayQuestion({
+export function EssayQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -629,7 +628,7 @@ export function EssayQuestion({
   );
 }
 // Picture Based Question
-export function PictureBasedQuestion({
+export function PictureBasedQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -701,7 +700,7 @@ export function PictureBasedQuestion({
 
 // Complete Statement Question
 
-export function CompleteStatementQuestion({
+export function CompleteStatementQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -788,7 +787,7 @@ export function CompleteStatementQuestion({
 
 // Definition Question
 
-export function DefinitionQuestion({
+export function DefinitionQuestions({
   question,
   onAnswer,
   showFeedback,
@@ -860,32 +859,32 @@ export function QuestionComponent({
   switch (question.type) {
     case "multiple_choice":
       return (
-        <MultipleChoiceQuestion
+        <MultipleChoiceQuestions
           question={question}
           onAnswer={onAnswer}
           showFeedback={showFeedback}
         />
       );
     case "true_false":
-      return <TrueFalseQuestion question={question} onAnswer={onAnswer} />;
+      return <TrueFalseQuestions question={question} onAnswer={onAnswer} />;
     case "fill_blank":
-      return <FillBlankQuestion question={question} onAnswer={onAnswer} />;
+      return <FillBlankQuestions question={question} onAnswer={onAnswer} />;
     case "short_answer":
-      return <ShortAnswerQuestion question={question} onAnswer={onAnswer} />;
+      return <ShortAnswerQuestions question={question} onAnswer={onAnswer} />;
     case "matching":
-      return <MatchingQuestion question={question} onAnswer={onAnswer} />;
+      return <MatchingQuestions question={question} onAnswer={onAnswer} />;
     case "ordering":
-      return <OrderingQuestion question={question} onAnswer={onAnswer} />;
+      return <OrderingQuestions question={question} onAnswer={onAnswer} />;
     case "essay":
-      return <EssayQuestion question={question} onAnswer={onAnswer} />;
+      return <EssayQuestions question={question} onAnswer={onAnswer} />;
     case "picture_based":
-      return <PictureBasedQuestion question={question} onAnswer={onAnswer} />;
+      return <PictureBasedQuestions question={question} onAnswer={onAnswer} />;
     case "complete_statement":
       return (
-        <CompleteStatementQuestion question={question} onAnswer={onAnswer} />
+        <CompleteStatementQuestions question={question} onAnswer={onAnswer} />
       );
     case "definition":
-      return <DefinitionQuestion question={question} onAnswer={onAnswer} />;
+      return <DefinitionQuestions question={question} onAnswer={onAnswer} />;
     default:
       return <div>Unsupported question type</div>;
   }

@@ -599,6 +599,8 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
           : 0;
 
         const impactAnalysis = answerData?.impact_analysis || '';
+        const fallbackText = 'No Impact Analysis Available';
+        const impactText = impactAnalysis ? impactAnalysis : `<p>${fallbackText}</p>`;
 
         function estimateHtmlHeight(html: string, doc: jsPDF, maxWidth = 80): number {
           let height = 0;
@@ -623,14 +625,9 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
           return height;
         }
 
-
-        const questionHeight = doc.splitTextToSize(questionText, 170).length * 5; // Height of question text
-        const answerHeight = doc.splitTextToSize(optionText, 160).length * 5; // Height of answer text
-        const impactHeight = estimateHtmlHeight(impactAnalysis, doc, 80);
-
-
+        const impactAnalysisHeight = estimateHtmlHeight(impactAnalysis, doc, 80);
         // Sum of all heights for the section
-        const sectionHeight = 2 + questionHeight + answerHeight + impactHeight + 1; // Add padding and spacing
+        const sectionHeight = impactAnalysisHeight > 80 ? impactAnalysisHeight : 80;
 
         if (yPos + sectionHeight > 280) {
           doc.addPage();
@@ -668,10 +665,9 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         yPos += 10 + answerLines.length * 5;
 
         // Draw vertical line to split left (Impact) and right (Score)
-        const estimatedImpactHeight = estimateHtmlHeight(impactAnalysis, doc, 80);
-        const splitY = yPos;
+        const splitY = yPos + 5;
         const colTop = splitY;
-        const colHeight = Math.max(estimatedImpactHeight - 15, 30);
+        const colHeight = 30;
         const colMid = 105;
 
         doc.setDrawColor(160, 120, 40);
@@ -688,8 +684,8 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
-        const newY = renderHtmlToPDF(impactAnalysis, doc, 20, splitY + 7, 80);
-        yPos = newY;
+        const newY = renderHtmlToPDF(impactText, doc, 20, splitY + 7, 80);
+        yPos = newY + 10;
 
         // Score & Performance (right side)
         doc.setFont('helvetica', 'bold');
@@ -706,8 +702,8 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         // Horizontal line divider after each question
         doc.setDrawColor(160, 120, 40); // optional: match with theme
         doc.setLineWidth(0.5);
-        doc.line(20, yPos, 190, yPos);
-        yPos += 10; // spacing before next question
+        doc.line(20, yPos + 5, 190, yPos + 5);
+        yPos += 20; // spacing before next question
 
       });
 
