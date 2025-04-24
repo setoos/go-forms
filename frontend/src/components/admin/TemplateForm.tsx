@@ -1,7 +1,7 @@
 import { BookOpen, Briefcase, Shield, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import React, { useState } from 'react';
-import { showToast } from '@/lib/toast';
+import { showToast } from '../../lib/toast';
 
 const categories = [
     {
