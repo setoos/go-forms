@@ -94,6 +94,7 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
           time_limit: quiz.time_limit,
           passing_score: quiz.passing_score,
           status: quiz.status || 'draft',
+          approval_status: quiz.approval_status || 'pending',
           is_published: quiz.is_published || false,
           created_by: quiz.created_by,
           version: 1,
@@ -101,7 +102,6 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
           quiz_type: quiz.quiz_type,
           quiz_question_type: quiz.quiz_question_type,
           question_count: quiz.question_count,
-
         })
         .select()
         .single();
@@ -120,9 +120,9 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
           status: quiz.status,
           is_published: quiz.is_published,
           updated_at: new Date().toISOString(),
-          version: quiz.version + 1,
+          version: quiz?.version + 1,
           last_published_at: quiz.is_published ? new Date().toISOString() : quiz.last_published_at,
-          published_version: quiz.is_published ? quiz.version + 1 : quiz.published_version
+          published_version: quiz.is_published ? quiz?.version + 1 : quiz.published_version
         })
         .eq('id', quizId);
 
@@ -141,7 +141,10 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
 
     // Save questions and related data
     for (const question of questions) {
-      const { data: newQuestion, error: questionError } = await supabase
+      const {
+        data: newQuestion,
+        error: questionError,
+      } = await supabase
         .from('questions')
         .insert({
           quiz_id: quizId,
@@ -156,81 +159,70 @@ export async function saveQuiz(quiz: Quiz, questions: Question[]) {
           required: question.required,
           media_url: question.media_url,
           answer_key: question.answer_key,
-          rubric: question.rubric,
-          tf_feedback: question.tf_feedback || {},
-          is_hide: question.is_hide
+          rubric: 'rubric' in question ? question.rubric : undefined,
+          tf_feedback: 'tf_feedback' in question ? question.tf_feedback || {} : undefined,
+          is_hide: question.is_hide,
         })
         .select()
         .single();
 
       if (questionError) throw questionError;
 
-      // Save options if they exist
-      if (question.options?.length) {
-        const optionsToCreate = question.options.map((option: Option) => ({
+      // Multiple Choice Options
+      if (question.type === 'multiple_choice' && question.options?.length) {
+        const optionsToCreate = question.options.map((option) => ({
           question_id: newQuestion.id,
           text: option.text,
           score: option.score,
           feedback: option.feedback || '',
           order: option.order,
-          is_correct: option.score > 0
+          is_correct: option.score > 0,
         }));
 
-        const { error: optionsError } = await supabase
-          .from('options')
-          .insert(optionsToCreate);
-
+        const { error: optionsError } = await supabase.from('options').insert(optionsToCreate);
         if (optionsError) throw optionsError;
       }
 
-      // Save matching pairs if they exist
-      if (question.matching_pairs?.length) {
-        const pairsToCreate = question.matching_pairs.map((pair: MatchingPair) => ({
+      // Matching Pairs
+      if (question.type === 'matching' && question.matching_pairs?.length) {
+        const pairsToCreate = question.matching_pairs.map((pair) => ({
           question_id: newQuestion.id,
           left_item: pair.left_item,
           right_item: pair.right_item,
-          order: pair.order
+          order: pair.order,
         }));
 
-        const { error: pairsError } = await supabase
-          .from('matching_pairs')
-          .insert(pairsToCreate);
-
+        const { error: pairsError } = await supabase.from('matching_pairs').insert(pairsToCreate);
         if (pairsError) throw pairsError;
       }
 
-      // Save ordering items if they exist
-      if (question.ordering_items?.length) {
-        const itemsToCreate = question.ordering_items.map((item: OrderingItem) => ({
+      // Ordering Items
+      if (question.type === 'ordering' && question.ordering_items?.length) {
+        const itemsToCreate = question.ordering_items.map((item) => ({
           question_id: newQuestion.id,
           item: item.item,
           correct_position: item.correct_position,
-          order: item.order
+          order: item.order,
         }));
 
-        const { error: itemsError } = await supabase
-          .from('ordering_items')
-          .insert(itemsToCreate);
-
+        const { error: itemsError } = await supabase.from('ordering_items').insert(itemsToCreate);
         if (itemsError) throw itemsError;
       }
 
-      // Save essay rubrics if they exist
-      if (question.essay_rubrics?.length) {
-        const rubricsToCreate = question.essay_rubrics.map((rubric: EssayRubric) => ({
+      // Essay Rubrics
+      if (question.type === 'essay' && question.essay_rubrics?.length) {
+        const rubricsToCreate = question.essay_rubrics.map((rubric) => ({
           question_id: newQuestion.id,
           criteria: rubric.criteria,
           description: rubric.description,
-          max_points: rubric.max_points
+          max_points: rubric.max_points,
         }));
 
-        const { error: rubricsError } = await supabase
-          .from('essay_rubrics')
-          .insert(rubricsToCreate);
-
+        const { error: rubricsError } = await supabase.from('essay_rubrics').insert(rubricsToCreate);
         if (rubricsError) throw rubricsError;
       }
     }
+
 
     return quizId;
   } catch (error) {
@@ -351,27 +343,27 @@ export async function getQuizTemplate(templateId: string) {
     // Modify questions to remove IDs
     const templateQuestions = questions?.map(question => ({
       ...question,
-      id: undefined, // Remove ID so a new one will be generated
-      quiz_id: undefined, // This will be set when saving
-      options: question.options?.map(option => ({
+      id: undefined,
+      quiz_id: undefined,
+      options: question.options?.map((option: Option) => ({
         ...option,
-        id: undefined, // Remove ID so a new one will be generated
-        question_id: undefined // This will be set when saving
+        id: undefined,
+        question_id: undefined
       })),
-      matching_pairs: question.matching_pairs?.map(pair => ({
+      matching_pairs: question.matching_pairs?.map((pair: MatchingPair) => ({
         ...pair,
-        id: undefined, // Remove ID so a new one will be generated
-        question_id: undefined // This will be set when saving
+        id: undefined,
+        question_id: undefined
       })),
-      ordering_items: question.ordering_items?.map(item => ({
+      ordering_items: question.ordering_items?.map((item: OrderingItem) => ({
         ...item,
-        id: undefined, // Remove ID so a new one will be generated
-        question_id: undefined // This will be set when saving
+        id: undefined,
+        question_id: undefined
       })),
-      essay_rubrics: question.essay_rubrics?.map(rubric => ({
+      essay_rubrics: question.essay_rubrics?.map((rubric: EssayRubric) => ({
         ...rubric,
-        id: undefined, // Remove ID so a new one will be generated
-        question_id: undefined // This will be set when saving
+        id: undefined,
+        question_id: undefined
       }))
     })) || [];
 

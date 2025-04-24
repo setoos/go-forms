@@ -231,17 +231,18 @@ export default function QuizView() {
                 Question {index + 1}: {question.text}
               </h3>
               <div className="space-y-3">
-                {question?.options?.map((option, optionIndex) => (
-                  <div
-                    key={option.id}
-                    className="flex items-center p-3 bg-gray-50 rounded-lg"
-                  >
-                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-background text-gray-600 mr-3">
-                      {String.fromCharCode(65 + optionIndex)}
-                    </span>
-                    <p className="text-text">{option.text}</p>
-                  </div>
-                ))}
+                {question?.type === "multiple_choice" &&
+                  question.options?.map((option, optionIndex) => (
+                    <div
+                      key={option.id}
+                      className="flex items-center p-3 bg-gray-50 rounded-lg"
+                    >
+                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-background text-gray-600 mr-3">
+                        {String.fromCharCode(65 + optionIndex)}
+                      </span>
+                      <p className="text-text">{option.text}</p>
+                    </div>
+                  ))}
               </div>
             </div>
           ))}

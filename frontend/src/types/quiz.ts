@@ -11,33 +11,33 @@ export type QuestionType =
   | 'definition';
 
 export interface Quiz {
-  id?: string;
+  id: string | undefined | null;
   title?: string;
   description?: string | null;
   category?: string | null;
-  time_limit?: number | null;
-  passing_score?: number | null;
+  time_limit: number | null;
+  passing_score: number | null;
   status?: 'draft' | 'published' | 'archived';
-  version?: number;
+  version: number;
   approval_status?: 'pending' | 'approved' | 'rejected';
-  approved_by?: string | null;
-  approved_at?: string | null;
-  rejection_reason?: string | null;
+  // approved_by?: string | null;
+  // approved_at?: string | null;
+  // rejection_reason?: string | null;
   last_published_at?: string | null;
   published_version?: number | null;
   created_at?: string;
   updated_at?: string;
   created_by?: string;
   is_published?: boolean;
-  deleted_at?: string | null;
+  // deleted_at?: string | null;
   completion_count?: number;
   average_score?: number;
   share_id?: string | null;
-  start_date?: string | null;
-  end_date?: string | null;
-  max_attempts?: number | null;
-  access_type?: 'public' | 'private' | 'invite';
-  password_hash?: string | null;
+  // start_date?: string | null;
+  // end_date?: string | null;
+  // max_attempts?: number | null;
+  // access_type?: 'public' | 'private' | 'invite';
+  // password_hash?: string | null;
   requires_auth?: boolean;
   quiz_score?: number;
   quiz_type?: 'configure' | 'template' | 'customize';
@@ -45,45 +45,145 @@ export interface Quiz {
   question_count?: number;
 }
 
-export interface Question {
+// export interface Question {
+//   id: string;
+//   quiz_id: string;
+//   text: string;
+//   type: QuestionType;
+//   order: number;
+//   instructions?: string;
+//   points: number;
+//   metadata?: any;
+//   correct_answer?: string;
+//   answer_key?: any;
+//   rubric?: any;
+//   validation_rules?: any;
+//   media_url?: string;
+//   cognitive_level?: 'recall' | 'understanding' | 'application' | 'analysis';
+//   difficulty_level?: 'easy' | 'medium' | 'hard';
+//   time_limit?: number;
+//   required: boolean;
+//   created_at: string;
+//   options?: Option[];
+//   matching_pairs?: MatchingPair[];
+//   ordering_items?: OrderingItem[];
+//   essay_rubrics?: EssayRubric[];
+//   feedback: string | null;
+//   is_hide: boolean;
+//   tf_feedback?: {
+//     true?: string;
+//     false?: string;
+//   }; 
+// }
+
+
+/******************************************************************************************************************* */
+/******************************************************************************************************************* */
+/******************************************************************************************************************* */
+/******************************************************************************************************************* */
+
+export type Question =
+  | MultipleChoiceQuestion
+  | MatchingQuestion
+  | OrderingQuestion
+  | EssayQuestion
+  | TrueFalseQuestion
+  | FillBlankQuestion
+  | ShortAnswerQuestion
+  | PictureBasedQuestion
+  | CompleteStatementQuestion
+  | DefinitionQuestion;
+
+
+export interface BaseQuestion {
   id: string;
-  quiz_id: string;
+  quiz_id: string | null | undefined;
   text: string;
   type: QuestionType;
   order: number;
-  instructions?: string;
   points: number;
+  required: boolean;
+  created_at: string;
+  feedback?: string | null;
+  is_hide?: boolean;
+  instructions?: string;
   metadata?: any;
   correct_answer?: string;
   answer_key?: any;
-  rubric?: any;
-  validation_rules?: any;
   media_url?: string;
   cognitive_level?: 'recall' | 'understanding' | 'application' | 'analysis';
   difficulty_level?: 'easy' | 'medium' | 'hard';
   time_limit?: number;
-  required: boolean;
-  created_at: string;
-  options?: Option[];
-  matching_pairs?: MatchingPair[];
-  ordering_items?: OrderingItem[];
-  essay_rubrics?: EssayRubric[];
-  feedback: string | null;
-  is_hide: boolean;
+}
+
+export interface MultipleChoiceQuestion extends BaseQuestion {
+  type: 'multiple_choice';
+  options: Option[];
+}
+
+export interface TrueFalseQuestion extends BaseQuestion {
+  type: 'true_false';
+  answer_key: {
+    correct_answer: boolean;
+  };
   tf_feedback?: {
     true?: string;
     false?: string;
-  }; 
+  };
 }
+
+
+export interface FillBlankQuestion extends BaseQuestion {
+  type: 'fill_blank';
+  answer_key?: any;
+}
+
+export interface ShortAnswerQuestion extends BaseQuestion {
+  type: 'short_answer';
+  rubric?: any;
+}
+
+export interface MatchingQuestion extends BaseQuestion {
+  type: 'matching';
+  matching_pairs?: MatchingPair[];
+}
+
+export interface OrderingQuestion extends BaseQuestion {
+  type: 'ordering';
+  ordering_items?: OrderingItem[];
+}
+
+export interface EssayQuestion extends BaseQuestion {
+  type: 'essay';
+  essay_rubrics?: EssayRubric[];
+}
+
+export interface PictureBasedQuestion extends BaseQuestion {
+  type: 'picture_based';
+}
+
+export interface CompleteStatementQuestion extends BaseQuestion {
+  type: 'complete_statement';
+}
+
+export interface DefinitionQuestion extends BaseQuestion {
+  type: 'definition';
+}
+
+/******************************************************************************************************************* */
+/******************************************************************************************************************* */
+/******************************************************************************************************************* */
+/******************************************************************************************************************* */
 
 export interface Option {
   id: string;
-  question_id: string;
+  question_id: string | null | undefined;
   text: string;
   score: number;
   feedback: string | null;
   order: number;
   is_correct?: boolean;
+  points?: number;
 }
 
 export interface MatchingPair {
@@ -124,6 +224,7 @@ export interface QuizResponse {
   email: string;
   phone?: string;
   answers: {
+    question_id: string;
     value: number;
     impact_analysis: string;
   }[];
@@ -132,7 +233,6 @@ export interface QuizResponse {
   completion_time: number | null;
   timestamp: string;
   custom_feedback?: string;
-  impact_analysis?: string | null;
 }
 
 export interface QuizState {

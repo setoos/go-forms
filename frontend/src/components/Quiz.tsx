@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Loader } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { QuestionComponent } from "./questions/QuestionTypes";
-import type { Quiz as QuizType, Question } from "../types/quiz";
+import type { Quiz as QuizType, Question, Quiz } from "../types/quiz";
 import { questions as sampleQuestions } from "../data/questions";
 import { shuffleQuestions, shuffleOptions } from "../lib/quiz";
 import { validate as isValidUUID } from "uuid";
@@ -93,7 +93,7 @@ export default function Quiz() {
       created_by: "system",
       is_published: true,
       share_id: "sample",
-    });
+    } as Quiz);
     setQuestions(sampleQuestions);
     setLoading(false);
   }
@@ -113,9 +113,11 @@ export default function Quiz() {
         : answer;
 
     // Try to find selected option (MCQs)
-    const selectedOption = question.options?.find(
-      (opt) => opt.id === selectedOptionId
-    );
+    const selectedOption =
+      'options' in question
+        ? question.options?.find((opt) => opt.id === selectedOptionId)
+        : undefined;
+
 
     // Use selectedOptionId if found, otherwise store full answer
     const newAnswers = {

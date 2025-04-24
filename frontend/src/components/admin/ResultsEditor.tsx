@@ -25,6 +25,7 @@ import { showToast } from '../../lib/toast';
 import { generatePDF } from '../../lib/pdf';
 import { useAuth } from '../../lib/auth';
 import { quillFormats, quillModules } from '../../lib/quillConfig';
+import { Quiz, QuizResponse } from '@/types/quiz';
 
 interface Template {
   id: string;
@@ -61,7 +62,7 @@ export default function ResultsEditor() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [quizzes, setQuizzes] = useState<any[]>([]);
-  const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
+  const [selectedQuiz, setSelectedQuiz] = useState<string | null | undefined>(null);
   const [isDefault, setIsDefault] = useState(false);
   const [showTemplateSettings, setShowTemplateSettings] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -161,12 +162,15 @@ export default function ResultsEditor() {
       }
 
       // If not a template, try to load as a quiz
-      const { data: quizData, error: quizError } = await supabase
+      const response = await supabase
         .from('quizzes')
         .select('*')
         .eq('id', quizId)
         .eq('created_by', user?.id)
         .maybeSingle();
+
+      const quizError = response.error;
+      const rawData = response.data;
 
       if (quizError) {
         if (quizError.code === 'PGRST116') {
@@ -176,6 +180,28 @@ export default function ResultsEditor() {
         }
         return;
       }
+
+      const quizData: Quiz = (rawData ?? []).map((quiz: Quiz) => ({
+        id: quiz.id,
+        title: quiz.title,
+        description: quiz.description,
+        category: quiz.category,
+        time_limit: quiz.time_limit,
+        passing_score: quiz.passing_score,
+        approval_status: quiz.approval_status,
+        created_at: quiz.created_at,
+        updated_at: quiz.updated_at,
+        created_by: quiz.created_by,
+        is_published: quiz.is_published,
+        completion_count: quiz.completion_count,
+        average_score: quiz.average_score,
+        share_id: quiz.share_id,
+        requires_auth: quiz.requires_auth,
+        quiz_score: quiz.quiz_score,
+        quiz_type: quiz.quiz_type,
+        quiz_question_type: quiz.quiz_question_type,
+        question_count: quiz.question_count,
+      }));
 
       if (!quizData) {
         setError('Quiz not found or you do not have permission to access it');
@@ -498,18 +524,27 @@ export default function ResultsEditor() {
 
   const handleGeneratePDF = async () => {
     try {
-      // Generate a sample response for preview
-      const sampleResponse = {
+      // Sample raw answers
+      const rawAnswers = { '0': 8, '1': 6, '2': 9, '3': 4, '4': 7 };
+
+      // Transform raw answers into expected array format
+      const formattedAnswers = Object.entries(rawAnswers).map(([question_id, value]) => ({
+        question_id,
+        value,
+        impact_analysis: '', // or provide actual impact analysis here
+      }));
+
+      const sampleResponse: QuizResponse = {
         id: 'preview',
         name: 'Sample User',
         email: 'sample@example.com',
         phone: '123-456-7890',
-        answers: { '0': 8, '1': 6, '2': 9, '3': 4, '4': 7 },
+        answers: formattedAnswers,
         score: 75,
         quiz_id: quizData?.id || selectedQuiz || 'sample',
         completion_time: 300,
         timestamp: new Date().toISOString(),
-        custom_feedback: sections.map(s => `<h3>${s.title}</h3>${s.content}`).join('')
+        custom_feedback: sections.map((s) => `<h3>${s.title}</h3>${s.content}`).join(''),
       };
 
       await generatePDF(sampleResponse);
@@ -519,6 +554,7 @@ export default function ResultsEditor() {
       showToast('Failed to generate PDF', 'error');
     }
   };
+
 
   const handleImageUpload = () => {
     // Create a file input element
@@ -695,8 +731,8 @@ export default function ResultsEditor() {
             onClick={handleSaveTemplate}
             disabled={saving || !templateName.trim() || !!nameError}
             className={`flex items-center px-4 py-2 rounded-lg ${saving || !templateName.trim() || !!nameError
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-secondary text-white hover:bg-primary'
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-secondary text-white hover:bg-primary'
               }`}
           >
             <Save className="w-5 h-5 mr-2" />
