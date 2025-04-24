@@ -24,6 +24,7 @@ import {
   SlidersHorizontal,
   Brush,
 } from "lucide-react";
+import '../../quill/ImageResizeBlot';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { supabase } from "../../lib/supabase";
@@ -252,7 +253,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
   // Add a new question
   const handleAddQuestion = () => {
     setIsDirty(true);
-  
+
     // Check for max question limit
     if (
       quiz.quiz_type === "configure" &&
@@ -261,7 +262,7 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
       showToast("Your question limit exceeds!", "error");
       return;
     }
-  
+
     const baseQuestion = {
       id: `temp-${Date.now()}`,
       quiz_id: quiz.id,
@@ -273,10 +274,10 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
       required: true,
       created_at: new Date().toISOString(),
     };
-    
-  
+
+
     let newQuestion: Question;
-  
+
     switch (quiz.quiz_question_type) {
       case "true_false":
         newQuestion = {
@@ -295,11 +296,11 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
         };
         break;
     }
-  
+
     setQuestions([...questions, newQuestion]);
     setExpandedQuestion(questions.length);
   };
-  
+
 
   // Delete a question
   const handleDeleteQuestion = (index: number) => {
@@ -405,20 +406,31 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
     };
 
     if (field === "type") {
-      const resetFields: Partial<Question> = {
-        options: [],
-        matching_pairs: [],
-        ordering_items: [],
-        essay_rubrics: [],
-        answer_key: null,
-      };
-
-      Object.assign(updatedQuestion, resetFields);
+      if (value === "multiple_choice") {
+        Object.assign(updatedQuestion, {
+          options: [],
+          answer_key: null,
+          tf_feedback: undefined,
+          matching_pairs: [],
+          ordering_items: [],
+          essay_rubrics: [],
+        });
+      } else if (value === "true_false") {
+        Object.assign(updatedQuestion, {
+          answer_key: { correct_answer: true },
+          tf_feedback: {},
+          options: undefined,
+          matching_pairs: [],
+          ordering_items: [],
+          essay_rubrics: [],
+        });
+      }
     }
 
     newQuestions[index] = updatedQuestion as Question;
     setQuestions(newQuestions);
   };
+
 
   // Add an option to a question
   const handleAddOption = (questionIndex: number) => {
@@ -1567,11 +1579,11 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
                                         ref={(el) => {
                                           quillRefs.current[`feedback-true-${index}`] = el;
                                         }}
-                                        value={question.tf_feedback?.true || ""}
+                                        value={(question as TrueFalseQuestion).tf_feedback?.true || ""}
                                         onChange={(content) =>
                                           updateQuestion(index, {
                                             tf_feedback: {
-                                              ...question.tf_feedback,
+                                              ...((question as TrueFalseQuestion).tf_feedback),
                                               true: content,
                                             },
                                           })
@@ -1592,11 +1604,11 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
                                         ref={(el) => {
                                           quillRefs.current[`feedback-false-${index}`] = el;
                                         }}
-                                        value={question.tf_feedback?.false || ""}
+                                        value={(question as TrueFalseQuestion).tf_feedback?.false || ""}
                                         onChange={(content) =>
                                           updateQuestion(index, {
                                             tf_feedback: {
-                                              ...question.tf_feedback,
+                                              ...((question as TrueFalseQuestion).tf_feedback),
                                               false: content,
                                             },
                                           })
@@ -2330,9 +2342,14 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
                     <select
                       value={quiz.quiz_question_type}
                       onChange={(e) => {
-                        handleQuizChange("quiz_question_type", e.target.value);
-                        setQuizQuestionType(e.target.value);
+                        const newType = e.target.value;
+                        handleQuizChange("quiz_question_type", newType);
+                        setQuizQuestionType(newType);
+
+                        setQuestions([]);
+                        setExpandedQuestion(null);
                       }}
+
                       disabled={quiz.quiz_type === 'configure' && !!id}
                       className={`w-full px-3 py-2 border border-border rounded-md focus:ring-secondary focus:border-secondary ${quiz.quiz_type === 'configure' && !!id ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                     >
@@ -2375,8 +2392,6 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
                   </div>
                 </div>
               )}
-
-
               <div>
                 <button
                   onClick={() => setExpandedSettings(!expandedSettings)}
@@ -2614,9 +2629,9 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
               <X className="h-5 w-5" />
             </button>
             <p className="my-5 text-balance">You have unsaved changes. Do you want to save them before leaving?</p>
-            <div className="flex justify-between gap-4 mt-3">
-              <button onClick={handleSave} className="bg-green-500 px-4 py-2 text-white rounded">Save</button>
-              <button onClick={handleDiscard} className="bg-red-500 px-4 py-2 text-white rounded">Discard</button>
+            <div className="flex justify-end gap-4 mt-3">
+              <button onClick={handleSave} className="bg-primary px-4 py-2 text-white rounded">Save</button>
+              <button onClick={handleDiscard} className="bg-gray-400 px-4 py-2 text-white rounded">Discard</button>
             </div>
           </div>
         </div>

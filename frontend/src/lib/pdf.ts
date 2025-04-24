@@ -87,15 +87,87 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         format: 'a4',
         compress: true,
         putOnlyUsedFonts: true,
-        floatPrecision: 16 // For better rendering quality
+        floatPrecision: 16
       });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
       let yPos = 20;
 
-      // Add logo and header with better styling
-      doc.setFillColor(147, 51, 234); // Purple color
+      function hexToRgb(hex: string) {
+        hex = hex.replace('#', '');
+
+        if (hex.length === 6) {
+          const r = parseInt(hex.substring(0, 2), 16);
+          const g = parseInt(hex.substring(2, 4), 16);
+          const b = parseInt(hex.substring(4, 6), 16);
+          return { r, g, b };
+        }
+
+        return { r: 0, g: 0, b: 0 };
+      }
+
+      function getPrimaryColorRGB() {
+        const hexValue = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-primary')
+          .trim(); // Should be something like "#166534"
+
+        if (!hexValue || hexValue === 'undefined') {
+          console.warn('Invalid primary color:', hexValue);
+          return { r: 0, g: 0, b: 0 }; // Fallback to black
+        }
+
+        // Convert the hex color to RGB
+        return hexToRgb(hexValue);
+      }
+
+      function getAccentColor() {
+        const hexValue = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-accent')
+          .trim();
+
+        if (!hexValue || hexValue === 'undefined') {
+          console.warn('Invalid accent color:', hexValue);
+          return { r: 0, g: 0, b: 0 };
+        }
+
+        return hexToRgb(hexValue);
+      }
+
+      function getTextColor() {
+        const hexValue = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-text')
+          .trim();
+
+        if (!hexValue || hexValue === 'undefined') {
+          console.warn('Invalid text color:', hexValue);
+          return { r: 0, g: 0, b: 0 };
+        }
+
+        return hexToRgb(hexValue);
+      }
+
+      function getSecondaryColor() {
+        const hexValue = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-secondary')
+          .trim();
+
+        if (!hexValue || hexValue === 'undefined') {
+          console.warn('Invalid secondary color:', hexValue);
+          return { r: 0, g: 0, b: 0 };
+        }
+
+        return hexToRgb(hexValue);
+      }
+
+
+      const primary = getPrimaryColorRGB();
+      const accent = getAccentColor();
+      const text = getTextColor();
+      const secondary = getSecondaryColor();
+      doc.setFillColor(primary.r, primary.g, primary.b);
+
+      // doc.setFillColor(147, 51, 234); // Purple color
       doc.rect(0, 0, pageWidth, 40, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(22);
@@ -133,7 +205,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
       yPos += 15;
 
       // Score Summary with improved styling
-      doc.setFillColor(245, 243, 255); // Light purple background
+      doc.setFillColor(accent.r, accent.g, accent.b); // Light purple background
       doc.rect(margin, yPos, pageWidth - (margin * 2), 40, 'F');
 
       doc.setFont('helvetica', 'bold');
@@ -141,7 +213,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
       doc.text('Score Summary', margin + 5, yPos + 15);
 
       doc.setFontSize(24);
-      doc.setTextColor(147, 51, 234); // Purple color
+      doc.setTextColor(primary.r, primary.g, primary.b); // Purple color
       const percentage = response.score;
       doc.text(
         `${Number.isInteger(percentage) ? percentage : percentage.toFixed(2)}%`,
@@ -554,9 +626,12 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
 
 
       yPos = 250; // Starting Y position
+      const imgWidth = 50;
+      const imgHeight = 30;
 
       function renderHtmlToPDF(html: string, doc: jsPDF, x: number, y: number, maxWidth = 80) {
         let cursorY = y;
+        const lineHeight = 5;
 
         const parser = new Parser({
           onopentag(name, attribs) {
@@ -566,20 +641,34 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
               doc.setFontSize(13);
               doc.setFont('helvetica', 'bold');
             } else if (name === 'p') {
-              cursorY += 5;
+              cursorY += lineHeight;
+            } else if (name === 'img' && attribs.src) {
+
+              try {
+                const formatMatch = attribs.src.match(/^data:image\/(png|jpeg);base64,/);
+                if (formatMatch) {
+                  const format = formatMatch[1] === 'jpeg' ? 'JPEG' : 'PNG';
+                  const base64 = attribs.src.replace(/^data:image\/(png|jpeg);base64,/, '');
+
+                  doc.addImage(base64, format, x, cursorY, imgWidth, imgHeight);
+                  cursorY += imgHeight + lineHeight;
+                }
+              } catch (error) {
+                console.error("Image rendering failed:", error);
+              }
             }
           },
           ontext(text) {
             const lines = doc.splitTextToSize(text.trim(), maxWidth);
             doc.text(lines, x, cursorY);
-            cursorY += lines.length * 5;
+            cursorY += lines.length * lineHeight;
           },
           onclosetag(name) {
             if (name === 'strong' || name === 'b' || name === 'h2') {
               doc.setFont('helvetica', 'normal');
               doc.setFontSize(10);
             }
-          },
+          }
         }, { decodeEntities: true });
 
         parser.write(html);
@@ -587,6 +676,7 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
 
         return cursorY;
       }
+
 
       Object.entries(response.answers || {}).forEach(([questionId, answerData], index) => {
         const question = questionDetails.find(q => q.id === questionId);
@@ -627,39 +717,39 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
 
         const impactAnalysisHeight = estimateHtmlHeight(impactAnalysis, doc, 80);
         // Sum of all heights for the section
-        const sectionHeight = impactAnalysisHeight > 80 ? impactAnalysisHeight : 80;
+        const sectionHeight = impactAnalysisHeight > 80 ? impactAnalysisHeight + imgHeight + 10 : 80 + imgHeight;
 
         if (yPos + sectionHeight > 280) {
           doc.addPage();
           yPos = 20;
-          addPageNumber(doc.getNumberOfPages(), 1);
+          addPageNumber(doc.getNumberOfPages(), 1);   
         }
 
         // Section background
-        doc.setFillColor(250, 250, 255);
+        doc.setFillColor(accent.r, accent.g, accent.b);
         doc.roundedRect(15, yPos - 5, 180, sectionHeight, 3, 3, 'F');
 
         // Question Title
         doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(80, 50, 20);
+        doc.setTextColor(text.r, text.g, text.b);
         doc.text(`Question ${index + 1}`, 20, yPos + 5);
 
         // Question Text
         doc.setFontSize(11);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(33, 33, 33);
+        doc.setTextColor(text.r, text.g, text.b);
         const questionLines = doc.splitTextToSize(questionText, 170);
         doc.text(questionLines, 20, yPos + 12);
         yPos += 12 + questionLines.length * 5;
 
         // User Answer
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(147, 51, 234);
+        doc.setTextColor(secondary.r, secondary.g, secondary.b);
         doc.text('Your Answer - option A', 20, yPos);
 
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(text.r, text.g, text.b);
         const answerLines = doc.splitTextToSize(optionText, 160);
         doc.text(answerLines, 20, yPos + 6);
         yPos += 10 + answerLines.length * 5;
@@ -678,19 +768,19 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         // Impact Analysis (left side)
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
-        doc.setTextColor(184, 134, 11);
+        doc.setTextColor(primary.r, primary.g, primary.b);
         doc.text('Impact Analysis', 20, splitY);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
         const newY = renderHtmlToPDF(impactText, doc, 20, splitY + 7, 80);
-        yPos = newY + 10;
-
+        yPos = impactAnalysisHeight > 80 && imgHeight ? newY + imgHeight : newY + 10;
+        
         // Score & Performance (right side)
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
-        doc.setTextColor(184, 134, 11);
+        doc.setTextColor(primary.r, primary.g, primary.b);
         doc.text('Score & Performance', colMid + 5, splitY);
 
         doc.setFont('helvetica', 'normal');
@@ -706,9 +796,6 @@ export async function generatePDF(response: QuizResponse, returnBlob = false): P
         yPos += 20; // spacing before next question
 
       });
-
-
-
 
 
       // -----------------*************------------------*******************-----------------************* 
