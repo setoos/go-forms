@@ -336,3 +336,28 @@ export interface QuizShare {
   max_attempts: number | null;
   created_by: string;
 }
+
+export interface TemplateData {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  audiencelevel: string;
+  duration: number;
+  scoringmethod: string;
+  passingscore: number;
+  certificateenabled: boolean;
+  analyticsenabled: boolean;
+  feedbacktype: string;
+  tags: string[];
+  previewimage: string;
+  popularity: number;
+  usagecount: number;
+  created_at?: string;
+  lastupdated?: string;
+  questions: Question[];
+  questioncount?: number;
+  questiontypes?: string[];
+  created_by?: string;
+}

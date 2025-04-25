@@ -2,6 +2,9 @@ import { BookOpen, Briefcase, Shield, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import React, { useState } from 'react';
 import { showToast } from '../../lib/toast';
+import { Question, Quiz, TemplateData } from '../../types/quiz';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../lib/auth';
 
 const categories = [
     {
@@ -62,22 +65,30 @@ const audienceLevels = [
 
 
 const TemplateForm = () => {
-    const [form, setForm] = useState({
-        title: '',
-        description: '',
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { quizId, questions, quiz } = location.state || {};
+
+    const { user } = useAuth();
+
+    const [form, setForm] = useState<TemplateData>({
+        id: '',
+        title: quiz.title || '',
+        description: quiz.description || '',
         category: '',
         subcategory: '',
-        audienceLevel: '',
-        duration: 0,
-        scoringMethod: '',
-        passingScore: 0,
-        certificateEnabled: false,
-        analyticsEnabled: false,
-        feedbackType: '',
+        audiencelevel: '',
+        duration: quiz.time_limit || 0,
+        scoringmethod: '',
+        passingscore: quiz.passing_score || 0,
+        certificateenabled: false,
+        analyticsenabled: false,
+        feedbacktype: '',
         tags: [''],
-        previewImage: '',
+        previewimage: '',
         popularity: 0,
-        usageCount: 0,
+        usagecount: 0,
+        questions: questions || [],
     });
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSubcategory, setSelectedSubcategory] = useState('');
@@ -126,7 +137,7 @@ const TemplateForm = () => {
             .getPublicUrl(filePath);
 
         if (publicUrlData?.publicUrl) {
-            setForm({ ...form, previewImage: publicUrlData.publicUrl });
+            setForm({ ...form, previewimage: publicUrlData.publicUrl });
         }
     };
 
@@ -148,19 +159,23 @@ const TemplateForm = () => {
             description: form.description,
             category: form.category,
             subcategory: form.subcategory,
-            audiencelevel: form.audienceLevel,
+            audiencelevel: form.audiencelevel,
             duration: form.duration,
-            scoringmethod: form.scoringMethod,
-            passingscore: form.passingScore,
-            certificateenabled: form.certificateEnabled,
-            analyticsenabled: form.analyticsEnabled,
-            feedbacktype: form.feedbackType,
+            scoringmethod: form.scoringmethod,
+            passingscore: form.passingscore,
+            certificateenabled: form.certificateenabled,
+            analyticsenabled: form.analyticsenabled,
+            feedbacktype: form.feedbacktype,
             tags: form.tags,
-            previewimage: form.previewImage,
+            previewimage: form.previewimage,
             popularity: form.popularity,
-            usagecount: form.usageCount,
+            usagecount: form.usagecount,
             created_at: new Date().toISOString(),
             lastupdated: new Date().toISOString(),
+            created_by: user?.id,
+            questions: form.questions,
+            questioncount: quiz.quiz_type === 'configure' ? quiz.question_count : form.questions.length,
+            questiontypes: quiz.quiz_type === 'configure' ? [quiz.quiz_question_type] : form.questions.map((q: any) => q.type),
         };
 
         try {
@@ -170,13 +185,12 @@ const TemplateForm = () => {
                 console.error('Error inserting template:', error);
             } else {
                 showToast('Template submitted successfully', 'success');
+                navigate('/templates/library');
             }
         } catch (error) {
             console.error('Unexpected error:', error);
         }
     };
-
-
 
     return (
         <div className="w-full mx-auto px-6 py-10 bg-gradient-to-br from-accent to-white rounded-3xl shadow-2xl">
@@ -202,7 +216,7 @@ const TemplateForm = () => {
                             }}
                             className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="">-- Select Category --</option>
+                            <option value="">Select Category</option>
                             {categories.map((cat) => (
                                 <option key={cat.id} value={cat.id}>
                                     {cat.name}
@@ -228,7 +242,7 @@ const TemplateForm = () => {
                                 }}
                                 className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                <option value="">-- Select Subcategory --</option>
+                                <option value="">Select Subcategory</option>
                                 {categories
                                     .find((c) => c.id === selectedCategory)
                                     ?.subcategories.map((sub) => (
@@ -239,7 +253,6 @@ const TemplateForm = () => {
                             </select>
                         </div>
                     )}
-
                     <div className="mt-6">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Audience Level</label>
                         <select
@@ -247,11 +260,11 @@ const TemplateForm = () => {
                             onChange={(e) => {
                                 const audience = e.target.value;
                                 setSelectedAudience(audience);
-                                setForm((prev) => ({ ...prev, audienceLevel: audience }));
+                                setForm((prev) => ({ ...prev, audiencelevel: audience }));
                             }}
                             className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="">-- Select Audience Level --</option>
+                            <option value="">Select Audience Level</option>
                             {audienceLevels.map((level) => (
                                 <option key={level.id} value={level.id}>
                                     {level.name}
@@ -261,18 +274,17 @@ const TemplateForm = () => {
                     </div>
                     <Input label="Duration (minutes)" name="duration" type="number" value={form.duration} onChange={handleChange} />
                 </CardSection>
-
                 {/* Section 2: Scoring & Feedback */}
                 <CardSection title="Scoring & Feedback">
-                    <Input label="Scoring Method" name="scoringMethod" value={form.scoringMethod} onChange={handleChange} />
-                    <Input label="Passing Score (%)" name="passingScore" type="number" value={form.passingScore} onChange={handleChange} />
-                    <Input label="Feedback Type" name="feedbackType" value={form.feedbackType} onChange={handleChange} />
+                    <Input label="Scoring Method" name="scoringmethod" value={form.scoringmethod} onChange={handleChange} />
+                    <Input label="Passing Score (%)" name="passingscore" type="number" value={form.passingscore} onChange={handleChange} />
+                    <Input label="Feedback Type" name="feedbacktype" value={form.feedbacktype} onChange={handleChange} />
                 </CardSection>
 
                 {/* Section 3: Toggles */}
                 <CardSection title="Options">
-                    <Toggle label="Enable Certificate" checked={form.certificateEnabled} onToggle={() => handleToggle('certificateEnabled')} />
-                    <Toggle label="Enable Analytics" checked={form.analyticsEnabled} onToggle={() => handleToggle('analyticsEnabled')} />
+                    <Toggle label="Enable Certificate" checked={form.certificateenabled} onToggle={() => handleToggle('certificateenabled')} />
+                    <Toggle label="Enable Analytics" checked={form.analyticsenabled} onToggle={() => handleToggle('analyticsenabled')} />
                 </CardSection>
 
                 {/* Section 4: Tags */}
@@ -299,9 +311,9 @@ const TemplateForm = () => {
                         onChange={handleImageUpload}
                         className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-800 hover:file:bg-blue-200"
                     />
-                    {form.previewImage && (
+                    {form.previewimage && (
                         <img
-                            src={form.previewImage}
+                            src={form.previewimage}
                             alt="Preview"
                             className="mt-4 rounded-xl w-36 h-36 object-cover mx-auto"
                         />
@@ -311,7 +323,7 @@ const TemplateForm = () => {
                 {/* Section 6: Extra Stats */}
                 <CardSection title="Extra Info">
                     <Input label="Popularity (1–5)" name="popularity" type="number" step="0.1" value={form.popularity} onChange={handleChange} />
-                    <Input label="Usage Count" name="usageCount" type="number" value={form.usageCount} onChange={handleChange} />
+                    <Input label="Usage Count" name="usagecount" type="number" value={form.usagecount} onChange={handleChange} />
                 </CardSection>
 
                 {/* Submit Button */}

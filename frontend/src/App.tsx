@@ -80,7 +80,7 @@ function App() {
 
               {/* Templates Routes */}
               <Route path="templates" element={<QuizTemplateHome />} />
-              <Route path="create-template" element={<TemplateForm />} />
+              <Route path="create-template/:id" element={<TemplateForm />} />
               <Route path="templates/library" element={<QuizTemplateLibrary />} />
               <Route path="templates/category/:categoryId" element={<QuizTemplateCategoryPage />} />
               <Route path="templates/features" element={<QuizTemplateFeatures />} />

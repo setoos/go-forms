@@ -1020,6 +1020,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
     handleQuizChange("quiz_type", "customize");
   };
 
+  const handleCreateTemplate = () => {
+    navigate(`/create-template/${id}`, {
+      state: {
+        quizId: id,
+        questions: questions,
+        quiz: quiz
+      }
+    });
+  };
 
   if (loading) {
     return (
@@ -1073,6 +1082,15 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
         <div className="flex items-center space-x-3">
           {quiz.id && (
             <>
+              {quiz.quiz_type !== 'template' && (
+                <button
+                  onClick={() => handleCreateTemplate()}
+                  className={`flex items-center px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary ${questions.length === 0 ? 'cursor-not-allowed' : ''}`}
+                  disabled={questions.length === 0}
+                >
+                  Save as Template
+                </button>
+              )}
               <button
                 onClick={handlePreview}
                 className="flex items-center px-4 py-2 border border-border rounded-lg text-text hover:bg-gray-50"
@@ -2225,15 +2243,6 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
                 Back to Details
               </button>
               <div className="flex items-center gap-2">
-                {quiz.quiz_type !== 'template' && (
-                  <button
-                    onClick={() => handleNext()}
-                    className={`flex items-center px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary ${questions.length === 0 ? 'cursor-not-allowed' : ''}`}
-                    disabled={questions.length === 0}
-                  >
-                    Save as Template
-                  </button>
-                )}
                 <button
                   onClick={handleSave}
                   disabled={saving}
@@ -2513,15 +2522,6 @@ export default function QuizEditor({ initialQuiz, initialQuestions }: { initialQ
             </label>
           </div>
           <div className="flex items-center gap-2 mt-5 justify-end">
-            {quiz.quiz_type !== 'template' && (
-              <button
-                onClick={() => handleNext()}
-                className={`flex items-center px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary ${questions.length === 0 ? 'cursor-not-allowed' : ''}`}
-                disabled={questions.length === 0}
-              >
-                Save as Template
-              </button>
-            )}
             <button
               onClick={handleSave}
               disabled={saving}
