@@ -25,10 +25,14 @@ import {
   Plus,
   ArrowRight,
   Sliders,
-  Calendar
+  Calendar,
+  AlertCircle,
+  Loader
 } from 'lucide-react';
 import { showToast } from '../../lib/toast';
 import { useAuth } from '../../lib/auth';
+import { supabase } from '../../lib/supabase';
+import { TemplateData } from '../../types/quiz';
 
 // Template categories and subcategories
 const categories = [
@@ -481,9 +485,51 @@ export default function QuizTemplateLibrary() {
   });
   const [expandedTemplate, setExpandedTemplate] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'popularity' | 'date'>('popularity');
+  const [templates, setTemplates] = useState<TemplateData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchTemplates();
+    }
+  }, [user])
+
+  async function fetchTemplates() {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      const response = await supabase
+        .from('templates')
+        .select('*')
+        .eq('created_by', user.id)
+        .order('created_at', { ascending: false });
+
+      const fetchError = response.error;
+      const data = response.data;
+
+      if (fetchError) {
+        console.error('Error fetching templates:', fetchError);
+        throw new Error('Failed to load templates. Please try again.');
+      }
+      setTemplates(data || []);
+    } catch (error) {
+      console.error('Error loading templates:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load templates');
+      showToast('Failed to load templates', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   // Filter templates based on search, category, subcategory, and audience level
-  const filteredTemplates = quizTemplates.filter(template => {
+  const filteredTemplates = templates.filter(template => {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -507,8 +553,8 @@ export default function QuizTemplateLibrary() {
 
     // Audience level filter
     if (selectedAudienceLevel &&
-      template.audienceLevel !== selectedAudienceLevel &&
-      template.audienceLevel !== 'all') {
+      template.audiencelevel !== selectedAudienceLevel &&
+      template.audiencelevel !== 'all') {
       return false;
     }
 
@@ -524,7 +570,7 @@ export default function QuizTemplateLibrary() {
     if (sortBy === 'popularity') {
       return b.popularity - a.popularity;
     } else {
-      return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
+      return new Date(b.lastupdated || '').getTime() - new Date(a.lastupdated || '').getTime();
     }
   });
 
@@ -581,6 +627,30 @@ export default function QuizTemplateLibrary() {
   const handleDownload = (templateId: string) => {
     showToast('Template downloaded successfully', 'success');
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader className="h-12 w-12 text-secondary animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-3xl mx-auto text-center py-12">
+        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-text mb-2">Failed to load GoForms</h3>
+        <p className="text-gray-500 mb-4">{error}</p>
+        <button
+          onClick={() => fetchTemplates()}
+          className="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -677,8 +747,8 @@ export default function QuizTemplateLibrary() {
           <button
             onClick={() => handleCategoryFilter(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium ${selectedCategory === null
-                ? 'bg-accent text-primary'
-                : 'bg-gray-100 text-text hover:bg-gray-200'
+              ? 'bg-accent text-primary'
+              : 'bg-gray-100 text-text hover:bg-gray-200'
               }`}
           >
             All Categories
@@ -688,8 +758,8 @@ export default function QuizTemplateLibrary() {
               key={category.id}
               onClick={() => handleCategoryFilter(category.id)}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${selectedCategory === category.id
-                  ? 'bg-accent text-primary'
-                  : 'bg-gray-100 text-text hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
                 }`}
             >
               {React.cloneElement(category.icon, { className: 'h-4 w-4 mr-1.5' })}
@@ -704,8 +774,8 @@ export default function QuizTemplateLibrary() {
             <button
               onClick={() => handleSubcategoryFilter(null)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium ${selectedSubcategory === null
-                  ? 'bg-accent text-primary'
-                  : 'bg-gray-100 text-text hover:bg-gray-200'
+                ? 'bg-accent text-primary'
+                : 'bg-gray-100 text-text hover:bg-gray-200'
                 }`}
             >
               All {categories.find(c => c.id === selectedCategory)?.name}
@@ -717,8 +787,8 @@ export default function QuizTemplateLibrary() {
                   key={subcategory.id}
                   onClick={() => handleSubcategoryFilter(subcategory.id)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium ${selectedSubcategory === subcategory.id
-                      ? 'bg-accent text-primary'
-                      : 'bg-gray-100 text-text hover:bg-gray-200'
+                    ? 'bg-accent text-primary'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
                     }`}
                 >
                   {subcategory.name}
@@ -765,7 +835,7 @@ export default function QuizTemplateLibrary() {
                       {/* Template Preview Image */}
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
                         <img
-                          src={template.previewImage}
+                          src={template.previewimage}
                           alt={template.title}
                           className="w-full h-full object-cover"
                         />
@@ -785,11 +855,11 @@ export default function QuizTemplateLibrary() {
                           </span>
                           <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full flex items-center">
                             <FileQuestion className="h-3 w-3 mr-1" />
-                            {template.questionCount} questions
+                            {template.questioncount} questions
                           </span>
                           <span className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full flex items-center">
                             <Users className="h-3 w-3 mr-1" />
-                            {audienceLevels.find(a => a.id === template.audienceLevel)?.name}
+                            {audienceLevels.find(a => a.id === template.audiencelevel)?.name}
                           </span>
                         </div>
 
@@ -798,7 +868,7 @@ export default function QuizTemplateLibrary() {
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center text-xs text-gray-500">
                             <Calendar className="h-3.5 w-3.5 mr-1" />
-                            Updated: {template.lastUpdated}
+                            Updated: {template.lastupdated}
                           </div>
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
@@ -835,7 +905,7 @@ export default function QuizTemplateLibrary() {
                             <div className="mb-3">
                               <h4 className="text-sm font-medium text-text mb-1">Question Types</h4>
                               <div className="flex flex-wrap gap-1">
-                                {template.questionTypes.map(type => (
+                                {template?.questiontypes?.map(type => (
                                   <span key={type} className="px-2 py-0.5 bg-gray-100 text-text text-xs rounded">
                                     {questionTypeLabels[type] || type}
                                   </span>
@@ -848,19 +918,19 @@ export default function QuizTemplateLibrary() {
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
                                   <p className="text-xs text-gray-500">Scoring Method</p>
-                                  <p className="text-sm text-text capitalize">{template.scoringMethod}</p>
+                                  <p className="text-sm text-text capitalize">{template.scoringmethod}</p>
                                 </div>
                                 <div>
                                   <p className="text-xs text-gray-500">Passing Score</p>
-                                  <p className="text-sm text-text">{template.passingScore ? `${template.passingScore}%` : 'N/A'}</p>
+                                  <p className="text-sm text-text">{template.passingscore ? `${template.passingscore}%` : 'N/A'}</p>
                                 </div>
                                 <div>
                                   <p className="text-xs text-gray-500">Feedback Type</p>
-                                  <p className="text-sm text-text capitalize">{template.feedbackType.replace(/_/g, ' ')}</p>
+                                  <p className="text-sm text-text capitalize">{template.feedbacktype.replace(/_/g, ' ')}</p>
                                 </div>
                                 <div>
                                   <p className="text-xs text-gray-500">Certificate</p>
-                                  <p className="text-sm text-text">{template.certificateEnabled ? 'Enabled' : 'Disabled'}</p>
+                                  <p className="text-sm text-text">{template.certificateenabled ? 'Enabled' : 'Disabled'}</p>
                                 </div>
                               </div>
                             </div>

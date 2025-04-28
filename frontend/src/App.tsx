@@ -33,6 +33,7 @@ import QuizSubmissions from './components/admin/QuizSubmissions';
 import SubmissionDetail from './components/admin/SubmissionDetail';
 import 'react-quill/dist/quill.snow.css';
 import { Loader } from 'lucide-react';
+import TemplateForm from './components/admin/templateForm';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -53,10 +54,10 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const { themeLoading , loading} = useTheme();
+  const { themeLoading, loading } = useTheme();
 
-  
-  if(themeLoading && loading) { 
+
+  if (themeLoading && loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -76,9 +77,10 @@ function App() {
               <Route path="quiz/view/:id" element={<QuizView />} />
               <Route path="results" element={<Results />} />
               <Route path="results/success" element={<ResultsSuccess />} />
-              
+
               {/* Templates Routes */}
               <Route path="templates" element={<QuizTemplateHome />} />
+              <Route path="create-template/:id" element={<TemplateForm />} />
               <Route path="templates/library" element={<QuizTemplateLibrary />} />
               <Route path="templates/category/:categoryId" element={<QuizTemplateCategoryPage />} />
               <Route path="templates/features" element={<QuizTemplateFeatures />} />
@@ -87,13 +89,13 @@ function App() {
                   <QuizTemplateCustomizer />
                 </PrivateRoute>
               } />
-              
+
               {/* Forms Routes */}
               <Route path="forms" element={<InstaFormsHome />} />
               <Route path="forms/templates" element={<InstaFormsLibrary />} />
               <Route path="forms/categories/:categoryId" element={<FormCategoryPage />} />
               <Route path="forms/templates/:id" element={<FormTemplateDetails />} />
-              
+
               {/* Settings Routes */}
               <Route
                 path="settings/*"

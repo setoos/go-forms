@@ -305,71 +305,50 @@ export function shuffleOptions(options: Option[]): Option[] {
 // Get a template by ID
 export async function getQuizTemplate(templateId: string) {
   try {
-    // In a real application, this would fetch from a templates table
-    // For this demo, we'll use the sample quiz data
-    const { data: quiz, error: quizError } = await supabase
-      .from('quizzes')
+    const { data: template, error: templateError } = await supabase
+      .from('templates')
       .select()
-      .eq('id', '00000000-0000-0000-0000-000000000000')
+      .eq('id', templateId)
       .single();
 
-    if (quizError) throw quizError;
+    if (templateError) throw templateError;
 
-    const { data: questions, error: questionsError } = await supabase
-      .from('questions')
-      .select(`
-        *,
-        options (*),
-        matching_pairs (*),
-        ordering_items (*),
-        essay_rubrics (*)
-      `)
-      .eq('quiz_id', '00000000-0000-0000-0000-000000000000')
-      .order('order', { ascending: true });
-
-    if (questionsError) throw questionsError;
-
-    // Modify the quiz to be a template
+    // Remove the ID so that a new one can be generated when copying
     const templateQuiz = {
-      ...quiz,
-      id: undefined, // Remove ID so a new one will be generated
-      title: `${quiz.title} (Copy)`,
+      ...template,
+      id: undefined,
+      title: `${template.title} (Copy)`,
       is_published: false,
       status: 'draft',
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      lastupdated: new Date().toISOString(),
     };
 
-    // Modify questions to remove IDs
-    const templateQuestions = questions?.map(question => ({
+    // Remove question IDs (if any)
+    const templateQuestions = template.questions?.map((question: any) => ({
       ...question,
       id: undefined,
-      quiz_id: undefined,
-      options: question.options?.map((option: Option) => ({
+      options: question.options?.map((option: any) => ({
         ...option,
         id: undefined,
-        question_id: undefined
       })),
-      matching_pairs: question.matching_pairs?.map((pair: MatchingPair) => ({
+      matching_pairs: question.matching_pairs?.map((pair: any) => ({
         ...pair,
         id: undefined,
-        question_id: undefined
       })),
-      ordering_items: question.ordering_items?.map((item: OrderingItem) => ({
+      ordering_items: question.ordering_items?.map((item: any) => ({
         ...item,
         id: undefined,
-        question_id: undefined
       })),
-      essay_rubrics: question.essay_rubrics?.map((rubric: EssayRubric) => ({
+      essay_rubrics: question.essay_rubrics?.map((rubric: any) => ({
         ...rubric,
         id: undefined,
-        question_id: undefined
-      }))
+      })),
     })) || [];
 
     return {
       quiz: templateQuiz,
-      questions: templateQuestions
+      questions: templateQuestions,
     };
   } catch (error) {
     console.error('Error getting quiz template:', error);

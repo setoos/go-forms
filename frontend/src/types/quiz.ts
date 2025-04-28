@@ -114,6 +114,8 @@ export interface BaseQuestion {
   cognitive_level?: 'recall' | 'understanding' | 'application' | 'analysis';
   difficulty_level?: 'easy' | 'medium' | 'hard';
   time_limit?: number;
+  instruction?: string;
+  addedFields?: string[];
 }
 
 export interface MultipleChoiceQuestion extends BaseQuestion {
@@ -184,6 +186,7 @@ export interface Option {
   order: number;
   is_correct?: boolean;
   points?: number;
+  addedFields?: string[];
 }
 
 export interface MatchingPair {
@@ -335,4 +338,29 @@ export interface QuizShare {
   password_hash: string | null;
   max_attempts: number | null;
   created_by: string;
+}
+
+export interface TemplateData {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  audiencelevel: string;
+  duration: number;
+  scoringmethod: string;
+  passingscore: number;
+  certificateenabled: boolean;
+  analyticsenabled: boolean;
+  feedbacktype: string;
+  tags: string[];
+  previewimage: string;
+  popularity: number;
+  usagecount: number;
+  created_at?: string;
+  lastupdated?: string;
+  questions: Question[];
+  questioncount?: number;
+  questiontypes?: string[];
+  created_by?: string;
 }
