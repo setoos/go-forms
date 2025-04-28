@@ -21,7 +21,6 @@ export const quillModules = {
     ],
     [{ align: [] }],
     ['link', 'image', 'video'],
-    ['blockquote', 'code-block'],
     ['clean'],
   ],
   imageResize: {
@@ -47,6 +46,4 @@ export const quillFormats = [
   'link',
   'image',
   'video',
-  'blockquote',
-  'code-block',
 ];
