@@ -33,7 +33,7 @@ import QuizSubmissions from './components/admin/QuizSubmissions';
 import SubmissionDetail from './components/admin/SubmissionDetail';
 import 'react-quill/dist/quill.snow.css';
 import { Loader } from 'lucide-react';
-import TemplateForm from './components/admin/templateForm';
+import TemplateForm from './components/admin/TemplateForm';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
