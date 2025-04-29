@@ -364,3 +364,22 @@ export interface TemplateData {
   questiontypes?: string[];
   created_by?: string;
 }
+
+export interface QuestionComponentProps {
+  question: Question;
+  index: number;
+  handleQuestionChange: (
+    index: number,
+    field: keyof Question,
+    value: any
+  ) => void;
+  handleDropField: (...args: any[]) => void;
+  handleRemoveField: (...args: any[]) => void;
+  quiz: Quiz;
+  updateQuestion: (...args: any[]) => void;
+  questions: Question[];
+  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>;
+  activeOptionEditors: { [key: number]: boolean };
+  setActiveOptionEditors: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>;
+  setIsOptionExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+}
