@@ -1,7 +1,7 @@
 import {
     useSortable,
 } from "@dnd-kit/sortable";
-import React, { useState } from "react";
+import React from "react";
 import {
     Trash2,
     Copy,
@@ -45,7 +45,6 @@ export function SortableQuestion({
     toggleQuestionExpand,
     handleDuplicateQuestion,
     handleDeleteQuestion,
-    initialQuestions,
 }: SortableQuestionProps) {
     
     const {
@@ -96,8 +95,7 @@ export function SortableQuestion({
                             {question.text || "Untitled Question"}
                         </p>
                         <p className="text-xs text-gray-500">
-                            {questionTypes.find((t) => t.value === question.type)
-                                ?.label && quizQuestionType || "Multiple Choice"}
+                            {question.type}
                         </p>
                     </div>
                 </div>
