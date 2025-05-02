@@ -1,39 +1,45 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, useTheme } from './lib/theme';
-import { AuthProvider, useAuth } from './lib/auth';
-import Welcome from './components/Welcome';
-import Quiz from './components/Quiz';
-import QuizView from './components/QuizView';
-import Results from './components/Results';
-import ResultsSuccess from './components/ResultsSuccess';
-import AuthForm from './components/auth/AuthForm';
-import QuizList from './components/admin/QuizList';
-import QuizEditor from './components/admin/QuizEditor';
-import QuizAnalytics from './components/admin/QuizAnalytics';
-import AnalyticsDashboard from './components/admin/AnalyticsDashboard';
-import UserSettings from './components/settings/UserSettings';
-import ReportTemplatesPage from './components/admin/ReportTemplatesPage';
-import TemplateList from './components/admin/TemplateList';
-import TemplateEditor from './components/admin/TemplateEditor';
-import TemplatePreview from './components/TemplatePreview';
-import InstaFormsLibrary from './components/forms/InstaFormsLibrary';
-import InstaFormsHome from './components/forms/InstaFormsHome';
-import FormCategoryPage from './components/forms/FormCategoryPage';
-import FormTemplateDetails from './components/forms/FormTemplateDetails';
-import DashboardLayout from './components/DashboardLayout';
-import Breadcrumbs from './components/Breadcrumbs';
-import QuizTemplateLibrary from './components/templates/QuizTemplateLibrary';
-import QuizTemplateCustomizer from './components/templates/QuizTemplateCustomizer';
-import QuizTemplateCategoryPage from './components/templates/QuizTemplateCategoryPage';
-import QuizTemplateFeatures from './components/templates/QuizTemplateFeatures';
-import QuizTemplateHome from './components/templates/QuizTemplateHome';
-import BillingReport from './components/admin/BillingReport';
-import QuizSubmissions from './components/admin/QuizSubmissions';
-import SubmissionDetail from './components/admin/SubmissionDetail';
-import 'react-quill/dist/quill.snow.css';
-import { Loader } from 'lucide-react';
-import TemplateForm from './components/admin/TemplateForm';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { ThemeProvider, useTheme } from "./lib/theme";
+import { AuthProvider, useAuth } from "./lib/auth";
+import Welcome from "./components/Welcome";
+import Quiz from "./components/Quiz";
+import QuizView from "./components/QuizView";
+import Results from "./components/Results";
+import ResultsSuccess from "./components/ResultsSuccess";
+import AuthForm from "./components/auth/AuthForm";
+import QuizList from "./components/admin/QuizList";
+import QuizEditor from "./components/admin/QuizEditor";
+import QuizAnalytics from "./components/admin/QuizAnalytics";
+import AnalyticsDashboard from "./components/admin/AnalyticsDashboard";
+import UserSettings from "./components/settings/UserSettings";
+import ReportTemplatesPage from "./components/admin/ReportTemplatesPage";
+import TemplateList from "./components/admin/TemplateList";
+import TemplateEditor from "./components/admin/TemplateEditor";
+import TemplatePreview from "./components/TemplatePreview";
+import InstaFormsLibrary from "./components/forms/InstaFormsLibrary";
+import InstaFormsHome from "./components/forms/InstaFormsHome";
+import FormCategoryPage from "./components/forms/FormCategoryPage";
+import FormTemplateDetails from "./components/forms/FormTemplateDetails";
+import DashboardLayout from "./components/DashboardLayout";
+import Breadcrumbs from "./components/Breadcrumbs";
+import QuizTemplateLibrary from "./components/templates/QuizTemplateLibrary";
+import QuizTemplateCustomizer from "./components/templates/QuizTemplateCustomizer";
+import QuizTemplateCategoryPage from "./components/templates/QuizTemplateCategoryPage";
+import QuizTemplateFeatures from "./components/templates/QuizTemplateFeatures";
+import QuizTemplateHome from "./components/templates/QuizTemplateHome";
+import BillingReport from "./components/admin/BillingReport";
+import QuizSubmissions from "./components/admin/QuizSubmissions";
+import SubmissionDetail from "./components/admin/SubmissionDetail";
+import "react-quill/dist/quill.snow.css";
+import { Loader } from "lucide-react";
+import TemplateForm from "./components/admin/TemplateForm";
+import CreatePage from "./pages/CreatePage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -56,7 +62,6 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function App() {
   const { themeLoading, loading } = useTheme();
 
-
   if (themeLoading && loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -72,7 +77,8 @@ function App() {
           <Routes>
             <Route path="/" element={<DashboardLayout />}>
               <Route index element={<Welcome />} />
-              <Route path="auth" element={<AuthForm />} />
+              <Route path="auth" element={<AuthForm />} /> 
+              <Route path="quiz/:id" element={<Quiz />} />
               <Route path="quiz/:id" element={<Quiz />} />
               <Route path="quiz/view/:id" element={<QuizView />} />
               <Route path="results" element={<Results />} />
@@ -81,20 +87,38 @@ function App() {
               {/* Templates Routes */}
               <Route path="templates" element={<QuizTemplateHome />} />
               <Route path="create-template/:id" element={<TemplateForm />} />
-              <Route path="templates/library" element={<QuizTemplateLibrary />} />
-              <Route path="templates/category/:categoryId" element={<QuizTemplateCategoryPage />} />
-              <Route path="templates/features" element={<QuizTemplateFeatures />} />
-              <Route path="templates/customize" element={
-                <PrivateRoute>
-                  <QuizTemplateCustomizer />
-                </PrivateRoute>
-              } />
+              <Route
+                path="templates/library"
+                element={<QuizTemplateLibrary />}
+              />
+              <Route
+                path="templates/category/:categoryId"
+                element={<QuizTemplateCategoryPage />}
+              />
+              <Route
+                path="templates/features"
+                element={<QuizTemplateFeatures />}
+              />
+              <Route
+                path="templates/customize"
+                element={
+                  <PrivateRoute>
+                    <QuizTemplateCustomizer />
+                  </PrivateRoute>
+                }
+              />
 
               {/* Forms Routes */}
               <Route path="forms" element={<InstaFormsHome />} />
               <Route path="forms/templates" element={<InstaFormsLibrary />} />
-              <Route path="forms/categories/:categoryId" element={<FormCategoryPage />} />
-              <Route path="forms/templates/:id" element={<FormTemplateDetails />} />
+              <Route
+                path="forms/categories/:categoryId"
+                element={<FormCategoryPage />}
+              />
+              <Route
+                path="forms/templates/:id"
+                element={<FormTemplateDetails />}
+              />
 
               {/* Settings Routes */}
               <Route
@@ -129,7 +153,8 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Breadcrumbs />
-                    <QuizEditor initialQuiz={null} initialQuestions={null} />
+                    {/* <QuizEditor initialQuiz={null} initialQuestions={null} /> */}
+                    <CreatePage />
                   </PrivateRoute>
                 }
               />
@@ -138,7 +163,8 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Breadcrumbs />
-                    <QuizEditor initialQuiz={null} initialQuestions={null} />
+                    {/* <QuizEditor initialQuiz={null} initialQuestions={null} /> */}
+                    <CreatePage />
                   </PrivateRoute>
                 }
               />
