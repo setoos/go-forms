@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { Question } from '../../types/aiTypes';
+import Button from '../ui/NewButton';
 import QuestionEditor from './QuestionEditor';
 
 interface DraggableQuestionProps {
@@ -58,16 +59,33 @@ const DraggableQuestion: React.FC<DraggableQuestionProps> = ({
               <div className="text-sm text-gray-500">{question.type}</div>
             </div>
           </div>
-          <button
-            onClick={onToggleExpand}
-            className="p-1 hover:bg-gray-100 rounded-full"
-          >
-            {isExpanded ? (
-              <ChevronUp size={20} className="text-gray-500" />
-            ) : (
-              <ChevronDown size={20} className="text-gray-500" />
-            )}
-          </button>
+          <div className="flex items-center space-x-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="text-gray-500 hover:text-red-500 hover:bg-red-50"
+              title="Delete question"
+            >
+              <Trash2 size={16} />
+            </Button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpand();
+              }}
+              className="p-1 hover:bg-gray-100 rounded-full"
+            >
+              {isExpanded ? (
+                <ChevronUp size={20} className="text-gray-500" />
+              ) : (
+                <ChevronDown size={20} className="text-gray-500" />
+              )}
+            </button>
+          </div>
         </div>
 
         {isExpanded && (

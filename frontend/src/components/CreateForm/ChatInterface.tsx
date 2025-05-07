@@ -20,7 +20,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     {
       id: '1',
       role: 'assistant',
-      content: "Hi there! I'm your form creation assistant. Tell me what kind of form you want to create, and I'll help you build it step by step. You can type or use voice input - just click the microphone icon and speak.",
+      content: "Hi there! I'm your form creation assistant. Let's create a form together. Could you tell me what kind of form you'd like to create? For example, is it a contact form, survey, quiz, assessment, or something else?",
       timestamp: new Date()
     }
   ]);
@@ -29,7 +29,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedForm, setGeneratedForm] = useState<Form | null>(null);
-  const [currentContext, setCurrentContext] = useState<string>('');
+  const [formRequirements, setFormRequirements] = useState<{
+    type?: string;
+    purpose?: string;
+    questionFormat?: string[];
+    isComplete: boolean;
+  }>({
+    isComplete: false
+  });
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -39,18 +46,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
   const textToSpeechRef = useRef<TextToSpeech | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+    let lastFinalText = '';
+    
     voiceRecognitionRef.current = new VoiceRecognition(
-      (text) => {
-        setInput((prev) => prev + ' ' + text);
+      (text, isFinal) => {
+        if (!isMounted) return;
+        
+        if (isFinal) {
+          lastFinalText = text;
+          setInput(text);
+        } else {
+          // Only update with interim results if they add new information
+          if (text && text !== lastFinalText) {
+            setInput(text);
+          }
+        }
+        
         if (inputRef.current) {
           inputRef.current.focus();
         }
       },
       (error) => {
+        if (!isMounted) return;
         console.error('Voice recognition error:', error);
         setIsRecording(false);
       },
       (isListening) => {
+        if (!isMounted) return;
+        if (!isListening) {
+          lastFinalText = '';
+        } else {
+          setInput('');
+        }
         setIsRecording(isListening);
         setShowVoiceTooltip(isListening);
       }
@@ -59,6 +87,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     textToSpeechRef.current = new TextToSpeech();
 
     return () => {
+      isMounted = false;
+      if (voiceRecognitionRef.current) {
+        voiceRecognitionRef.current.stop();
+      }
       if (textToSpeechRef.current) {
         textToSpeechRef.current.stop();
       }
@@ -97,16 +129,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     setSpeakingMessageId(message.id);
   };
 
-  const generateFormFromChat = async (userMessage: string) => {
+  const generateFormFromChat = async (formRequirements: string) => {
     try {
-      const generatedForm = await FormGenerator.generateForm(userMessage);
+      const requirements = typeof formRequirements === 'string' ? JSON.parse(formRequirements) : formRequirements;
+      
+      // Enhance the prompt with the collected requirements
+      const enhancedPrompt = `Create a ${requirements.type} form with the following details:
+      - Purpose: ${requirements.purpose}
+      - Question Formats: ${requirements.questionFormats?.join(', ') || 'Not specified'}
+      
+      Please generate appropriate questions and fields based on these requirements.`;
+      
+      const generatedForm = await FormGenerator.generateForm(enhancedPrompt);
       
       if (user) {
         const formData = {
           ...generatedForm,
           user_id: user.id,
           sharing_enabled: false,
-          is_template: false
+          is_template: false,
+          description: `Purpose: ${requirements.purpose}`
         };
         
         setGeneratedForm(formData);
@@ -124,7 +166,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
 
   const simulateAIResponse = async (userMessage: string) => {
     setIsLoading(true);
-    setCurrentContext(userMessage);
     
     try {
       const completion = await openai.chat.completions.create({
@@ -132,7 +173,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful form creation assistant. Keep responses concise and focused on form creation."
+            content: `You are an expert form creation assistant. Your goal is to help users create forms by gathering three key pieces of information:
+            
+            1. Type of form (e.g., contact form, survey, quiz, feedback form)
+            2. Purpose or subject of the form
+            3. Preferred question formats (Multiple Choice, Short Answer, True/False, etc.)
+            
+            Follow these rules:
+            - Ask one question at a time
+            - Be concise and focused
+            - Confirm each piece of information before moving to the next
+            - Only generate the form when all three pieces of information are collected
+            - When ready, say "I'll create your form now" and summarize the form details
+            - If any information is missing, ask follow-up questions`
           },
           ...messages.map(msg => ({
             role: msg.role as "user" | "assistant",
@@ -142,22 +195,62 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
             role: "user",
             content: userMessage
           }
-        ]
+        ],
+        functions: [
+          {
+            name: "generate_form",
+            description: "Generate a form with the collected information",
+            parameters: {
+              type: "object",
+              properties: {
+                type: {
+                  type: "string",
+                  description: "Type of form (e.g., contact, survey, quiz, feedback)",
+                  enum: ["contact", "survey", "quiz", "feedback", "registration", "application", "order"]
+                },
+                purpose: {
+                  type: "string",
+                  description: "Main purpose or subject of the form"
+                },
+                questionFormats: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                    enum: ["Multiple Choice", "Short Answer", "True/False", "Rating Scale", "Dropdown", "Checkbox", "File Upload"]
+                  },
+                  description: "Preferred question formats for the form"
+                }
+              },
+              required: ["type", "purpose", "questionFormats"]
+            }
+          }
+        ],
+        function_call: "auto"
       });
 
-      const aiResponse = completion.choices[0].message.content || "I'll help you create your form. Could you provide more details about what you need?";
+      const responseMessage = completion.choices[0].message;
+      let responseText = responseMessage.content || "I'll help you create your form. Could you provide more details about what you need?";
       
-      const form = await generateFormFromChat(userMessage);
-      
-      let response = aiResponse;
-      if (form) {
-        response += `\n\nI've created a ${form.type} form based on your request. It includes ${form.questions.length} questions to start with. You can now customize it in the Form Editor or use it as is. Would you like to add any specific questions or make changes?`;
+      // Check if the AI wants to generate the form
+      if (responseMessage.function_call && responseMessage.function_call.name === 'generate_form') {
+        const functionArgs = JSON.parse(responseMessage.function_call.arguments);
+        setFormRequirements({
+          ...formRequirements,
+          ...functionArgs,
+          isComplete: true
+        });
+        
+        // Generate the form with the collected information
+        const form = await generateFormFromChat(JSON.stringify(functionArgs));
+        if (form) {
+          responseText = `I've created a ${form.type} form based on your requirements. It includes ${form.questions.length} questions. You can now customize it in the Form Editor or use it as is.`;
+        }
       }
       
       const newMessage: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: response,
+        content: responseText,
         timestamp: new Date()
       };
       
@@ -299,8 +392,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
       </div>
       
       <ChatSuggestions 
-        onSuggestionClick={handleSuggestionClick}
-        currentContext={currentContext}
+        onSuggestionClick={handleSuggestionClick} 
+        messages={messages}
+        currentFormType={formRequirements.type}
       />
       
       <div className="p-3 border-t border-gray-200">

@@ -28,29 +28,39 @@ export class VoiceRecognition {
     this.recognition.continuous = true;
     this.recognition.interimResults = true;
     this.recognition.lang = this.language;
-    this.recognition.maxAlternatives = 3;
-
-    const resultId = nanoid();
+    this.recognition.maxAlternatives = 1; // Only use the top alternative
 
     this.recognition.onstart = () => {
       this.isListening = true;
+      this.finalTranscript = '';
+      this.interimTranscript = '';
       this.onStateChange(true);
       this.startSoundLevelMonitoring();
     };
 
     this.recognition.onresult = (event) => {
-      this.interimTranscript = '';
+      let interimTranscript = '';
+      let finalTranscript = '';
       
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         const result = event.results[i];
+        const transcript = result[0].transcript;
+        
         if (result.isFinal) {
-          this.finalTranscript += result[0].transcript;
+          this.finalTranscript = transcript;
           this.confidence = result[0].confidence;
-          this.onResult(result[0].transcript, true);
+          finalTranscript = this.finalTranscript;
         } else {
-          this.interimTranscript += result[0].transcript;
-          this.onResult(result[0].transcript, false);
+          interimTranscript += transcript;
         }
+      }
+      
+      // Always send both final and interim results
+      this.onResult(finalTranscript || interimTranscript, !!finalTranscript);
+      
+      // If we have a final result, clear interim for next round
+      if (finalTranscript) {
+        this.finalTranscript = '';
       }
     };
 
@@ -143,11 +153,14 @@ export class VoiceRecognition {
     }
   }
 
-  private stop() {
+  public stop() {
     if (!this.recognition || !this.isListening) return;
 
     try {
       this.recognition.stop();
+      this.isListening = false;
+      this.onStateChange(false);
+      this.stopSoundLevelMonitoring();
     } catch (error) {
       this.onError('Error stopping voice recognition.');
     }
