@@ -2,30 +2,11 @@ import { Database } from './supabase';
 
 export type FormTier = 'capture' | 'learn' | 'engage' | 'strategize' | 'convert';
 
-export type FormType = 'contact' | 'survey' | 'quiz' | 'assessment' | 'transaction';
+export type FormType = string; // Dynamic form type from OpenAI
 
 export type EvaluationMode = 'none' | 'simple' | 'ai-assisted' | 'weighted' | 'dynamic';
 
-export type QuestionType = 
-  | 'short-text' 
-  | 'long-text' 
-  | 'email' 
-  | 'phone' 
-  | 'number' 
-  | 'date' 
-  | 'time'
-  | 'multiple-choice' 
-  | 'checkbox' 
-  | 'dropdown' 
-  | 'rating-scale'
-  | 'likert-scale'
-  | 'slider'
-  | 'matrix'
-  | 'file-upload'
-  | 'voice-input'
-  | 'price'
-  | 'quantity'
-  | 'unit';
+export type QuestionType = string; // Dynamic question type from OpenAI
 
 export interface Question {
   id: string;

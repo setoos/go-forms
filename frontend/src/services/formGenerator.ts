@@ -48,7 +48,7 @@ export class FormGenerator {
       const content = completion.choices[0].message.content;
       if (!content) {
         return this.fallbackAnalysis(input);
-      }
+  }
 
       try {
         return JSON.parse(content);

@@ -16,18 +16,12 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hi there! I'm your form creation assistant. Let's create a form together. Could you tell me what kind of form you'd like to create? For example, is it a contact form, survey, quiz, assessment, or something else?",
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [generatedForm, setGeneratedForm] = useState<Form | null>(null);
   const [formRequirements, setFormRequirements] = useState<{
     type?: string;
@@ -39,11 +33,68 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
   });
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const messageEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const welcomeMessageShown = useRef(false);
   const { user } = useAuth();
   const voiceRecognitionRef = useRef<VoiceRecognition | null>(null);
   const textToSpeechRef = useRef<TextToSpeech | null>(null);
+
+  // Generate welcome message on component mount
+  useEffect(() => {
+    const generateWelcomeMessage = async () => {
+      // Prevent multiple welcome messages in development with StrictMode
+      if (welcomeMessageShown.current) return;
+      welcomeMessageShown.current = true;
+      
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert form creation assistant. Welcome the user and ask them what kind of form they'd like to create. Be friendly and professional."
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 150,
+        });
+
+        // Only add the message if we don't have any messages yet
+        setMessages(prev => {
+          if (prev.length === 0) {
+            return [{
+              id: Date.now().toString(),
+              role: 'assistant',
+              content: completion.choices[0]?.message?.content || 
+                     "Hi there! I'm here to help you create a form. What kind of form would you like to create?",
+              timestamp: new Date()
+            }];
+          }
+          return prev;
+        });
+      } catch (error) {
+        console.error('Error generating welcome message:', error);
+        // Fallback message if API call fails
+        setMessages(prev => {
+          if (prev.length === 0) {
+            return [{
+              id: Date.now().toString(),
+              role: 'assistant',
+              content: "Hi there! I'm here to help you create a form. What kind of form would you like to create?",
+              timestamp: new Date()
+            }];
+          }
+          return prev;
+        });
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    generateWelcomeMessage();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -129,34 +180,59 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     setSpeakingMessageId(message.id);
   };
 
-  const generateFormFromChat = async (formRequirements: string) => {
+  const generateFormFromChat = async (formData: any) => {
     try {
-      const requirements = typeof formRequirements === 'string' ? JSON.parse(formRequirements) : formRequirements;
-      
-      // Enhance the prompt with the collected requirements
-      const enhancedPrompt = `Create a ${requirements.type} form with the following details:
-      - Purpose: ${requirements.purpose}
-      - Question Formats: ${requirements.questionFormats?.join(', ') || 'Not specified'}
-      
-      Please generate appropriate questions and fields based on these requirements.`;
-      
-      const generatedForm = await FormGenerator.generateForm(enhancedPrompt);
+      // Map the form data from the AI to our form structure
+      const generatedForm: Form = {
+        id: `form_${Date.now()}`,
+        title: formData.title || 'Untitled Form',
+        description: formData.description || '',
+        type: formData.type,
+        tier: 'capture', // Default tier, can be enhanced based on form type
+        evaluation_mode: 'none',
+        questions: formData.questions.map((q: any, index: number) => ({
+          id: `q_${Date.now()}_${index}`,
+          type: q.type,
+          label: q.label,
+          required: q.required !== false, // Default to true if not specified
+          options: q.options || [],
+          order: index,
+          logic: []
+        })),
+        settings: {
+          requireIdentity: false,
+          enableBranching: false,
+          enableScoring: false,
+          enableAI: true,
+          enableVoice: true,
+          enableWebhooks: false
+        },
+        analytics: {
+          views: 0,
+          submissions: 0,
+          completionRate: 0
+        },
+        created_at: new Date(),
+        updated_at: new Date(),
+        is_template: false,
+        sharing_enabled: false,
+        share_link: ''
+      };
       
       if (user) {
-        const formData = {
+        const formWithUser = {
           ...generatedForm,
           user_id: user.id,
           sharing_enabled: false,
-          is_template: false,
-          description: `Purpose: ${requirements.purpose}`
+          is_template: false
         };
         
-        setGeneratedForm(formData);
+        setGeneratedForm(formWithUser);
         if (onFormGenerated) {
-          onFormGenerated(formData);
+          onFormGenerated(formWithUser);
         }
 
-        return formData;
+        return formWithUser;
       }
     } catch (error) {
       console.error('Error generating form:', error);
@@ -168,24 +244,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     setIsLoading(true);
     
     try {
+      // First, analyze the user's message to understand the form requirements
       const completion = await openai.chat.completions.create({
         model: "gpt-4",
         messages: [
           {
             role: "system",
-            content: `You are an expert form creation assistant. Your goal is to help users create forms by gathering three key pieces of information:
+            content: `You are an expert form creation assistant. Your goal is to help users create forms by analyzing their request and generating a complete form in one go.
             
-            1. Type of form (e.g., contact form, survey, quiz, feedback form)
-            2. Purpose or subject of the form
-            3. Preferred question formats (Multiple Choice, Short Answer, True/False, etc.)
+            Follow these steps:
+            1. Analyze the user's message to understand:
+               - Type of form (e.g., contact form, survey, quiz, feedback form, registration, application, order form)
+               - Purpose and subject of the form
+               - Any specific requirements or preferences mentioned
+               
+            2. Generate a complete form with appropriate fields based on the analysis
             
-            Follow these rules:
-            - Ask one question at a time
-            - Be concise and focused
-            - Confirm each piece of information before moving to the next
-            - Only generate the form when all three pieces of information are collected
-            - When ready, say "I'll create your form now" and summarize the form details
-            - If any information is missing, ask follow-up questions`
+            Be concise but thorough in your response.`
           },
           ...messages.map(msg => ({
             role: msg.role as "user" | "assistant",
@@ -198,70 +273,99 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
         ],
         functions: [
           {
-            name: "generate_form",
-            description: "Generate a form with the collected information",
+            name: "generate_complete_form",
+            description: "Generate a complete form based on the user's request",
             parameters: {
               type: "object",
               properties: {
                 type: {
                   type: "string",
-                  description: "Type of form (e.g., contact, survey, quiz, feedback)",
-                  enum: ["contact", "survey", "quiz", "feedback", "registration", "application", "order"]
+                  description: "Type of form (e.g., contact, survey, quiz, feedback, registration, application, order)",
+                  enum: ["contact", "survey", "quiz", "feedback", "registration", "application", "order", "event", "membership", "donation"]
                 },
-                purpose: {
+                title: {
                   type: "string",
-                  description: "Main purpose or subject of the form"
+                  description: "Title of the form"
                 },
-                questionFormats: {
+                description: {
+                  type: "string",
+                  description: "Detailed description of the form's purpose"
+                },
+                questions: {
                   type: "array",
                   items: {
-                    type: "string",
-                    enum: ["Multiple Choice", "Short Answer", "True/False", "Rating Scale", "Dropdown", "Checkbox", "File Upload"]
-                  },
-                  description: "Preferred question formats for the form"
+                    type: "object",
+                    properties: {
+                      type: {
+                        type: "string",
+                        enum: ["short-text", "long-text", "email", "phone", "number", "date", "time", "datetime", "multiple-choice", "checkbox", "dropdown", "rating", "file-upload", "signature"]
+                      },
+                      label: {
+                        type: "string"
+                      },
+                      required: {
+                        type: "boolean",
+                        default: true
+                      },
+                      options: {
+                        type: "array",
+                        items: {
+                          type: "string"
+                        }
+                      },
+                      description: {
+                        type: "string"
+                      }
+                    },
+                    required: ["type", "label"]
+                  }
                 }
               },
-              required: ["type", "purpose", "questionFormats"]
+              required: ["type", "title", "questions"]
             }
           }
         ],
-        function_call: "auto"
+        function_call: { name: "generate_complete_form" }
       });
 
       const responseMessage = completion.choices[0].message;
-      let responseText = responseMessage.content || "I'll help you create your form. Could you provide more details about what you need?";
       
-      // Check if the AI wants to generate the form
-      if (responseMessage.function_call && responseMessage.function_call.name === 'generate_form') {
+      // If we got a function call, process the form generation
+      if (responseMessage.function_call && responseMessage.function_call.name === 'generate_complete_form') {
         const functionArgs = JSON.parse(responseMessage.function_call.arguments);
-        setFormRequirements({
-          ...formRequirements,
-          ...functionArgs,
-          isComplete: true
-        });
         
         // Generate the form with the collected information
-        const form = await generateFormFromChat(JSON.stringify(functionArgs));
+        const form = await generateFormFromChat(functionArgs);
         if (form) {
-          responseText = `I've created a ${form.type} form based on your requirements. It includes ${form.questions.length} questions. You can now customize it in the Form Editor or use it as is.`;
+          const successMessage: ChatMessage = {
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: `I've created a "${form.title}" form based on your request. It includes ${form.questions.length} questions. You can now customize it in the Form Editor or use it as is.`,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, successMessage]);
+          setShowSuggestions(true);
+          return;
         }
       }
       
-      const newMessage: ChatMessage = {
+      // If we get here, either no function was called or form generation failed
+      const fallbackMessage: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: responseText,
+        content: responseMessage.content || "I'll help you create your form. Could you provide more details about what you need?",
         timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, newMessage]);
+      setMessages(prev => [...prev, fallbackMessage]);
+      setShowSuggestions(true);
     } catch (error) {
       console.error('Error in AI response:', error);
       
       const fallbackMessage: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: "I understand you want to create a form. Could you provide more details about what type of form you need? For example, is it a contact form, survey, quiz, or assessment?",
+        content: "I encountered an error while processing your request. Could you try again with more details about the form you'd like to create?",
         timestamp: new Date()
       };
       
@@ -284,6 +388,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setShowSuggestions(false); // Hide suggestions when user sends a message
     
     simulateAIResponse(input);
   };
@@ -351,11 +456,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
                   {message.role === 'assistant' && (
                     <button
                       onClick={() => toggleSpeaking(message)}
-                      className={`p-1 rounded-full ${
-                        message.role === 'user'
-                          ? 'text-blue-100 hover:bg-blue-500'
-                          : 'text-gray-600 hover:bg-gray-300'
-                      }`}
+                      className="p-1 rounded-full text-gray-600 hover:bg-gray-300"
                     >
                       {speakingMessageId === message.id ? <VolumeX size={14} /> : <Volume2 size={14} />}
                     </button>
@@ -371,7 +472,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
         </AnimatePresence>
         
         <AnimatePresence>
-          {isLoading && (
+          {isLoading && !isInitializing && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -391,11 +492,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
         <div ref={messageEndRef} />
       </div>
       
-      <ChatSuggestions 
-        onSuggestionClick={handleSuggestionClick} 
-        messages={messages}
-        currentFormType={formRequirements.type}
-      />
+      {showSuggestions && messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
+        <ChatSuggestions 
+          onSuggestionClick={handleSuggestionClick} 
+          messages={messages}
+          currentFormType={formRequirements.type}
+        />
+      )}
       
       <div className="p-3 border-t border-gray-200">
         <form onSubmit={handleSubmit} className="flex items-center space-x-2">

@@ -19,12 +19,9 @@ const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({
 
   useEffect(() => {
     const generateSuggestions = async () => {
-      if (messages.length === 0) return;
-
       setIsLoading(true);
       
       try {
-        // Extract the last few messages for context
         const recentMessages = messages.slice(-4);
         const context = recentMessages.map(m => `${m.role}: ${m.content}`).join('\n');
 
@@ -34,13 +31,17 @@ const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({
           messages: [
             {
               role: 'system',
-              content: `You are a helpful assistant that suggests relevant follow-up messages for a form builder conversation. 
-              Based on the conversation context, suggest 4 concise and natural follow-up messages that a user might want to send next.
-              Keep suggestions short (max 10 words) and focused on form creation or modification.`
+              content: `You are an AI form building expert that suggests relevant actions for form creation and modification.
+              ${messages.length === 0 ? 'Suggest initial form creation ideas.' : 'Based on the conversation context, suggest relevant next steps.'}
+              Suggestions should be concise (max 8 words), natural, and actionable.
+              Focus on form structure, fields, validation, and user experience.
+              Consider the form type if specified: ${currentFormType || 'not specified'}`
             },
             {
               role: 'user',
-              content: `Conversation context (most recent messages first):\n${context}\n\nCurrent form type: ${currentFormType || 'not specified'}\n\nPlease suggest 4 relevant follow-up messages:`
+              content: messages.length === 0 
+                ? 'Suggest 4 creative ways to start building a form:'
+                : `Recent conversation:\n${context}\n\nSuggest 4 relevant next steps:`
             }
           ],
           temperature: 0.7,
@@ -63,70 +64,47 @@ const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({
           setSuggestions(generated);
         }
       } catch (error) {
-        console.error('Error generating suggestions:', error);
-        // Fallback to default suggestions if API call fails
-        setSuggestions(getFallbackSuggestions());
+        console.error('Error generating primary suggestions:', error);
+        // Try with a simpler model and prompt as backup
+        try {
+          const backupPrompt = await openai.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            messages: [
+              {
+                role: 'system',
+                content: `You are a form building assistant. Generate 4 suggestions for ${currentFormType || 'form'} creation.`
+              },
+              {
+                role: 'user',
+                content: 'What are the next steps for building this form?'
+              }
+            ],
+            temperature: 0.5,
+            max_tokens: 100,
+          });
+
+          const backupContent = backupPrompt.choices[0]?.message?.content;
+          if (backupContent) {
+            const backupSuggestions = backupContent
+              .split('\n')
+              .map(s => s.replace(/^\d+[.)]\s*/, '').trim())
+              .filter(s => s.length > 0)
+              .slice(0, 4);
+            setSuggestions(backupSuggestions);
+          } else {
+            setSuggestions([]);
+          }
+        } catch (backupError) {
+          console.error('Error generating backup suggestions:', backupError);
+          setSuggestions([]);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    // Only generate suggestions if there's enough conversation history
-    if (messages.length > 0) {
-      generateSuggestions();
-    } else {
-      setSuggestions(getFallbackSuggestions());
-    }
+    generateSuggestions();
   }, [messages, currentFormType]);
-
-  const getFallbackSuggestions = (): string[] => {
-    if (!currentFormType) {
-      return [
-        "Create a contact form for my website",
-        "I need a customer satisfaction survey",
-        "Make a quiz about digital marketing",
-        "Build an employee skills assessment"
-      ];
-    }
-
-    const type = currentFormType.toLowerCase();
-    if (type.includes('contact')) {
-      return [
-        "Add a phone number field",
-        "Include a message box",
-        "Make email required",
-        "Add a company name field"
-      ];
-    } else if (type.includes('survey')) {
-      return [
-        "Add a rating scale question",
-        "Include a multiple choice question",
-        "Add an open-ended feedback section",
-        "Make it anonymous"
-      ];
-    } else if (type.includes('quiz')) {
-      return [
-        "Add multiple choice questions",
-        "Include a time limit",
-        "Show score at the end",
-        "Add explanation for wrong answers"
-      ];
-    } else if (type.includes('assessment')) {
-      return [
-        "Add skill rating questions",
-        "Include open-ended responses",
-        "Enable AI evaluation",
-        "Add performance criteria"
-      ];
-    }
-
-    return [
-      "What fields should I include?",
-      "How should I structure this form?",
-      "What's the main goal of this form?",
-      "Who is the target audience?"
-    ];
-  };
 
   return (
     <div className="p-3 border-t border-gray-200 bg-gray-50">
