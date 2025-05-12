@@ -325,7 +325,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
             }
           }
         ],
-        function_call: { name: "generate_complete_form" }
+        // function_call: { name: "generate_complete_form" }
       });
 
       const responseMessage = completion.choices[0].message;
