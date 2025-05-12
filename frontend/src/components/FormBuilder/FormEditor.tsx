@@ -66,6 +66,9 @@ const FormEditor: React.FC<FormEditorProps> = ({ form, onUpdate }) => {
     });
   };
 
+  console.log("form", form);
+  
+
   const addQuestion = (type: QuestionType) => {
     const newQuestion: Question = {
       id: `question-${Date.now()}`,

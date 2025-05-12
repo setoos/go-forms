@@ -30,8 +30,13 @@ const FormBuilderWrapper: React.FC<FormBuilderWrapperProps> = ({ initialForm, on
     }
 
     setIsSaving(true);
+
+    console.log("form", form);
+    
     try {
       if (form.id) {
+        console.log("hghghghyg");
+        
         await updateForm(form.id, form);
       } else {
         await createForm(form);
@@ -42,6 +47,9 @@ const FormBuilderWrapper: React.FC<FormBuilderWrapperProps> = ({ initialForm, on
       setIsSaving(false);
     }
   };
+
+  console.log("form", form);
+  
 
   return (
     <div className="space-y-6">

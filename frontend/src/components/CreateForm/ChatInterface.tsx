@@ -184,14 +184,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onFormGenerated }) => {
     try {
       // Map the form data from the AI to our form structure
       const generatedForm: Form = {
-        id: `form_${Date.now()}`,
+        id: crypto.randomUUID(),
         title: formData.title || 'Untitled Form',
         description: formData.description || '',
         type: formData.type,
         tier: 'capture', // Default tier, can be enhanced based on form type
         evaluation_mode: 'none',
         questions: formData.questions.map((q: any, index: number) => ({
-          id: `q_${Date.now()}_${index}`,
+          id: crypto.randomUUID(),
           type: q.type,
           label: q.label,
           required: q.required !== false, // Default to true if not specified

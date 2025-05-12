@@ -83,6 +83,8 @@ export const useFormStore = create<FormState>((set, get) => ({
   createForm: async (formData) => {
     const { questions, ...formFields } = formData;
 
+    console.log("formData", formData);
+    
 
     const formToInsert = {
       ...formFields,
@@ -106,6 +108,9 @@ export const useFormStore = create<FormState>((set, get) => ({
         ...question,
         form_id: form.id,
       }));
+
+      console.log("questionsWithFormId", form.id);
+      
 
       const { error: questionsError } = await supabase
         .from("goform_questions")
