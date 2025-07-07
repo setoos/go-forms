@@ -31,6 +31,8 @@ interface ModalProps {
 }
 
 function Modal({ open, onClose, setForm, form }: ModalProps) {
+    const serviceUrl = process.env.VITE_API_BASE_URL || ""
+    const mailTo = process.env.VITE_MAIL_TO || ""
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
@@ -80,11 +82,11 @@ function Modal({ open, onClose, setForm, form }: ModalProps) {
                 </table>
             `;
             const payload = {
-                to: 'prasad@setoo.co',
+                to: mailTo,
                 html,
                 subject: 'New Early Access Request',
             };
-            const res = await fetch('http://localhost:3000/api/send-email', {
+            const res = await fetch(`${serviceUrl}/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
