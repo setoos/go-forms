@@ -31,9 +31,8 @@ interface ModalProps {
 }
 
 function Modal({ open, onClose, setForm, form }: ModalProps) {
-    const serviceUrl = process.env.VITE_API_BASE_URL || ""
-    const mailTo = process.env.VITE_MAIL_TO || ""
-
+    const serviceUrl = import.meta.env.VITE_API_BASE_URL || "";
+    const mailTo = (import.meta.env.VITE_MAIL_TO || "").split(",").map((e: string) => e.trim()).filter(Boolean);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
 
@@ -81,24 +80,32 @@ function Modal({ open, onClose, setForm, form }: ModalProps) {
                   <tr><td><b>Phone:</b></td><td>${form.phone}</td></tr>
                 </table>
             `;
-            const payload = {
-                to: mailTo,
-                html,
-                subject: 'New Early Access Request',
-            };
-            const res = await fetch(`${serviceUrl}/send-email`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            if (!res.ok) throw new Error('Failed to send email');
+
+            // Send to all emails in parallel
+            const results = await Promise.all(
+                mailTo.map(async (mail: string) => {
+                    const payload = {
+                        to: mail,
+                        html,
+                        subject: 'New Early Access Request',
+                    };
+                    const res = await fetch(`${serviceUrl}/send-email`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+                    if (!res.ok) throw new Error('Failed to send email to ' + mail);
+                    return res;
+                })
+            );
+
             setSubmitting(false);
-            toast.success("You'll receive an email shortly.")
+            toast.success("You'll receive an email shortly.");
             resetForm();
             onClose();
         } catch (err) {
             setSubmitting(false);
-            toast.error("Something went wrong. Please try again.")
+            toast.error("Something went wrong. Please try again.");
             setErrors({ general: 'Failed to submit. Please try again.' });
         }
     };
