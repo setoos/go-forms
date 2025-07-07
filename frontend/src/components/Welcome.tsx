@@ -38,9 +38,16 @@ import Dashboard from './Dashboard';
 import { useTheme } from '../lib/theme';
 import { useNavigate } from 'react-router-dom';
 import '../styles/index.css';
+import Modal, { FormState } from './Modal';
 
 
-const ScrollNav = ({ activeSection }: { activeSection: string }) => {
+const ScrollNav = ({
+  activeSection,
+  setModalOpen,
+}: {
+  activeSection: string;
+  setModalOpen: (open: boolean) => void;
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -67,7 +74,7 @@ const ScrollNav = ({ activeSection }: { activeSection: string }) => {
         <div className="flex items-center justify-between h-20">
           <div className="text-2xl font-bold text-brand-green flex items-center gap-2">
             <img src="/goformlogo.svg" alt="Logo" className="h-32 w-auto" />
-            
+
           </div>
 
           <button
@@ -82,10 +89,9 @@ const ScrollNav = ({ activeSection }: { activeSection: string }) => {
             <a href="#usecases" className={`nav-link ${activeSection === 'usecases' ? 'text-brand-green' : ''}`}>Use Cases</a>
             <a href="#why" className={`nav-link ${activeSection === 'why' ? 'text-brand-green' : ''}`}>Why GoForms</a>
             <button
-              onClick={() => navigate('/auth')}
+              onClick={() => setModalOpen(true)}
               className="btn-primary">
-              Get Started
-              <ArrowRight size={20} />
+              Get Early Access
             </button>
           </div>
         </div>
@@ -109,7 +115,6 @@ const ScrollNav = ({ activeSection }: { activeSection: string }) => {
             </a>
             <button className="btn-primary w-full justify-center" onClick={() => setIsMenuOpen(false)}>
               Get Started
-              <ArrowRight size={20} />
             </button>
           </div>
         </div>
@@ -286,6 +291,10 @@ function Welcome() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('hero');
   const { user } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -307,19 +316,45 @@ function Welcome() {
     return () => observer.disconnect();
   }, []);
 
-  if(user?.id) {
+  if (user?.id) {
     return (
       <div className="min-h-screen">
-        <ScrollNav activeSection={activeSection} />
-        </div>
+        <ScrollNav activeSection={activeSection} setModalOpen={setModalOpen} />
+      </div>
     )
   }
 
+  const validateEmail = (value: string) => {
+    if (!value) return 'Email is required';
+    // Simple email regex
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) return 'Enter a valid email';
+    return '';
+  };
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const err = validateEmail(email);
+    if (err) {
+      setEmailError(err);
+      return;
+    }
+    setEmailError('');
+    setForm({ firstName: '', lastName: '', email: email, phone: '' });
+    setModalOpen(true);
+    setEmail("")
+  };
+  const [form, setForm] = useState<FormState>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+  });
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-brand-green/5 to-white welcome-layout-wrapper">
-        <ScrollNav activeSection={activeSection} />
 
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} setForm={setForm} form={form} />
+      <div className="min-h-screen bg-gradient-to-b from-brand-green/5 to-white welcome-layout-wrapper">
+        <ScrollNav activeSection={activeSection} setModalOpen={setModalOpen} />
         <section id="hero" className="relative pt-32 pb-24 overflow-hidden">
           <div className="hero-gradient" />
           <div className='max-w-7xl mx-auto'>
@@ -341,16 +376,27 @@ function Welcome() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 fade-up">
-                  <button
-                    onClick={() => navigate('/auth')}
-                    className="btn-primary">
-                    Get Started Free
-                    <ArrowRight size={20} />
-                  </button>
-                  <button className="btn-secondary">
-                    Watch Demo
-                    <PlayCircle size={20} />
-                  </button>
+                  <div className="flex justify-center items-center w-full">
+                    <form onSubmit={handleEmailSubmit} className="flex flex-col items-center w-full max-w-xl">
+                      <div className="flex w-full bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-transparent ">
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={e => setEmail(e.target.value)}
+                          placeholder="Your business email"
+                          className="flex-1 px-6 py-3 text-lg bg-white outline-none border-none placeholder-gray-400"
+                        />
+                        <button
+                          type="submit"
+                          className="btn-primary text-lg font-semibold m-2 rounded-2xl shadow-md hover:from-[#23263a] hover:to-[#23263a] transition-all"
+                        >
+                          Get Early Access
+                        </button>
+                      </div>
+                      {emailError && <div className="w-full text-left mt-2"><span className="text-red-500 font-semibold text-base">{emailError}</span></div>}
+                    </form>
+                  </div>
+
                 </div>
               </div>
             </div>

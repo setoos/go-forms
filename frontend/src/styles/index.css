@@ -311,3 +311,47 @@
     }
   }
   
+  .react-international-phone-input-container {
+    border-radius: 0.75rem !important; /* rounded-xl */
+    border: 1px solid #cbd5e1 !important; /* border-brand-green/20 */
+    background: #fff !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box;
+  }
+  
+  .react-international-phone-country-selector {
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0.75rem 0 0 0.75rem !important; /* left side rounded */
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-right: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  .react-international-phone-input {  
+    border-left: none;
+    box-shadow: none !important;
+    height: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    background: transparent !important;
+  }
+  
+  .react-international-phone-country-selector-button {
+    border: none !important;
+    background: transparent !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 0.5rem !important;
+    border-radius: 0.75rem 0 0 0.75rem !important;
+  }
+  
+  .react-international-phone-country-selector-button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
